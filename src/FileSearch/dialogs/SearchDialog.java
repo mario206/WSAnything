@@ -1,7 +1,6 @@
 package FileSearch.dialogs;
 
 import FileSearch.*;
-import FileSearch.impl.ResultImpl;
 import FileSearch.tools.FileUtils;
 import FileSearch.tools.Result;
 import com.intellij.ide.BrowserUtil;
@@ -19,6 +18,7 @@ import java.awt.event.*;
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+
 
 public class SearchDialog extends JDialog {
     private Project project;
@@ -54,6 +54,9 @@ public class SearchDialog extends JDialog {
     }
 
     public SearchDialog(final SearchManager searchManager, Project project, final FileUtils fileUtils) {
+
+        marioTest(project);
+
         setTitle("Find Files by Name");
         setContentPane(contentPane);
         setModal(true);
@@ -137,6 +140,8 @@ public class SearchDialog extends JDialog {
             descriptor.setDescription("You can pick multiple directories to search.");
             String projectPath = project.getBasePath();
             VirtualFile virtualFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(new File(projectPath));
+
+
             VirtualFile[] vFiles = FileChooser.chooseFiles(descriptor, null, virtualFile);
             for (VirtualFile file : vFiles) {
                 searchPathModel.addElement(file.getPath());
@@ -279,4 +284,17 @@ public class SearchDialog extends JDialog {
         stopSearching();
         dispose();
     }
+
+
+
+
+    public void marioTest(Project project) {
+        WSFindPopupPanel pnl = new WSFindPopupPanel(project);
+        pnl.showUI();
+    }
+
+
 }
+
+
+

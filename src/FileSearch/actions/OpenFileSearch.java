@@ -2,6 +2,8 @@ package FileSearch.actions;
 
 import FileSearch.FSLog;
 import FileSearch.SearchManager;
+import FileSearch.WSFindPopupPanel;
+import FileSearch.WSProjectListener;
 import FileSearch.dialogs.SearchDialog;
 import FileSearch.impl.FileUtilsImpl;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -14,11 +16,14 @@ public class OpenFileSearch extends AnAction {
     public void actionPerformed(AnActionEvent e) {
         FSLog.log.info("Action performed.");
         Project project = e.getProject();
-        FileUtilsImpl fileUtils = new FileUtilsImpl(project);
+/*        FileUtilsImpl fileUtils = new FileUtilsImpl(project);
         SearchDialog dialog = new SearchDialog(new SearchManager  (fileUtils), project, fileUtils);
         dialog.setPreferredSize(new Dimension(800, 500));
         dialog.pack();
         dialog.setLocationRelativeTo(null);
-        dialog.setVisible(true);
+        dialog.setVisible(true);*/
+        WSFindPopupPanel pnl = new WSFindPopupPanel(project);
+        pnl.showUI();
+        WSProjectListener.getInstance().registerEvent();
     }
 }
