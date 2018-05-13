@@ -80,11 +80,11 @@ public class WSFindUIHelper {
     }
 
     String getTitle() {
-        return "";
+        return "WSAnything";
     }
 
     public boolean isReplaceState() {
-        return true;
+        return false;
     }
 
     public Runnable getOkHandler() {

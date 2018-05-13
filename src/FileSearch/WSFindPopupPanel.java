@@ -331,7 +331,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
     myCbCaseSensitive.addItemListener(liveResultsPreviewUpdateListener);
     myCbPreserveCase = createCheckBox("find.options.replace.preserve.case");
     myCbPreserveCase.addItemListener(liveResultsPreviewUpdateListener);
-    myCbPreserveCase.setVisible(/*myHelper.getModel().isReplaceState()*/true);
+    myCbPreserveCase.setVisible(/*myHelper.getModel().isReplaceState()*/false);
     myCbWholeWordsOnly = createCheckBox("find.popup.whole.words");
     myCbWholeWordsOnly.addItemListener(liveResultsPreviewUpdateListener);
     myCbRegularExpressions = createCheckBox("find.popup.regex");
@@ -717,6 +717,8 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
     DocumentAdapter documentAdapter = new DocumentAdapter() {
       @Override
       protected void textChanged(DocumentEvent e) {
+        String text = mySearchComponent.getText();
+        int len = text.length();
         mySearchComponent.setRows(Math.max(1, Math.min(3, StringUtil.countChars(mySearchComponent.getText(), '\n') + 1)));
         myReplaceComponent.setRows(Math.max(1, Math.min(3, StringUtil.countChars(myReplaceComponent.getText(), '\n') + 1)));
 
@@ -1038,9 +1040,6 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
     finishPreviousPreviewSearch();
     mySearchRescheduleOnCancellationsAlarm.cancelAllRequests();
     applyTo(myHelper.getModel());
-    FindModel findModel = new FindModel();
-    findModel.copyFrom(myHelper.getModel());
-
     ValidationInfo result = getValidationInfo(myHelper.getModel());
 
     final ProgressIndicatorBase progressIndicatorWhenSearchStarted = new ProgressIndicatorBase() {
@@ -1303,7 +1302,10 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
   @Override
   @NotNull
   public String getStringToFind() {
-    return mySearchComponent.getText();
+    String text = mySearchComponent.getText();
+    LOG.info("getStringToFind = " + text);
+    int len = text.length();
+    return text;
   }
 
   @NotNull
