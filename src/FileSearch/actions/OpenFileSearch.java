@@ -1,16 +1,11 @@
 package FileSearch.actions;
 
 import FileSearch.FSLog;
-import FileSearch.SearchManager;
 import FileSearch.WSFindPopupPanel;
-import FileSearch.WSProjectListener;
-import FileSearch.dialogs.SearchDialog;
-import FileSearch.impl.FileUtilsImpl;
+import FileSearch.Core.WSProjectListener;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
-
-import java.awt.*;
 
 public class OpenFileSearch extends AnAction {
     public void actionPerformed(AnActionEvent e) {
@@ -25,5 +20,8 @@ public class OpenFileSearch extends AnAction {
         WSFindPopupPanel pnl = new WSFindPopupPanel(project);
         pnl.showUI();
         WSProjectListener.getInstance().registerEvent();
+        if(project != null) {
+            WSProjectListener.getInstance().projectOpened(project);
+        }
     }
 }

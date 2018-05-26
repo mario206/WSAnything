@@ -1,6 +1,7 @@
 // Copyright 2000-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package FileSearch;
 
+import FileSearch.Core.*;
 import com.intellij.CommonBundle;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.find.*;
@@ -125,8 +126,8 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
   private String mySelectedContextName = FindBundle.message("find.context.anywhere.scope.label");
   private JPanel myScopeDetailsPanel;
 
-  private JBTable myResultsPreviewTable;
-  private UsagePreviewPanel myUsagePreviewPanel;
+  private JBTable myResultsPreviewTable;  // 结果列表
+  private UsagePreviewPanel myUsagePreviewPanel;  // 使用预览
   private JBPopup myBalloon;
   private LoadingDecorator myLoadingDecorator;
   private int myLoadingHash;
@@ -502,57 +503,6 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
     myReplaceSelectedButton = new JButton(FindBundle.message("find.popup.replace.selected.button", 0));
 
     myOkActionListener = __ -> doOK(true);
-    myReplaceAllButton.addActionListener(e -> {
-      boolean okToReplaceAll = myResultsPreviewTable.getRowCount() < 2;
-      if (!okToReplaceAll) {
-        Window window = UIUtil.getWindow(this);
-        try {
-          if (window != null) {
-            window.setVisible(false);
-          }
-          okToReplaceAll = ReplaceInProjectManager.getInstance(myProject).showReplaceAllConfirmDialog(
-            myUsagesCount,
-            getStringToFind(),
-            myFilesCount,
-            getStringToReplace());
-        } finally {
-          if (window != null) {
-            window.setVisible(true);
-          }
-        }
-      }
-      if (okToReplaceAll) {
-        doOK(false);
-      }
-    });
-    myReplaceSelectedButton.addActionListener(e -> {
-      int rowToSelect = myResultsPreviewTable.getSelectionModel().getMinSelectionIndex();
-      Map<Integer, Usage> usages = getSelectedUsages();
-      if (usages == null) {
-        return;
-      }
-      CommandProcessor.getInstance().executeCommand(myProject, () -> {
-        for (Map.Entry<Integer, Usage> entry : usages.entrySet()) {
-          try {
-            ReplaceInProjectManager.getInstance(myProject).replaceUsage(entry.getValue(), myHelper.getModel(), Collections.emptySet(), false);
-            ((DefaultTableModel)myResultsPreviewTable.getModel()).removeRow(entry.getKey());
-          }
-          catch (FindManager.MalformedReplacementStringException ex) {
-            if (!ApplicationManager.getApplication().isUnitTestMode()) {
-              Messages.showErrorDialog(this, ex.getMessage(), FindBundle.message("find.replace.invalid.replacement.string.title"));
-            }
-            break;
-          }
-        }
-
-        ApplicationManager.getApplication().invokeLater(() -> {
-          if (myResultsPreviewTable.getRowCount() > rowToSelect) {
-            myResultsPreviewTable.getSelectionModel().setSelectionInterval(rowToSelect, rowToSelect);
-          }
-          ScrollingUtil.ensureSelectionExists(myResultsPreviewTable);
-        });
-      }, FindBundle.message("find.replace.command"), null);
-    });
     myOKButton.addActionListener(myOkActionListener);
     boolean enterAsOK = Registry.is("ide.find.enter.as.ok", false);
 
@@ -1052,6 +1002,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
     myResultsPreviewSearchProgress = progressIndicatorWhenSearchStarted;
     final int hash = System.identityHashCode(myResultsPreviewSearchProgress);
 
+    //memo
     final DefaultTableModel model = new DefaultTableModel() {
       @Override
       public boolean isCellEditable(int row, int column) {
@@ -1077,7 +1028,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
     myReplaceAllButton.setEnabled(false);
     myReplaceSelectedButton.setEnabled(false);
     myReplaceSelectedButton.setText(FindBundle.message("find.popup.replace.selected.button", 0));
-    myCodePreviewComponent.setVisible(false);
+    myCodePreviewComponent.setVisible(true);//test true;
 
     mySearchTextArea.setInfoText(null);
     myResultsPreviewTable.setModel(model);
@@ -1303,7 +1254,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
   @NotNull
   public String getStringToFind() {
     String text = mySearchComponent.getText();
-    LOG.info("getStringToFind = " + text);
+    FSLog.log.info("getStringToFind = " + text);
     int len = text.length();
     return text;
   }
@@ -1327,12 +1278,30 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
 
     model.setSearchContext(searchContext);*/
 
-    model.setRegularExpressions(myCbRegularExpressions.isSelected());
-    model.setStringToFind(getStringToFind());
+    //model.setRegularExpressions(myCbRegularExpressions.isSelected());
 
-    if (model.isReplaceState()) {
+    ///mariotodo
+    model.setStringToFind(getStringToFind());
+    FindTextRequest req = new FindTextRequest();
+    req.setString(getStringToFind());
+    req.m_searchFiles = WSProjectListener.getInstance().getWSProject().getSolutionFileCopy();
+
+    req.m_finishCallBack = (param)->{
+      WSFindTextArgs args = (WSFindTextArgs)param;
+      FSLog.log.info("find req callback result num = " + args.listResult.size());
+      for(int i = 0;i < args.listResult.size();++i) {
+        WSFindTextResult result = args.listResult.get(i);
+        FSLog.log.info("find req callback result num = " + args.listResult.size());
+        FSLog.log.info(result.tostring());
+      }
+      return 0;
+    };
+    WSTextFinder.getInstance().start(req);
+
+
+/*    if (model.isReplaceState()) {
       model.setStringToReplace(StringUtil.convertLineSeparators(getStringToReplace()));
-    }
+    }*/
 
 
     model.setProjectScope(false);
@@ -1343,7 +1312,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
     model.setCustomScope(false);
     //myScopeUI.applyTo(model, mySelectedScope);
 
-    model.setFindAll(false);
+    //model.setFindAll(false);
 
     String mask = getFileTypeMask();
     model.setFileFilter(mask);
