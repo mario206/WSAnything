@@ -56,4 +56,6 @@ public class WSProjectListener implements VetoableProjectManagerListener {
     public WSProject getWSProject() {
         return m_wsProject;
     }
+
+    public Project getJBProject() {return m_currProject;}
 }

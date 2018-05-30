@@ -2,6 +2,8 @@
 package FileSearch;
 
 import FileSearch.Core.*;
+import FileSearch.UI.*;
+import FileSearch.actions.OpenFileSearch;
 import com.intellij.CommonBundle;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.find.*;
@@ -47,6 +49,8 @@ import com.intellij.openapi.wm.WindowManager;
 import com.intellij.openapi.wm.impl.IdeFrameImpl;
 import com.intellij.pom.Navigatable;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.search.GlobalSearchScopeUtil;
 import com.intellij.ui.*;
 import com.intellij.ui.awt.RelativePoint;
 import com.intellij.ui.components.JBLabel;
@@ -637,13 +641,15 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
       }
     };
     Disposer.register(myDisposable, myUsagePreviewPanel);
+    /// mariotodo preview
     final Runnable updatePreviewRunnable = () -> {
       if (Disposer.isDisposed(myDisposable)) return;
       int[] selectedRows = myResultsPreviewTable.getSelectedRows();
       final List<UsageInfo> selection = new SmartList<>();
       VirtualFile file = null;
       for (int row : selectedRows) {
-        UsageInfo2UsageAdapter adapter = (UsageInfo2UsageAdapter)myResultsPreviewTable.getModel().getValueAt(row, 0);
+        UsageInfo usageInfo = WSUtil.getUsageInfo((WSFindTextResult) myResultsPreviewTable.getModel().getValueAt(row, 0));
+        UsageInfo2UsageAdapter adapter = new UsageInfo2UsageAdapter(usageInfo);
         file = adapter.getFile();
         if (adapter.isValid()) {
           selection.addAll(Arrays.asList(adapter.getMergedInfos()));
@@ -1022,8 +1028,8 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
         if (file != null) filesToScanInitially.add(file);
       }
     }
-
-    myHelper.myPreviousModel = myHelper.getModel().clone();*/
+*/
+    myHelper.myPreviousModel = myHelper.getModel().clone();
 
     myReplaceAllButton.setEnabled(false);
     myReplaceSelectedButton.setEnabled(false);
@@ -1037,12 +1043,11 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
       onStop(hash, result.message);
       return;
     }
+  GlobalSearchScope scope = GlobalSearchScopeUtil.toGlobalSearchScope(
+          WSFindInProjectUtil.getScopeFromModel(myProject, myHelper.myPreviousModel), myProject);
 
-   /* GlobalSearchScope scope = GlobalSearchScopeUtil.toGlobalSearchScope(
-      FindInProjectUtil.getScopeFromModel(myProject, myHelper.myPreviousModel), myProject);
     myResultsPreviewTable.getColumnModel().getColumn(0).setCellRenderer(
-      new FindDialog.UsageTableCellRenderer(myCbFileFilter.isSelected(), false, scope));
-    onStart(hash);*/
+            new WSTableCellRenderer(myCbFileFilter.isSelected(), false, scope)); //mariotodo
 
     final AtomicInteger resultsCount = new AtomicInteger();
     final AtomicInteger resultsFilesCount = new AtomicInteger();
@@ -1291,9 +1296,18 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
       FSLog.log.info("find req callback result num = " + args.listResult.size());
       for(int i = 0;i < args.listResult.size();++i) {
         WSFindTextResult result = args.listResult.get(i);
-        FSLog.log.info("find req callback result num = " + args.listResult.size());
         FSLog.log.info(result.tostring());
       }
+
+      DefaultTableModel tableModel = (DefaultTableModel)myResultsPreviewTable.getModel();
+      Vector<WSFindTextResult> vec = new Vector<WSFindTextResult>(args.listResult);
+
+      for(int i = 0;i < args.listResult.size();++i) {
+        WSFindTextResult result = args.listResult.get(i);
+        tableModel.addRow(new Object[]{result});  //mariotodo
+      }
+      //tableModel.addRow(vec);
+      //tableModel.fireTableRowsUpdated(tableModel.getRowCount() - 1, tableModel.getRowCount() - 1);
       return 0;
     };
     WSTextFinder.getInstance().start(req);
@@ -1318,44 +1332,35 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
     model.setFileFilter(mask);
   }
 
+  // 点击跳转
   private void navigateToSelectedUsage(AnActionEvent e) {
-    Navigatable[] navigatables = e != null ? e.getData(CommonDataKeys.NAVIGATABLE_ARRAY) : null;
-    if (navigatables != null) {
-      myBalloon.cancel();
-      OpenSourceUtil.navigate(navigatables);
-      return;
-    }
-
-    Map<Integer, Usage> usages = getSelectedUsages();
+    List<WSFindTextResult> usages = getSelectedResults();
     if (usages != null) {
       myBalloon.cancel();
       boolean first = true;
-      for (Usage usage : usages.values()) {
+      for (WSFindTextResult usage : usages) {
         if (first) {
-          usage.navigate(true);
+          WSUtil.navigateToFile(usage,true);
         }
         else {
-          usage.highlightInEditor();
+          //usage.highlightInEditor();
         }
         first = false;
       }
     }
   }
 
-  @Nullable
-  private Map<Integer, Usage> getSelectedUsages() {
-    int[] rows = myResultsPreviewTable.getSelectedRows();
-    Map<Integer, Usage> result = null;
-    for (int i = rows.length - 1; i >= 0; i--) {
-      int row = rows[i];
-      Object valueAt = myResultsPreviewTable.getModel().getValueAt(row, 0);
-      if (valueAt instanceof Usage) {
-        if (result == null) result = ContainerUtil.newLinkedHashMap();
-        result.put(row, (Usage)valueAt);
-      }
+    private List<WSFindTextResult> getSelectedResults() {
+        List<WSFindTextResult> result = null;
+        int[] rows = myResultsPreviewTable.getSelectedRows();
+        for (int i = rows.length - 1; i >= 0; i--) {
+            int row = rows[i];
+            Object valueAt = myResultsPreviewTable.getModel().getValueAt(row, 0);
+            if (result == null) result = new ArrayList<WSFindTextResult>();
+            result.add((WSFindTextResult) valueAt);
+        }
+        return result;
     }
-    return result;
-  }
 
   public static ActionToolbarImpl createToolbar(AnAction... actions) {
     ActionToolbarImpl toolbar = (ActionToolbarImpl)ActionManager.getInstance()

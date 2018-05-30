@@ -28,6 +28,7 @@ import javax.swing.*;
 public class WSFindUIHelper {
     @NotNull private final Project myProject;
     private FindModel model;
+    FindModel myPreviousModel;
 
     WSFindUIHelper(@NotNull Project project) {
         myProject = project;
