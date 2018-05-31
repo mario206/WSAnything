@@ -14,7 +14,8 @@ import java.util.List;
 public class WSTextFinder {
     private static WSTextFinder pInstance;
 
-    private int MAX_SEARCH_THREAD = 4;
+    private int MAX_SEARCH_THREAD = Math.max(1,Runtime.getRuntime().availableProcessors() - 1);
+
     private List<AsyncTask> m_FindTextThreads = Lists.newArrayList();
     private AsyncTask m_FindTask = null;
     private FindTextRequest request = null;
@@ -103,7 +104,7 @@ public class WSTextFinder {
                 if(args.req.m_searchFiles.size() > 0) {
                     file = args.req.m_searchFiles.get(0);
                     args.req.m_searchFiles.remove(0);
-                    FSLog.log.info("search File" + file.getName());
+                    //FSLog.log.info("search File" + file.getName());
                 } else {
                     FSLog.log.info("search file empty,break");
                     break;
@@ -153,6 +154,7 @@ public class WSTextFinder {
                 oneLineResult.nBeginIndex = startIndex;
                 oneLineResult.nEndIdex = endIndex;
                 oneLineResult.m_strLineLowercase = line;
+                oneLineResult.m_strLine = cache.m_Lines.get(i);
                 result.add(oneLineResult);
             }
         }

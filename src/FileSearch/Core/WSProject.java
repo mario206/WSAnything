@@ -67,13 +67,13 @@ public class WSProject {
         ProjectRootManager.getInstance(this.m_project).getFileIndex().iterateContent(fileOrDir -> {
             if (!fileOrDir.isDirectory() && listSearchSuffix.contains(WSUtil.getFileSuffix(fileOrDir.getName()))) {
                 try {
-                    String text = LoadTextUtil.loadText(fileOrDir).toString();
+                    //String text = LoadTextUtil.loadText(fileOrDir).toString();
                     WSFileCache cache = new WSFileCache();
                     cache.init(fileOrDir);
 
                     solutionFile.add(fileOrDir);
                     cacheFile.put(fileOrDir,cache);
-                    FSLog.log.info(text);
+                    //FSLog.log.info(text);
                 } catch (Exception e) {
                     FSLog.log.error("scanFileMain Exception");
                 }

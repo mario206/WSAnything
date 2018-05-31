@@ -37,7 +37,7 @@ public class WSTableCellRenderer extends JPanel implements TableCellRenderer {
 
             TextAttributesKey USAGE_LOCATION = TextAttributesKey.createTextAttributesKey("$NUMBER_OF_USAGES");
             EditorColorsScheme myColorsScheme = EditorColorsUtil.getColorSchemeForBackground(UIUtil.getTreeTextBackground());
-            TextChunk textChunk = new TextChunk(myColorsScheme.getAttributes(USAGE_LOCATION),result.m_strLineLowercase);
+            TextChunk textChunk = new TextChunk(myColorsScheme.getAttributes(USAGE_LOCATION),result.m_strLine);
             SimpleTextAttributes attributes = getAttributes(textChunk);
             myUsageRenderer.append(textChunk.getText(), attributes);
 

@@ -19,7 +19,7 @@ public class WSFileCache {
     List<String> m_LinesLowercase = new ArrayList<String>();
 
     public void init(VirtualFile file) {
-        FSLog.log.info("WSFileCache init: " + file.getName());
+        //FSLog.log.info("WSFileCache init: " + file.getName());
         m_virtualFile = file;
         m_fileName = file.getName();
         m_timeStamp = file.getTimeStamp();

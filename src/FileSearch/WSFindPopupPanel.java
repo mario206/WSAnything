@@ -1288,7 +1288,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
     ///mariotodo
     model.setStringToFind(getStringToFind());
     FindTextRequest req = new FindTextRequest();
-    req.setString(getStringToFind());
+    req.setString(getStringToFind().toLowerCase());
     req.m_searchFiles = WSProjectListener.getInstance().getWSProject().getSolutionFileCopy();
 
     req.m_finishCallBack = (param)->{
@@ -1296,7 +1296,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
       FSLog.log.info("find req callback result num = " + args.listResult.size());
       for(int i = 0;i < args.listResult.size();++i) {
         WSFindTextResult result = args.listResult.get(i);
-        FSLog.log.info(result.tostring());
+        //FSLog.log.info(result.tostring());
       }
 
       DefaultTableModel tableModel = (DefaultTableModel)myResultsPreviewTable.getModel();
