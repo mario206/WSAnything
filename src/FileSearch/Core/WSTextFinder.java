@@ -101,9 +101,12 @@ public class WSTextFinder {
                     FSLog.log.info("findTextThreadMain cancel");
                     break;
                 }
-                if(args.req.m_searchFiles.size() > 0) {
-                    file = args.req.m_searchFiles.get(0);
-                    args.req.m_searchFiles.remove(0);
+                if(args.req.m_currIndex < args.req.m_searchFiles.size()) {
+                    if(args.req.m_nMaxResult <= args.m_currResultCnt) {
+                        args.req.m_upToResultCntLimit = true;
+                        break;
+                    }
+                    file = args.req.m_searchFiles.get(args.req.m_currIndex++);
                     //FSLog.log.info("search File" + file.getName());
                 } else {
                     FSLog.log.info("search file empty,break");
@@ -113,6 +116,13 @@ public class WSTextFinder {
             if(file != null) {
                 List<WSFindTextResult> tmpRsult = searchFile(file,pattern);
                 result.addAll(tmpRsult);
+                if(tmpRsult.size() > 0) {
+                    synchronized (args) {
+                        args.req.m_nResultFileCnt++;
+                        args.m_currResultCnt += tmpRsult.size();
+                    }
+                }
+
             }
 
         }

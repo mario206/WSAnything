@@ -1,12 +1,16 @@
 package FileSearch.Core;
 
+import com.intellij.find.FindInProjectSettings;
+import com.intellij.find.FindManager;
 import com.intellij.find.FindModel;
 import com.intellij.find.findInProject.FindInProjectManager;
 import com.intellij.find.impl.FindInProjectUtil;
 import com.intellij.injected.editor.VirtualFileWindow;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.module.Module;
@@ -30,6 +34,7 @@ import com.intellij.psi.search.SearchScope;
 import com.intellij.psi.util.PsiUtilCore;
 import com.intellij.usageView.UsageInfo;
 import com.intellij.util.SmartList;
+import com.sun.java.accessibility.util.EventID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -90,5 +95,43 @@ public class WSUtil {
             return null;
         }
         return Pair.createNonNull(psiFile, sourceVirtualFile);
+    }
+
+    public static String getWordAtCaret(Project project) {
+        String result = "";
+
+        Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
+        if(editor == null) {
+            return result;
+        }
+        int caretOffset = editor.getCaretModel().getOffset();
+        Document document = editor.getDocument();
+        CharSequence text = document.getCharsSequence();
+        int start = 0;
+        int end = document.getTextLength();
+        if (!editor.getSelectionModel().hasSelection()) {
+            for (int i = caretOffset - 1; i >= 0; i--) {
+                char c = text.charAt(i);
+                if (!Character.isJavaIdentifierPart(c)) {
+                    start = i + 1;
+                    break;
+                }
+            }
+            for (int i = caretOffset; i < document.getTextLength(); i++) {
+                char c = text.charAt(i);
+                if (!Character.isJavaIdentifierPart(c)) {
+                    end = i;
+                    break;
+                }
+            }
+        } else {
+            start = editor.getSelectionModel().getSelectionStart();
+            end = editor.getSelectionModel().getSelectionEnd();
+        }
+        if (start >= end) {
+            return result;
+        }
+        result = text.subSequence(start, end).toString();
+        return result;
     }
 }

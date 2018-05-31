@@ -17,11 +17,11 @@ public class OpenFileSearch extends AnAction {
         dialog.pack();
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);*/
-        WSFindPopupPanel pnl = new WSFindPopupPanel(project);
-        pnl.showUI();
         WSProjectListener.getInstance().registerEvent();
         if(project != null) {
             WSProjectListener.getInstance().projectOpened(project);
         }
+        WSFindPopupPanel pnl = new WSFindPopupPanel(project);
+        pnl.showUI();
     }
 }

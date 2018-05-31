@@ -10,10 +10,13 @@ public class FindTextRequest {
         String[] vec = new String[0];
     }
     public Pattern m_pattern = new Pattern();
-    int m_nMaxResult;
-    boolean m_bConsiderFileName;
+    public int m_nMaxResult;
+    public boolean m_upToResultCntLimit = false;
+    public int m_nResultFileCnt = 0;
+    public boolean m_bConsiderFileName;
     public String m_TextBoxText;
     public Function<Object,Integer> m_finishCallBack;
+    public int m_currIndex = 0;
     public List<VirtualFile> m_searchFiles;
 
     public void setString(String str) {

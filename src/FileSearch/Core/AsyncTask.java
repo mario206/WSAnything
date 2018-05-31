@@ -56,7 +56,11 @@ public class AsyncTask {
                 FSLog.log.info(m_threadName + " Run");
                 if(!newContext.isTaskCanceled()) {
                     FSLog.log.info(m_threadName + " ExcuteMain");
-                    m_threadMain.apply(newContext);
+                    try {
+                        m_threadMain.apply(newContext);
+                    } catch (Exception ex) {
+                        FSLog.log.error("AsyncTask wait exception2 :" + m_threadName);
+                    }
                 } else {
                     FSLog.log.info(m_threadName + " task is cancel");
                 }

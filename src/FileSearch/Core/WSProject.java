@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project;
 
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileManager;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,14 +17,18 @@ import java.util.Map;
 
 public class WSProject {
     private Project m_project;
+    private WSFileListener m_FileListener = new WSFileListener(this);
+
     private List<VirtualFile> m_solutionFile = Lists.newArrayList();
     private Map<VirtualFile, WSFileCache> m_CacheFile = new HashMap<VirtualFile, WSFileCache>();
     private AsyncTask scanFileThread = new AsyncTask((ctx)->{
         this.scanFileMain(ctx);
         return 0;
     },"scanFileThread");
-    private static WSProject pInstance;
 
+    WSProject() {
+        VirtualFileManager.getInstance().addVirtualFileListener(m_FileListener);
+    }
     public void start(Project project) {
         synchronized (this) {
             m_project = project;
@@ -36,12 +41,14 @@ public class WSProject {
             m_project = null;
             m_solutionFile.clear();
             m_CacheFile.clear();
+            VirtualFileManager.getInstance().removeVirtualFileListener(m_FileListener);
         }
 
     }
     public List<VirtualFile> getSolutionFileCopy() {
         return Lists.newArrayList(m_solutionFile);
     }
+
     public WSFileCache getCache(VirtualFile file) {
         synchronized (this) {
             WSFileCache ret = m_CacheFile.get(file);
@@ -70,7 +77,6 @@ public class WSProject {
                     //String text = LoadTextUtil.loadText(fileOrDir).toString();
                     WSFileCache cache = new WSFileCache();
                     cache.init(fileOrDir);
-
                     solutionFile.add(fileOrDir);
                     cacheFile.put(fileOrDir,cache);
                     //FSLog.log.info(text);
@@ -86,6 +92,17 @@ public class WSProject {
             m_CacheFile = cacheFile;
         }
         FSLog.log.info("scanFileMain end,fileNums = " + solutionFile.size());
+    }
+
+    public void updateCache(VirtualFile file,WSFileCache cache) {
+        synchronized (this) {
+            if(m_CacheFile.get(file) != null) {
+                FSLog.log.error("updateCache file:" + file.getName());
+                m_CacheFile.put(file,cache);
+            } else {
+                //FSLog.log.error("updateCache can't find file:" + file.getName());
+            }
+        }
     }
 }
 

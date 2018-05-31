@@ -894,7 +894,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
       myFileMaskField.setSelectedItem(variants.get(0));
     }
     myFileMaskField.setEnabled(isThereFileFilter);
-    String toSearch = myModel.getStringToFind();
+    String toSearch = WSUtil.getWordAtCaret(WSProjectListener.getInstance().getJBProject());  //myModel.getStringToFind();
     FindInProjectSettings findInProjectSettings = FindInProjectSettings.getInstance(myProject);
 
     if (StringUtil.isEmpty(toSearch)) {
@@ -1288,6 +1288,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
     ///mariotodo
     model.setStringToFind(getStringToFind());
     FindTextRequest req = new FindTextRequest();
+    req.m_nMaxResult = 1000;
     req.setString(getStringToFind().toLowerCase());
     req.m_searchFiles = WSProjectListener.getInstance().getWSProject().getSolutionFileCopy();
 
@@ -1301,11 +1302,28 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
 
       DefaultTableModel tableModel = (DefaultTableModel)myResultsPreviewTable.getModel();
       Vector<WSFindTextResult> vec = new Vector<WSFindTextResult>(args.listResult);
-
-      for(int i = 0;i < args.listResult.size();++i) {
+      Vector<Object> tmp = new Vector<Object>();
+      for (int i = 0; i < args.listResult.size(); ++i) {
         WSFindTextResult result = args.listResult.get(i);
         tableModel.addRow(new Object[]{result});  //mariotodo
       }
+      myResultsPreviewTable.setRowSelectionInterval(0, 0);
+      String resultDesc = "";
+      if (args.listResult.size() > 0) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(args.listResult.size());
+        if (args.req.m_upToResultCntLimit) {
+          stringBuilder.append("+");
+        }
+        stringBuilder.append(" matches in " + args.req.m_nResultFileCnt);
+        if (args.req.m_upToResultCntLimit) {
+          stringBuilder.append("+");
+        }
+        stringBuilder.append(" files");
+        resultDesc = stringBuilder.toString();
+      }
+
+      mySearchTextArea.setInfoText(resultDesc);
       //tableModel.addRow(vec);
       //tableModel.fireTableRowsUpdated(tableModel.getRowCount() - 1, tableModel.getRowCount() - 1);
       return 0;
