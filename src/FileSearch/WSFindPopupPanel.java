@@ -1009,7 +1009,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
     final int hash = System.identityHashCode(myResultsPreviewSearchProgress);
 
     //memo
-    final DefaultTableModel model = new DefaultTableModel() {
+    final WSTableModel model = new WSTableModel() {
       @Override
       public boolean isCellEditable(int row, int column) {
         return false;
@@ -1037,7 +1037,12 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
     myCodePreviewComponent.setVisible(true);//test true;
 
     mySearchTextArea.setInfoText(null);
-    myResultsPreviewTable.setModel(model);
+    try {
+      myResultsPreviewTable.setModel(model);
+
+    }catch (Exception e) {
+      FSLog.log.info("sdfsd");
+    }
 
     if (result != null) {
       onStop(hash, result.message);
@@ -1300,14 +1305,17 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
         //FSLog.log.info(result.tostring());
       }
 
-      DefaultTableModel tableModel = (DefaultTableModel)myResultsPreviewTable.getModel();
-      Vector<WSFindTextResult> vec = new Vector<WSFindTextResult>(args.listResult);
-      Vector<Object> tmp = new Vector<Object>();
-      for (int i = 0; i < args.listResult.size(); ++i) {
+      if(args.listResult.size() > 0) {
+        WSTableModel tableModel = (WSTableModel)myResultsPreviewTable.getModel();
+        Vector<Object> vec = new Vector<Object>(args.listResult);
+        tableModel.addRows(vec);
+        myResultsPreviewTable.setRowSelectionInterval(0, 0);
+      }
+
+/*      for (int i = 0; i < args.listResult.size(); ++i) {
         WSFindTextResult result = args.listResult.get(i);
         tableModel.addRow(new Object[]{result});  //mariotodo
-      }
-      myResultsPreviewTable.setRowSelectionInterval(0, 0);
+      }*/
       String resultDesc = "";
       if (args.listResult.size() > 0) {
         StringBuilder stringBuilder = new StringBuilder();
