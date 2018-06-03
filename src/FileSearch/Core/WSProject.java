@@ -78,13 +78,14 @@ public class WSProject {
                     //String text = LoadTextUtil.loadText(fileOrDir).toString();
                     WSFileCache cache = new WSFileCache();
                     cache.init(fileOrDir);
-                    if(cache.getIsSizeValid()) {
+                    if(cache.getIsSizeValid() && cache.isReadSuccess()) {
                         solutionFile.add(fileOrDir);
                         cacheFile.put(fileOrDir,cache);
                     }
                     //FSLog.log.info(text);
                 } catch (Exception e) {
                     FSLog.log.error("scanFileMain Exception");
+                    FSLog.log.error(e);
                 }
             }
             return true;
@@ -101,7 +102,7 @@ public class WSProject {
         synchronized (this) {
             if(m_CacheFile.get(file) != null) {
                 FSLog.log.info("updateCache file:" + file.getName());
-                if(cache.getIsSizeValid()) {
+                if(cache.getIsSizeValid() && cache.isReadSuccess()) {
                     m_CacheFile.put(file,cache);
                 } else {
                     FSLog.log.error(cache.m_fileName + "is size invalid,will remove");
@@ -109,20 +110,20 @@ public class WSProject {
                     m_solutionFile.remove(file);
                 }
             } else {
-                FSLog.log.error("updateCache can't find file:" + file.getName());
+                FSLog.log.warn("updateCache can't find file:" + file.getName());
             }
         }
     }
     public void addCache(VirtualFile file,WSFileCache cache) {
         synchronized (this) {
             if(m_CacheFile.get(file) == null) {
-                if(cache.getIsSizeValid()) {
+                if(cache.getIsSizeValid() && cache.isReadSuccess()) {
                     FSLog.log.info("addCache file:" + file.getName());
                     m_CacheFile.put(file,cache);
                     m_solutionFile.add(file);
                 }
             } else {
-                FSLog.log.error("addCache file already exist" + file.getName());
+                FSLog.log.warn("addCache file already exist" + file.getName());
             }
         }
     }

@@ -4,6 +4,7 @@ import FileSearch.FSLog;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.impl.LoadTextUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import sun.misc.Cache;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,11 +21,19 @@ public class WSFileCache {
     List<String> m_LinesLowercase = new ArrayList<String>();
 
     boolean m_bIsSizeValid = true;
+    boolean m_bReadSuccess = true;
 
     public void init(VirtualFile file) {
         //FSLog.log.info("WSFileCache init: " + file.getName());
-        String text = LoadTextUtil.loadText(file).toString();
-        updateByText(file,text);
+        try {
+            String text = LoadTextUtil.loadText(file).toString();
+            updateByText(file,text);
+        } catch (Exception e) {
+            m_bReadSuccess = false;
+        }
+    }
+    public boolean isReadSuccess() {
+        return m_bReadSuccess;
     }
 
     public void updateFromUnSaveDocument(VirtualFile file, Document document) {
