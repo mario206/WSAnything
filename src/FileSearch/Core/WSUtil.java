@@ -60,8 +60,13 @@ public class WSUtil {
                     break;
                 }
             }
-            int offSet = StringUtil.lineColToOffset(document.getCharsSequence(),result.m_nLineIndex,result.nBeginIndex + 1);
-            info = new UsageInfo(psiFile,offSet,offSet,false);
+            int offSet = StringUtil.lineColToOffset(document.getCharsSequence(),result.m_nLineIndex,result.nBeginIndex);
+            int endOffSet = StringUtil.lineColToOffset(document.getCharsSequence(),result.m_nLineIndex,result.nEndIdex + 1);
+
+            info = ReadAction.compute(() -> {
+                UsageInfo tmp_info = new UsageInfo(psiFile,offSet,endOffSet,false);
+                return tmp_info;
+            });
         } catch (Exception e) {
             return null;
         }

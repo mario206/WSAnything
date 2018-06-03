@@ -47,7 +47,8 @@ public class WSFileCache {
         m_Lines = Arrays.asList(text.split("\n"));
         m_LinesLowercase.clear();
         for(int i = 0;i < m_Lines.size();++i) {
-            m_Lines.set(i,m_Lines.get(i).trim());
+            //m_Lines.set(i,m_Lines.get(i).trim());
+            m_Lines.set(i,m_Lines.get(i));
             m_LinesLowercase.add(m_Lines.get(i).toLowerCase());
         }
         m_virtualFile = file;

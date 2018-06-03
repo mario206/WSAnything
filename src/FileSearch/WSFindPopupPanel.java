@@ -86,191 +86,196 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class WSFindPopupPanel extends JBPanel implements FindUI {
-  private static final Logger LOG = Logger.getInstance(WSFindPopupPanel.class);
+    private static final Logger LOG = Logger.getInstance(WSFindPopupPanel.class);
 
-  private static final KeyStroke ENTER = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
-  private static final KeyStroke ENTER_WITH_MODIFIERS =
-    KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, SystemInfo.isMac ? InputEvent.META_DOWN_MASK : InputEvent.CTRL_DOWN_MASK);
-  private static final KeyStroke REPLACE_ALL =
-    KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.SHIFT_DOWN_MASK | InputEvent.ALT_MASK);
+    private static final KeyStroke ENTER = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
+    private static final KeyStroke ENTER_WITH_MODIFIERS =
+            KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, SystemInfo.isMac ? InputEvent.META_DOWN_MASK : InputEvent.CTRL_DOWN_MASK);
+    private static final KeyStroke REPLACE_ALL =
+            KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.SHIFT_DOWN_MASK | InputEvent.ALT_MASK);
 
-  private static final String SERVICE_KEY = "find.popup";
-  private static final String SPLITTER_SERVICE_KEY = "find.popup.splitter";
-  @NotNull private final WSFindUIHelper myHelper;
-  @NotNull private final Project myProject;
-  @NotNull private final Disposable myDisposable;
-  private final Alarm myPreviewUpdater;
-  //@NotNull private final FindPopupScopeUI myScopeUI;
-  private JComponent myCodePreviewComponent;
-  private SearchTextArea mySearchTextArea;
-  private SearchTextArea myReplaceTextArea;
-  private ActionListener myOkActionListener;
-  private final AtomicBoolean myCanClose = new AtomicBoolean(true);
-  private final AtomicBoolean myIsPinned = new AtomicBoolean(false);
-  private JBLabel myOKHintLabel;
-  private Alarm mySearchRescheduleOnCancellationsAlarm;
-  private volatile ProgressIndicatorBase myResultsPreviewSearchProgress;
+    private static final String SERVICE_KEY = "find.popup";
+    private static final String SPLITTER_SERVICE_KEY = "find.popup.splitter";
+    @NotNull
+    private final WSFindUIHelper myHelper;
+    @NotNull
+    private final Project myProject;
+    @NotNull
+    private final Disposable myDisposable;
+    private final Alarm myPreviewUpdater;
+    //@NotNull private final FindPopupScopeUI myScopeUI;
+    private JComponent myCodePreviewComponent;
+    private SearchTextArea mySearchTextArea;
+    private SearchTextArea myReplaceTextArea;
+    private ActionListener myOkActionListener;
+    private final AtomicBoolean myCanClose = new AtomicBoolean(true);
+    private final AtomicBoolean myIsPinned = new AtomicBoolean(false);
+    private JBLabel myOKHintLabel;
+    private Alarm mySearchRescheduleOnCancellationsAlarm;
+    private volatile ProgressIndicatorBase myResultsPreviewSearchProgress;
 
-  private JLabel myTitleLabel;
-  private StateRestoringCheckBox myCbCaseSensitive;
-  private StateRestoringCheckBox myCbPreserveCase;
-  private StateRestoringCheckBox myCbWholeWordsOnly;
-  private StateRestoringCheckBox myCbRegularExpressions;
-  private StateRestoringCheckBox myCbFileFilter;
-  private ActionToolbarImpl myScopeSelectionToolbar;
-  private ComboBox myFileMaskField;
-  private ActionButton myFilterContextButton;
-  private ActionButton myTabResultsButton;
-  private ActionButton myPinButton;
-  private JButton myOKButton;
-  private JButton myReplaceAllButton;
-  private JButton myReplaceSelectedButton;
-  private JTextArea mySearchComponent;
-  private JTextArea myReplaceComponent;
-  private String mySelectedContextName = FindBundle.message("find.context.anywhere.scope.label");
-  private JPanel myScopeDetailsPanel;
+    private JLabel myTitleLabel;
+    private StateRestoringCheckBox myCbCaseSensitive;
+    private StateRestoringCheckBox myCbPreserveCase;
+    private StateRestoringCheckBox myCbWholeWordsOnly;
+    private StateRestoringCheckBox myCbRegularExpressions;
+    private StateRestoringCheckBox myCbFileFilter;
+    private ActionToolbarImpl myScopeSelectionToolbar;
+    private ComboBox myFileMaskField;
+    private ActionButton myFilterContextButton;
+    private ActionButton myTabResultsButton;
+    private ActionButton myPinButton;
+    private JButton myOKButton;
+    private JButton myReplaceAllButton;
+    private JButton myReplaceSelectedButton;
+    private JTextArea mySearchComponent;
+    private JTextArea myReplaceComponent;
+    private String mySelectedContextName = FindBundle.message("find.context.anywhere.scope.label");
+    private JPanel myScopeDetailsPanel;
 
-  private JBTable myResultsPreviewTable;  // 结果列表
-  private UsagePreviewPanel myUsagePreviewPanel;  // 使用预览
-  private JBPopup myBalloon;
-  private LoadingDecorator myLoadingDecorator;
-  private int myLoadingHash;
-  private JPanel myTitlePanel;
-  private String myUsagesCount;
-  private String myFilesCount;
-  private UsageViewPresentation myUsageViewPresentation;
-  private Boolean m_bFirstTime = true;
+    private JBTable myResultsPreviewTable;  // 结果列表
+    private UsagePreviewPanel myUsagePreviewPanel;  // 使用预览
+    private JBPopup myBalloon;
+    private LoadingDecorator myLoadingDecorator;
+    private int myLoadingHash;
+    private JPanel myTitlePanel;
+    private String myUsagesCount;
+    private String myFilesCount;
+    private UsageViewPresentation myUsageViewPresentation;
+    private Boolean m_bFirstTime = true;
+    private static WSFindPopupPanel pInstance;
 
+    public WSFindPopupPanel(Project pro) {
+        WSFindUIHelper helper = new WSFindUIHelper(pro);
+        myHelper = helper;
+        myProject = myHelper.getProject();
+        myDisposable = Disposer.newDisposable();
+        myPreviewUpdater = new Alarm(myDisposable);
+        //myScopeUI = FindPopupScopeUIProvider.getInstance().create(this);
 
-  public WSFindPopupPanel(Project pro) {
-    WSFindUIHelper helper = new WSFindUIHelper(pro);
-    myHelper = helper;
-    myProject = myHelper.getProject();
-    myDisposable = Disposer.newDisposable();
-    myPreviewUpdater = new Alarm(myDisposable);
-    //myScopeUI = FindPopupScopeUIProvider.getInstance().create(this);
+        Disposer.register(myDisposable, () -> {
+            finishPreviousPreviewSearch();
+            if (mySearchRescheduleOnCancellationsAlarm != null)
+                Disposer.dispose(mySearchRescheduleOnCancellationsAlarm);
+            if (myUsagePreviewPanel != null) Disposer.dispose(myUsagePreviewPanel);
+        });
 
-    Disposer.register(myDisposable, () -> {
-      finishPreviousPreviewSearch();
-      if (mySearchRescheduleOnCancellationsAlarm != null) Disposer.dispose(mySearchRescheduleOnCancellationsAlarm);
-      if (myUsagePreviewPanel != null) Disposer.dispose(myUsagePreviewPanel);
-    });
+        initComponents();
+        initByModel();
 
-    initComponents();
-    initByModel();
-
-    ApplicationManager.getApplication().invokeLater(this::scheduleResultsUpdate, ModalityState.any());
-    if (SystemInfo.isWindows) {
-      ApplicationManager.getApplication().getMessageBus()
-                        .connect(myDisposable).subscribe(ApplicationActivationListener.TOPIC,
-                                                         new ApplicationActivationListener() {
-                                                           @Override
-                                                           public void applicationDeactivated(IdeFrame ideFrame) {
-                                                             closeImmediately();
-                                                           }
-                                                         });
-    }
-  }
-
-  @Override
-  public void showUI() {
-    if (myBalloon != null && myBalloon.isVisible()) {
-      return;
-    }
-    if (myBalloon != null && !myBalloon.isDisposed()) {
-      myBalloon.cancel();
-    }
-    if (myBalloon == null || myBalloon.isDisposed()) {
-      final ComponentPopupBuilder builder = JBPopupFactory.getInstance().createComponentPopupBuilder(this, mySearchComponent);
-      myBalloon = builder
-        .setProject(myHelper.getProject())
-        .setMovable(true)
-        .setResizable(true)
-        .setMayBeParent(true)
-        .setCancelOnClickOutside(true)
-        .setRequestFocus(true)
-        .setCancelKeyEnabled(false)
-        .setCancelCallback(() -> {
-          boolean canBeClosed = canBeClosed();
-          if (canBeClosed) {
-            saveSettings();
-          }
-          return canBeClosed;
-        })
-        .createPopup();
-      Disposer.register(myBalloon, myDisposable);
-      registerCloseAction(myBalloon);
-      final Window window = WindowManager.getInstance().suggestParentWindow(myProject);
-      Component parent = UIUtil.findUltimateParent(window);
-      RelativePoint showPoint = null;
-      Point screenPoint = DimensionService.getInstance().getLocation(SERVICE_KEY);
-      if (screenPoint != null) {
-        if (parent != null) {
-          SwingUtilities.convertPointFromScreen(screenPoint, parent);
-          showPoint = new RelativePoint(parent, screenPoint);
-        } else {
-          showPoint = new RelativePoint(screenPoint);
+        ApplicationManager.getApplication().invokeLater(this::scheduleResultsUpdate, ModalityState.any());
+        if (SystemInfo.isWindows) {
+            ApplicationManager.getApplication().getMessageBus()
+                    .connect(myDisposable).subscribe(ApplicationActivationListener.TOPIC,
+                    new ApplicationActivationListener() {
+                        @Override
+                        public void applicationDeactivated(IdeFrame ideFrame) {
+                            closeImmediately();
+                        }
+                    });
         }
-      }
-      if (parent != null && showPoint == null) {
-        int height = UISettings.getInstance().getShowNavigationBar() ? 135 : 115;
-        if (parent instanceof IdeFrameImpl && ((IdeFrameImpl)parent).isInFullScreen()) {
-          height -= 20;
-        }
-        showPoint = new RelativePoint(parent, new Point((parent.getSize().width - getPreferredSize().width) / 2, height));
-      }
-      mySearchComponent.selectAll();
-      WindowMoveListener windowListener = new WindowMoveListener(this);
-      myTitlePanel.addMouseListener(windowListener);
-      myTitlePanel.addMouseMotionListener(windowListener);
-      Dimension panelSize = getPreferredSize();
-      Dimension prev = DimensionService.getInstance().getSize(SERVICE_KEY);
-      if (!myCbPreserveCase.isVisible()) {
-        panelSize.width += myCbPreserveCase.getPreferredSize().width + 8;
-      }
-      panelSize.width += JBUI.scale(24);//hidden 'loading' icon
-      panelSize.height *= 2;
-      if (prev != null && prev.height < panelSize.height) prev.height = panelSize.height;
-      myBalloon.setMinimumSize(panelSize);
-      if (prev == null) {
-        panelSize.height *= 1.5;
-        panelSize.width *= 1.15;
-      }
-      myBalloon.setSize(prev != null ? prev : panelSize);
-
-      IdeEventQueue.getInstance().getPopupManager().closeAllPopups(false);
-      if (showPoint != null && showPoint.getComponent() != null) {
-        myBalloon.show(showPoint);
-      } else {
-        myBalloon.showCenteredInCurrentWindow(myProject);
-      }
-      JRootPane rootPane = getRootPane();
-      if (rootPane != null && myHelper.isReplaceState()) {
-        rootPane.setDefaultButton(myReplaceSelectedButton);
-      }
     }
-  }
 
-  @Override
-  public void doLayout() {
-    Dimension prefSize = getMinimumSize();
-    if (myBalloon instanceof AbstractPopup && !myBalloon.isDisposed()) {
-     // Window window = ((AbstractPopup)myBalloon).getPopupWindow();
-      //Dimension minimumSize = window != null ? window.getMinimumSize() : null;
-      myBalloon.setMinimumSize(prefSize);
+    @Override
+    public void showUI() {
+        if (myBalloon != null && myBalloon.isVisible()) {
+            return;
+        }
+        if (myBalloon != null && !myBalloon.isDisposed()) {
+            myBalloon.cancel();
+        }
+        if (myBalloon == null || myBalloon.isDisposed()) {
+            final ComponentPopupBuilder builder = JBPopupFactory.getInstance().createComponentPopupBuilder(this, mySearchComponent);
+            myBalloon = builder
+                    .setProject(myHelper.getProject())
+                    .setMovable(true)
+                    .setResizable(true)
+                    .setMayBeParent(true)
+                    .setCancelOnClickOutside(true)
+                    .setRequestFocus(true)
+                    .setCancelKeyEnabled(false)
+                    .setCancelCallback(() -> {
+                        boolean canBeClosed = canBeClosed();
+                        if (canBeClosed) {
+                            saveSettings();
+                        }
+                        return canBeClosed;
+                    })
+                    .createPopup();
+            Disposer.register(myBalloon, myDisposable);
+            registerCloseAction(myBalloon);
+            final Window window = WindowManager.getInstance().suggestParentWindow(myProject);
+            Component parent = UIUtil.findUltimateParent(window);
+            RelativePoint showPoint = null;
+            Point screenPoint = DimensionService.getInstance().getLocation(SERVICE_KEY);
+            if (screenPoint != null) {
+                if (parent != null) {
+                    SwingUtilities.convertPointFromScreen(screenPoint, parent);
+                    showPoint = new RelativePoint(parent, screenPoint);
+                } else {
+                    showPoint = new RelativePoint(screenPoint);
+                }
+            }
+            if (parent != null && showPoint == null) {
+                int height = UISettings.getInstance().getShowNavigationBar() ? 135 : 115;
+                if (parent instanceof IdeFrameImpl && ((IdeFrameImpl) parent).isInFullScreen()) {
+                    height -= 20;
+                }
+                showPoint = new RelativePoint(parent, new Point((parent.getSize().width - getPreferredSize().width) / 2, height));
+            }
+            mySearchComponent.selectAll();
+            WindowMoveListener windowListener = new WindowMoveListener(this);
+            myTitlePanel.addMouseListener(windowListener);
+            myTitlePanel.addMouseMotionListener(windowListener);
+            Dimension panelSize = getPreferredSize();
+            Dimension prev = DimensionService.getInstance().getSize(SERVICE_KEY);
+            if (!myCbPreserveCase.isVisible()) {
+                panelSize.width += myCbPreserveCase.getPreferredSize().width + 8;
+            }
+            panelSize.width += JBUI.scale(24);//hidden 'loading' icon
+            panelSize.height *= 2;
+            if (prev != null && prev.height < panelSize.height) prev.height = panelSize.height;
+            myBalloon.setMinimumSize(panelSize);
+            if (prev == null) {
+                panelSize.height *= 1.5;
+                panelSize.width *= 1.15;
+            }
+            myBalloon.setSize(prev != null ? prev : panelSize);
+
+            IdeEventQueue.getInstance().getPopupManager().closeAllPopups(false);
+            if (showPoint != null && showPoint.getComponent() != null) {
+                myBalloon.show(showPoint);
+            } else {
+                myBalloon.showCenteredInCurrentWindow(myProject);
+            }
+            JRootPane rootPane = getRootPane();
+            if (rootPane != null && myHelper.isReplaceState()) {
+                rootPane.setDefaultButton(myReplaceSelectedButton);
+            }
+        }
+    }
+
+    @Override
+    public void doLayout() {
+        Dimension prefSize = getMinimumSize();
+        if (myBalloon instanceof AbstractPopup && !myBalloon.isDisposed()) {
+            // Window window = ((AbstractPopup)myBalloon).getPopupWindow();
+            //Dimension minimumSize = window != null ? window.getMinimumSize() : null;
+            myBalloon.setMinimumSize(prefSize);
  /*     if (minimumSize != null && prefSize.width > minimumSize.width) {
         myBalloon.moveToFitScreen();
       }*/
-      if(m_bFirstTime) {
-        m_bFirstTime = false;
-        myBalloon.moveToFitScreen();
-      }
+            if (m_bFirstTime) {
+                m_bFirstTime = false;
+                myBalloon.moveToFitScreen();
+            }
+        }
+
+        super.doLayout();
     }
 
-    super.doLayout();
-  }
-
-  protected boolean canBeClosed() { myBalloon.moveToFitScreen();
+    protected boolean canBeClosed() {
+        myBalloon.moveToFitScreen();
 /*    if (!myCanClose.get()) return false;
     if (myIsPinned.get()) return false;
     if (!ApplicationManager.getApplication().isActive()) return SystemInfo.isWindows;
@@ -287,738 +292,729 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
       return false;
     }
     return !myScopeUI.hideAllPopups();*/
-    return true;
-  }
+        return true;
+    }
 
-  public void saveSettings() {
+    public void saveSettings() {
  /*   DimensionService.getInstance().setSize(SERVICE_KEY, myBalloon.getSize(), myHelper.getProject() );
     DimensionService.getInstance().setLocation(SERVICE_KEY, myBalloon.getLocationOnScreen(), myHelper.getProject() );
     FindSettings findSettings = FindSettings.getInstance();
     myScopeUI.applyTo(findSettings, mySelectedScope);
     myHelper.updateFindSettings();
     applyTo(FindManager.getInstance(myProject).getFindInProjectModel());*/
-  }
-
-  @NotNull
-  @Override
-  public Disposable getDisposable() {
-    return myDisposable;
-  }
-
-  @NotNull
-  public Project getProject() {
-    return myProject;
-  }
-
-  @NotNull
-  public WSFindUIHelper getHelper() {
-    return myHelper;
-  }
-
-  @NotNull
-  public JBPopup getBalloon() {
-    return myBalloon;
-  }
-
-  @NotNull
-  public AtomicBoolean getCanClose() {
-    return myCanClose;
-  }
-
-  private void initComponents() {
-    myTitleLabel = new JBLabel(FindBundle.message("find.in.path.dialog.title"), UIUtil.ComponentStyle.REGULAR);
-    myTitleLabel.setFont(myTitleLabel.getFont().deriveFont(Font.BOLD));
-    //myTitleLabel.setBorder(JBUI.Borders.emptyRight(16));
-    myLoadingDecorator = new LoadingDecorator(new JLabel(EmptyIcon.ICON_16), getDisposable(), 250, true, new AsyncProcessIcon("FindInPathLoading"));
-    myLoadingDecorator.setLoadingText("");
-    myCbCaseSensitive = createCheckBox("find.popup.case.sensitive");
-    ItemListener liveResultsPreviewUpdateListener = __ -> scheduleResultsUpdate();
-    myCbCaseSensitive.addItemListener(liveResultsPreviewUpdateListener);
-    myCbPreserveCase = createCheckBox("find.options.replace.preserve.case");
-    myCbPreserveCase.addItemListener(liveResultsPreviewUpdateListener);
-    myCbPreserveCase.setVisible(/*myHelper.getModel().isReplaceState()*/false);
-    myCbWholeWordsOnly = createCheckBox("find.popup.whole.words");
-    myCbWholeWordsOnly.addItemListener(liveResultsPreviewUpdateListener);
-    myCbRegularExpressions = createCheckBox("find.popup.regex");
-    myCbRegularExpressions.addItemListener(liveResultsPreviewUpdateListener);
-    myCbFileFilter = createCheckBox("find.popup.filemask");
-    myCbFileFilter.addItemListener(__ -> {
-      if (myCbFileFilter.isSelected()) {
-        myFileMaskField.setEnabled(true);
-        if (myCbFileFilter.getClientProperty("dontRequestFocus") == null) {
-          IdeFocusManager.getInstance(myProject).requestFocus(myFileMaskField, true);
-          myFileMaskField.getEditor().selectAll();
-        }
-      }
-      else {
-        myFileMaskField.setEnabled(false);
-        if (myCbFileFilter.getClientProperty("dontRequestFocus") == null) {
-          IdeFocusManager.getInstance(myProject).requestFocus(mySearchComponent, true);
-        }
-      }
-    });
-    myCbFileFilter.addItemListener(liveResultsPreviewUpdateListener);
-    myFileMaskField = new ComboBox() {
-
-      @Override
-      public Dimension getPreferredSize() {
-        int width = 0;
-        int buttonWidth = 0;
-        Component[] components = getComponents();
-        for (Component component : components) {
-          Dimension size = component.getPreferredSize();
-          int w = size != null ? size.width : 0;
-          if (component instanceof JButton) {
-            buttonWidth = w;
-          }
-          width += w;
-        }
-        ComboBoxEditor editor = getEditor();
-        if (editor != null) {
-          Component editorComponent = editor.getEditorComponent();
-          if (editorComponent != null) {
-            FontMetrics fontMetrics = editorComponent.getFontMetrics(editorComponent.getFont());
-            width = Math.max(width, fontMetrics.stringWidth(String.valueOf(getSelectedItem())) + buttonWidth);
-            //Let's reserve some extra space for just one 'the next' letter
-            width += fontMetrics.stringWidth("m");
-          }
-        }
-        Dimension size = super.getPreferredSize();
-        Insets insets = getInsets();
-        width += insets.left + insets.right;
-        size.width = Math.min(JBUI.scale(500), Math.max(JBUI.scale(80), width));
-        return size;
-      }
-    };
-    myFileMaskField.setEditable(true);
-    myFileMaskField.setMaximumRowCount(8);
-    myFileMaskField.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        scheduleResultsUpdate();
-      }
-    });
-    Component editorComponent = myFileMaskField.getEditor().getEditorComponent();
-    if (editorComponent instanceof EditorTextField) {
-      final EditorTextField etf = (EditorTextField) editorComponent;
-      etf.addDocumentListener(new DocumentListener() {
-        @Override
-        public void documentChanged(com.intellij.openapi.editor.event.DocumentEvent event) {
-          onFileMaskChanged();
-        }
-      });
     }
-    else {
-      if (editorComponent instanceof JTextComponent) {
-        ((JTextComponent)editorComponent).getDocument().addDocumentListener(new DocumentAdapter() {
-          @Override
-          protected void textChanged(DocumentEvent e) {
-            onFileMaskChanged();
-          }
+
+    @NotNull
+    @Override
+    public Disposable getDisposable() {
+        return myDisposable;
+    }
+
+    @NotNull
+    public Project getProject() {
+        return myProject;
+    }
+
+    @NotNull
+    public WSFindUIHelper getHelper() {
+        return myHelper;
+    }
+
+    @NotNull
+    public JBPopup getBalloon() {
+        return myBalloon;
+    }
+
+    @NotNull
+    public AtomicBoolean getCanClose() {
+        return myCanClose;
+    }
+
+    private void initComponents() {
+        myTitleLabel = new JBLabel(FindBundle.message("find.in.path.dialog.title"), UIUtil.ComponentStyle.REGULAR);
+        myTitleLabel.setFont(myTitleLabel.getFont().deriveFont(Font.BOLD));
+        //myTitleLabel.setBorder(JBUI.Borders.emptyRight(16));
+        myLoadingDecorator = new LoadingDecorator(new JLabel(EmptyIcon.ICON_16), getDisposable(), 250, true, new AsyncProcessIcon("FindInPathLoading"));
+        myLoadingDecorator.setLoadingText("");
+        myCbCaseSensitive = createCheckBox("find.popup.case.sensitive");
+        ItemListener liveResultsPreviewUpdateListener = __ -> scheduleResultsUpdate();
+        myCbCaseSensitive.addItemListener(liveResultsPreviewUpdateListener);
+        myCbPreserveCase = createCheckBox("find.options.replace.preserve.case");
+        myCbPreserveCase.addItemListener(liveResultsPreviewUpdateListener);
+        myCbPreserveCase.setVisible(/*myHelper.getModel().isReplaceState()*/false);
+        myCbWholeWordsOnly = createCheckBox("find.popup.whole.words");
+        myCbWholeWordsOnly.addItemListener(liveResultsPreviewUpdateListener);
+        myCbRegularExpressions = createCheckBox("find.popup.regex");
+        myCbRegularExpressions.addItemListener(liveResultsPreviewUpdateListener);
+        myCbFileFilter = createCheckBox("find.popup.filemask");
+        myCbFileFilter.addItemListener(__ -> {
+            if (myCbFileFilter.isSelected()) {
+                myFileMaskField.setEnabled(true);
+                if (myCbFileFilter.getClientProperty("dontRequestFocus") == null) {
+                    IdeFocusManager.getInstance(myProject).requestFocus(myFileMaskField, true);
+                    myFileMaskField.getEditor().selectAll();
+                }
+            } else {
+                myFileMaskField.setEnabled(false);
+                if (myCbFileFilter.getClientProperty("dontRequestFocus") == null) {
+                    IdeFocusManager.getInstance(myProject).requestFocus(mySearchComponent, true);
+                }
+            }
         });
-      } else {
-        assert false;
-      }
-    }
+        myCbFileFilter.addItemListener(liveResultsPreviewUpdateListener);
+        myFileMaskField = new ComboBox() {
 
-    AnAction myShowFilterPopupAction = new MyShowFilterPopupAction();
-    myFilterContextButton =
-      new ActionButton(myShowFilterPopupAction, myShowFilterPopupAction.getTemplatePresentation(), ActionPlaces.UNKNOWN,
-                       ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE) {
-        @Override
-        public int getPopState() {
-          int state = super.getPopState();
-          if (state != ActionButtonComponent.NORMAL) return state;
-          return mySelectedContextName.equals(FindDialog.getPresentableName(FindModel.SearchContext.ANY))
-                 ? ActionButtonComponent.NORMAL
-                 : ActionButtonComponent.PUSHED;
+            @Override
+            public Dimension getPreferredSize() {
+                int width = 0;
+                int buttonWidth = 0;
+                Component[] components = getComponents();
+                for (Component component : components) {
+                    Dimension size = component.getPreferredSize();
+                    int w = size != null ? size.width : 0;
+                    if (component instanceof JButton) {
+                        buttonWidth = w;
+                    }
+                    width += w;
+                }
+                ComboBoxEditor editor = getEditor();
+                if (editor != null) {
+                    Component editorComponent = editor.getEditorComponent();
+                    if (editorComponent != null) {
+                        FontMetrics fontMetrics = editorComponent.getFontMetrics(editorComponent.getFont());
+                        width = Math.max(width, fontMetrics.stringWidth(String.valueOf(getSelectedItem())) + buttonWidth);
+                        //Let's reserve some extra space for just one 'the next' letter
+                        width += fontMetrics.stringWidth("m");
+                    }
+                }
+                Dimension size = super.getPreferredSize();
+                Insets insets = getInsets();
+                width += insets.left + insets.right;
+                size.width = Math.min(JBUI.scale(500), Math.max(JBUI.scale(80), width));
+                return size;
+            }
+        };
+        myFileMaskField.setEditable(true);
+        myFileMaskField.setMaximumRowCount(8);
+        myFileMaskField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                scheduleResultsUpdate();
+            }
+        });
+        Component editorComponent = myFileMaskField.getEditor().getEditorComponent();
+        if (editorComponent instanceof EditorTextField) {
+            final EditorTextField etf = (EditorTextField) editorComponent;
+            etf.addDocumentListener(new DocumentListener() {
+                @Override
+                public void documentChanged(com.intellij.openapi.editor.event.DocumentEvent event) {
+                    onFileMaskChanged();
+                }
+            });
+        } else {
+            if (editorComponent instanceof JTextComponent) {
+                ((JTextComponent) editorComponent).getDocument().addDocumentListener(new DocumentAdapter() {
+                    @Override
+                    protected void textChanged(DocumentEvent e) {
+                        onFileMaskChanged();
+                    }
+                });
+            } else {
+                assert false;
+            }
         }
-      };
-    myShowFilterPopupAction.registerCustomShortcutSet(myShowFilterPopupAction.getShortcutSet(), this);
-    ToggleAction pinAction = new ToggleAction(null, null, AllIcons.General.AutohideOff) {
-      @Override
-      public boolean isDumbAware() {
-        return true;
-      }
 
-      @Override
-      public boolean isSelected(AnActionEvent e) {
-        return UISettings.getInstance().getPinFindInPath();
-      }
+        AnAction myShowFilterPopupAction = new MyShowFilterPopupAction();
+        myFilterContextButton =
+                new ActionButton(myShowFilterPopupAction, myShowFilterPopupAction.getTemplatePresentation(), ActionPlaces.UNKNOWN,
+                        ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE) {
+                    @Override
+                    public int getPopState() {
+                        int state = super.getPopState();
+                        if (state != ActionButtonComponent.NORMAL) return state;
+                        return mySelectedContextName.equals(FindDialog.getPresentableName(FindModel.SearchContext.ANY))
+                                ? ActionButtonComponent.NORMAL
+                                : ActionButtonComponent.PUSHED;
+                    }
+                };
+        myShowFilterPopupAction.registerCustomShortcutSet(myShowFilterPopupAction.getShortcutSet(), this);
+        ToggleAction pinAction = new ToggleAction(null, null, AllIcons.General.AutohideOff) {
+            @Override
+            public boolean isDumbAware() {
+                return true;
+            }
 
-      @Override
-      public void setSelected(AnActionEvent e, boolean state) {
-        myIsPinned.set(state);
-        UISettings.getInstance().setPinFindInPath(state);
-      }
-    };
-    myPinButton = new ActionButton(pinAction, pinAction.getTemplatePresentation(), ActionPlaces.UNKNOWN, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE);
+            @Override
+            public boolean isSelected(AnActionEvent e) {
+                return UISettings.getInstance().getPinFindInPath();
+            }
+
+            @Override
+            public void setSelected(AnActionEvent e, boolean state) {
+                myIsPinned.set(state);
+                UISettings.getInstance().setPinFindInPath(state);
+            }
+        };
+        myPinButton = new ActionButton(pinAction, pinAction.getTemplatePresentation(), ActionPlaces.UNKNOWN, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE);
 
 
-    DefaultActionGroup tabResultsContextGroup = new DefaultActionGroup();
-    tabResultsContextGroup.add(new ToggleAction(FindBundle.message("find.options.skip.results.tab.with.one.usage.checkbox")) {
-      @Override
-      public boolean isSelected(AnActionEvent e) {
-        return myHelper.isSkipResultsWithOneUsage();
-      }
+        DefaultActionGroup tabResultsContextGroup = new DefaultActionGroup();
+        tabResultsContextGroup.add(new ToggleAction(FindBundle.message("find.options.skip.results.tab.with.one.usage.checkbox")) {
+            @Override
+            public boolean isSelected(AnActionEvent e) {
+                return myHelper.isSkipResultsWithOneUsage();
+            }
 
-      @Override
-      public void setSelected(AnActionEvent e, boolean state) {
-        myHelper.setSkipResultsWithOneUsage(state);
-      }
+            @Override
+            public void setSelected(AnActionEvent e, boolean state) {
+                myHelper.setSkipResultsWithOneUsage(state);
+            }
 
-      @Override
-      public void update(@NotNull AnActionEvent e) {
-        super.update(e);
-        e.getPresentation().setVisible(!myHelper.isReplaceState());
-      }
-    });
-    tabResultsContextGroup.add(new ToggleAction(FindBundle.message("find.open.in.new.tab.checkbox")) {
-      @Override
-      public boolean isSelected(AnActionEvent e) {
-        return myHelper.isUseSeparateView();
-      }
+            @Override
+            public void update(@NotNull AnActionEvent e) {
+                super.update(e);
+                e.getPresentation().setVisible(!myHelper.isReplaceState());
+            }
+        });
+        tabResultsContextGroup.add(new ToggleAction(FindBundle.message("find.open.in.new.tab.checkbox")) {
+            @Override
+            public boolean isSelected(AnActionEvent e) {
+                return myHelper.isUseSeparateView();
+            }
 
-      @Override
-      public void setSelected(AnActionEvent e, boolean state) {
-        myHelper.setUseSeparateView(state);
-      }
+            @Override
+            public void setSelected(AnActionEvent e, boolean state) {
+                myHelper.setUseSeparateView(state);
+            }
 
-      @Override
-      public void update(@NotNull AnActionEvent e) {
-        super.update(e);
-        e.getPresentation().setEnabled(myHelper.getModel().isOpenInNewTabEnabled());
-        e.getPresentation().setVisible(myHelper.getModel().isOpenInNewTabVisible());
-      }
-    });
-    tabResultsContextGroup.setPopup(true);
-    Presentation tabSettingsPresentation = new Presentation();
-    tabSettingsPresentation.setIcon(AllIcons.General.SecondaryGroup);
-    myTabResultsButton =
-      new ActionButton(tabResultsContextGroup, tabSettingsPresentation, ActionPlaces.UNKNOWN, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE);
-    new AnAction() {
-      @Override
-      public void actionPerformed(AnActionEvent e) {
-        myTabResultsButton.click();
-      }
-    }.registerCustomShortcutSet(CustomShortcutSet.fromString("alt DOWN"), this);
-    myOKButton = new JButton(FindBundle.message("find.popup.find.button"));
-    myReplaceAllButton = new JButton(FindBundle.message("find.popup.replace.all.button"));
-    myReplaceSelectedButton = new JButton(FindBundle.message("find.popup.replace.selected.button", 0));
+            @Override
+            public void update(@NotNull AnActionEvent e) {
+                super.update(e);
+                e.getPresentation().setEnabled(myHelper.getModel().isOpenInNewTabEnabled());
+                e.getPresentation().setVisible(myHelper.getModel().isOpenInNewTabVisible());
+            }
+        });
+        tabResultsContextGroup.setPopup(true);
+        Presentation tabSettingsPresentation = new Presentation();
+        tabSettingsPresentation.setIcon(AllIcons.General.SecondaryGroup);
+        myTabResultsButton =
+                new ActionButton(tabResultsContextGroup, tabSettingsPresentation, ActionPlaces.UNKNOWN, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE);
+        new AnAction() {
+            @Override
+            public void actionPerformed(AnActionEvent e) {
+                myTabResultsButton.click();
+            }
+        }.registerCustomShortcutSet(CustomShortcutSet.fromString("alt DOWN"), this);
+        myOKButton = new JButton(FindBundle.message("find.popup.find.button"));
+        myReplaceAllButton = new JButton(FindBundle.message("find.popup.replace.all.button"));
+        myReplaceSelectedButton = new JButton(FindBundle.message("find.popup.replace.selected.button", 0));
 
-    myOkActionListener = __ -> doOK(true);
-    myOKButton.addActionListener(myOkActionListener);
-    boolean enterAsOK = Registry.is("ide.find.enter.as.ok", false);
+        myOkActionListener = __ -> doOK(true);
+        myOKButton.addActionListener(myOkActionListener);
+        boolean enterAsOK = Registry.is("ide.find.enter.as.ok", false);
 
-    new DumbAwareAction() {
-      @Override
-      public void update(AnActionEvent e) {
-        e.getPresentation().setEnabled(
-          e.getData(CommonDataKeys.EDITOR) == null ||
-          SwingUtilities.isDescendingFrom(e.getData(PlatformDataKeys.CONTEXT_COMPONENT), myFileMaskField));
-      }
+        new DumbAwareAction() {
+            @Override
+            public void update(AnActionEvent e) {
+                e.getPresentation().setEnabled(
+                        e.getData(CommonDataKeys.EDITOR) == null ||
+                                SwingUtilities.isDescendingFrom(e.getData(PlatformDataKeys.CONTEXT_COMPONENT), myFileMaskField));
+            }
 
-      @Override
-      public void actionPerformed(AnActionEvent e) {
-        if (SwingUtilities.isDescendingFrom(e.getData(PlatformDataKeys.CONTEXT_COMPONENT), myFileMaskField) && myFileMaskField.isPopupVisible()) {
-          myFileMaskField.hidePopup();
-          return;
+            @Override
+            public void actionPerformed(AnActionEvent e) {
+                if (SwingUtilities.isDescendingFrom(e.getData(PlatformDataKeys.CONTEXT_COMPONENT), myFileMaskField) && myFileMaskField.isPopupVisible()) {
+                    myFileMaskField.hidePopup();
+                    return;
+                }
+                if (enterAsOK) {
+                    myOkActionListener.actionPerformed(null);
+                } else {
+                    if (myHelper.isReplaceState()) {
+                        myReplaceSelectedButton.doClick();
+                    } else {
+                        navigateToSelectedUsage(null);
+                    }
+                }
+            }
+        }.registerCustomShortcutSet(new CustomShortcutSet(ENTER), this);
+        DumbAwareAction.create(e -> {
+            if (enterAsOK) {
+                navigateToSelectedUsage(null);
+            } else {
+                myOkActionListener.actionPerformed(null);
+            }
+        }).registerCustomShortcutSet(new CustomShortcutSet(ENTER_WITH_MODIFIERS), this);
+
+        DumbAwareAction.create(e -> {
+            myReplaceAllButton.doClick();
+        }).registerCustomShortcutSet(new CustomShortcutSet(REPLACE_ALL), this);
+        myReplaceAllButton.setToolTipText(KeymapUtil.getKeystrokeText(REPLACE_ALL));
+
+        List<Shortcut> navigationKeyStrokes = ContainerUtil.newArrayList();
+        KeyStroke viewSourceKeyStroke = KeymapUtil.getKeyStroke(CommonShortcuts.getViewSource());
+        if (viewSourceKeyStroke != null && !Comparing.equal(viewSourceKeyStroke, ENTER_WITH_MODIFIERS) && !Comparing.equal(viewSourceKeyStroke, ENTER)) {
+            navigationKeyStrokes.add(new KeyboardShortcut(viewSourceKeyStroke, null));
         }
-        if (enterAsOK) {
-          myOkActionListener.actionPerformed(null);
+        KeyStroke editSourceKeyStroke = KeymapUtil.getKeyStroke(CommonShortcuts.getEditSource());
+        if (editSourceKeyStroke != null && !Comparing.equal(editSourceKeyStroke, ENTER_WITH_MODIFIERS) && !Comparing.equal(editSourceKeyStroke, ENTER)) {
+            navigationKeyStrokes.add(new KeyboardShortcut(editSourceKeyStroke, null));
         }
-        else {
-          if (myHelper.isReplaceState()) {
-            myReplaceSelectedButton.doClick();
-          } else {
-            navigateToSelectedUsage(null);
-          }
+        if (!navigationKeyStrokes.isEmpty()) {
+            new AnAction() {
+                @Override
+                public void actionPerformed(AnActionEvent e) {
+                    navigateToSelectedUsage(e);
+                }
+            }.registerCustomShortcutSet(new CustomShortcutSet(navigationKeyStrokes.toArray(Shortcut.EMPTY_ARRAY)), this);
         }
-      }
-    }.registerCustomShortcutSet(new CustomShortcutSet(ENTER), this);
-    DumbAwareAction.create(e -> {
-      if (enterAsOK) {
-        navigateToSelectedUsage(null);
-      }
-      else {
-        myOkActionListener.actionPerformed(null);
-      }
-    }).registerCustomShortcutSet(new CustomShortcutSet(ENTER_WITH_MODIFIERS), this);
 
-    DumbAwareAction.create(e -> {
-      myReplaceAllButton.doClick();
-    }).registerCustomShortcutSet(new CustomShortcutSet(REPLACE_ALL), this);
-    myReplaceAllButton.setToolTipText(KeymapUtil.getKeystrokeText(REPLACE_ALL));
-    
-    List<Shortcut> navigationKeyStrokes = ContainerUtil.newArrayList();
-    KeyStroke viewSourceKeyStroke = KeymapUtil.getKeyStroke(CommonShortcuts.getViewSource());
-    if (viewSourceKeyStroke != null && !Comparing.equal(viewSourceKeyStroke, ENTER_WITH_MODIFIERS) && !Comparing.equal(viewSourceKeyStroke, ENTER)) {
-      navigationKeyStrokes.add(new KeyboardShortcut(viewSourceKeyStroke, null));
-    }
-    KeyStroke editSourceKeyStroke = KeymapUtil.getKeyStroke(CommonShortcuts.getEditSource());
-    if (editSourceKeyStroke != null && !Comparing.equal(editSourceKeyStroke, ENTER_WITH_MODIFIERS) && !Comparing.equal(editSourceKeyStroke, ENTER)) {
-      navigationKeyStrokes.add(new KeyboardShortcut(editSourceKeyStroke, null));
-    }
-    if (!navigationKeyStrokes.isEmpty()) {
-      new AnAction() {
-        @Override
-        public void actionPerformed(AnActionEvent e) {
-          navigateToSelectedUsage(e);
-        }
-      }.registerCustomShortcutSet(new CustomShortcutSet(navigationKeyStrokes.toArray(Shortcut.EMPTY_ARRAY)), this);
-    }
+        mySearchComponent = new JTextArea();
+        mySearchComponent.setColumns(25);
+        mySearchComponent.setRows(1);
+        myReplaceComponent = new JTextArea();
+        myReplaceComponent.setColumns(25);
+        myReplaceComponent.setRows(1);
+        mySearchTextArea = new SearchTextArea(mySearchComponent, true, true);
+        myReplaceTextArea = new SearchTextArea(myReplaceComponent, false, false);
+        mySearchTextArea.setMultilineEnabled(false);
+        myReplaceTextArea.setMultilineEnabled(false);
 
-    mySearchComponent = new JTextArea();
-    mySearchComponent.setColumns(25);
-    mySearchComponent.setRows(1);
-    myReplaceComponent = new JTextArea();
-    myReplaceComponent.setColumns(25);
-    myReplaceComponent.setRows(1);
-    mySearchTextArea = new SearchTextArea(mySearchComponent, true, true);
-    myReplaceTextArea = new SearchTextArea(myReplaceComponent, false, false);
-    mySearchTextArea.setMultilineEnabled(false);
-    myReplaceTextArea.setMultilineEnabled(false);
+        //Pair<FindPopupScopeUI.ScopeType, JComponent>[] scopeComponents = myScopeUI.getComponents();
+        //Pair<FindPopupScopeUI.ScopeType, JComponent>[] scopeComponents = new Pair<FindPopupScopeUI.ScopeType, JComponent>[]{};
+        myScopeDetailsPanel = new JPanel(new CardLayout());
+        myScopeDetailsPanel.setBorder(JBUI.Borders.emptyBottom(UIUtil.isUnderDefaultMacTheme() ? 0 : 3));
 
-   //Pair<FindPopupScopeUI.ScopeType, JComponent>[] scopeComponents = myScopeUI.getComponents();
-    //Pair<FindPopupScopeUI.ScopeType, JComponent>[] scopeComponents = new Pair<FindPopupScopeUI.ScopeType, JComponent>[]{};
-    myScopeDetailsPanel = new JPanel(new CardLayout());
-    myScopeDetailsPanel.setBorder(JBUI.Borders.emptyBottom(UIUtil.isUnderDefaultMacTheme() ? 0 : 3));
-
-    //List<AnAction> scopeActions = new ArrayList<>(scopeComponents.length);
-    List<AnAction> scopeActions = new ArrayList<>();
+        //List<AnAction> scopeActions = new ArrayList<>(scopeComponents.length);
+        List<AnAction> scopeActions = new ArrayList<>();
 /*    for (Pair<FindPopupScopeUI.ScopeType, JComponent> scopeComponent : scopeComponents) {
       FindPopupScopeUI.ScopeType scopeType = scopeComponent.first;
       scopeActions.add(new MySelectScopeToggleAction(scopeType));
       myScopeDetailsPanel.add(scopeType.name, scopeComponent.second);
     }*/
-    myScopeSelectionToolbar = createToolbar(scopeActions.toArray(AnAction.EMPTY_ARRAY));
-    myScopeSelectionToolbar.setMinimumButtonSize(ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE);
-    //mySelectedScope = scopeComponents[0].first;
+        myScopeSelectionToolbar = createToolbar(scopeActions.toArray(AnAction.EMPTY_ARRAY));
+        myScopeSelectionToolbar.setMinimumButtonSize(ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE);
+        //mySelectedScope = scopeComponents[0].first;
 
-    myScopeSelectionToolbar = createToolbar();
+        myScopeSelectionToolbar = createToolbar();
 
-    myResultsPreviewTable = new JBTable() {
-      @Override
-      public Dimension getPreferredScrollableViewportSize() {
-        return new Dimension(getWidth(), 1 + getRowHeight() * 4);
-      }
-    };
-    myResultsPreviewTable.setFocusable(false);
-    myResultsPreviewTable.getEmptyText().setShowAboveCenter(false);
-    myResultsPreviewTable.setShowColumns(false);
-    myResultsPreviewTable.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-    myResultsPreviewTable.setShowGrid(false);
-    myResultsPreviewTable.setIntercellSpacing(JBUI.emptySize());
-    new DoubleClickListener() {
-      @Override
-      protected boolean onDoubleClick(MouseEvent event) {
-        if (event.getSource() != myResultsPreviewTable) return false;
-        navigateToSelectedUsage(null);
-        return true;
-      }
-    }.installOn(myResultsPreviewTable);
-    myResultsPreviewTable.addMouseListener(new MouseAdapter() {
-      @Override
-      public void mousePressed(MouseEvent e) {
-        myResultsPreviewTable.transferFocus();
-      }
-    });
-    applyFont(JBUI.Fonts.label(), myCbCaseSensitive, myCbPreserveCase, myCbWholeWordsOnly, myCbRegularExpressions,
-              myResultsPreviewTable);
-    ScrollingUtil.installActions(myResultsPreviewTable, false, mySearchComponent);
-    ScrollingUtil.installActions(myResultsPreviewTable, false, myReplaceComponent);
-    ScrollingUtil.installActions(myResultsPreviewTable, false, myReplaceSelectedButton);
+        myResultsPreviewTable = new JBTable() {
+            @Override
+            public Dimension getPreferredScrollableViewportSize() {
+                return new Dimension(getWidth(), 1 + getRowHeight() * 4);
+            }
+        };
+        myResultsPreviewTable.setFocusable(false);
+        myResultsPreviewTable.getEmptyText().setShowAboveCenter(false);
+        myResultsPreviewTable.setShowColumns(false);
+        myResultsPreviewTable.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        myResultsPreviewTable.setShowGrid(false);
+        myResultsPreviewTable.setIntercellSpacing(JBUI.emptySize());
+        new DoubleClickListener() {
+            @Override
+            protected boolean onDoubleClick(MouseEvent event) {
+                if (event.getSource() != myResultsPreviewTable) return false;
+                navigateToSelectedUsage(null);
+                return true;
+            }
+        }.installOn(myResultsPreviewTable);
+        myResultsPreviewTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                myResultsPreviewTable.transferFocus();
+            }
+        });
+        applyFont(JBUI.Fonts.label(), myCbCaseSensitive, myCbPreserveCase, myCbWholeWordsOnly, myCbRegularExpressions,
+                myResultsPreviewTable);
+        ScrollingUtil.installActions(myResultsPreviewTable, false, mySearchComponent);
+        ScrollingUtil.installActions(myResultsPreviewTable, false, myReplaceComponent);
+        ScrollingUtil.installActions(myResultsPreviewTable, false, myReplaceSelectedButton);
 
-    ActionListener helpAction = __ -> HelpManager.getInstance().invokeHelp("reference.dialogs.findinpath");
-    registerKeyboardAction(helpAction,KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0),JComponent.WHEN_IN_FOCUSED_WINDOW);
-    registerKeyboardAction(helpAction,KeyStroke.getKeyStroke(KeyEvent.VK_HELP, 0),JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionListener helpAction = __ -> HelpManager.getInstance().invokeHelp("reference.dialogs.findinpath");
+        registerKeyboardAction(helpAction, KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
+        registerKeyboardAction(helpAction, KeyStroke.getKeyStroke(KeyEvent.VK_HELP, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-    myUsageViewPresentation = new UsageViewPresentation();
-    myUsagePreviewPanel = new UsagePreviewPanel(myProject, myUsageViewPresentation, Registry.is("ide.find.as.popup.editable.code")) {
-      @Override
-      public Dimension getPreferredSize() {
-        return new Dimension(myResultsPreviewTable.getWidth(), Math.max(getHeight(), getLineHeight() * 15));
-      }
-    };
-    Disposer.register(myDisposable, myUsagePreviewPanel);
-    /// mariotodo preview
-    final Runnable updatePreviewRunnable = () -> {
-      if (Disposer.isDisposed(myDisposable)) return;
-      int[] selectedRows = myResultsPreviewTable.getSelectedRows();
-      final List<UsageInfo> selection = new SmartList<>();
-      VirtualFile file = null;
-      for (int row : selectedRows) {
-        UsageInfo usageInfo = WSUtil.getUsageInfo((WSFindTextResult) myResultsPreviewTable.getModel().getValueAt(row, 0));
-        UsageInfo2UsageAdapter adapter = new UsageInfo2UsageAdapter(usageInfo);
-        file = adapter.getFile();
-        if (adapter.isValid()) {
-          selection.addAll(Arrays.asList(adapter.getMergedInfos()));
+        myUsageViewPresentation = new UsageViewPresentation();
+        myUsagePreviewPanel = new UsagePreviewPanel(myProject, myUsageViewPresentation, Registry.is("ide.find.as.popup.editable.code")) {
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(myResultsPreviewTable.getWidth(), Math.max(getHeight(), getLineHeight() * 15));
+            }
+        };
+        Disposer.register(myDisposable, myUsagePreviewPanel);
+        /// mariotodo preview
+        final Runnable updatePreviewRunnable = () -> {
+            if (Disposer.isDisposed(myDisposable)) return;
+            int[] selectedRows = myResultsPreviewTable.getSelectedRows();
+            final List<UsageInfo> selection = new SmartList<>();
+            VirtualFile file = null;
+            for (int row : selectedRows) {
+                UsageInfo usageInfo = WSUtil.getUsageInfo((WSFindTextResult) myResultsPreviewTable.getModel().getValueAt(row, 0));
+                UsageInfo2UsageAdapter adapter = new UsageInfo2UsageAdapter(usageInfo);
+                file = adapter.getFile();
+                if (adapter.isValid()) {
+                    selection.addAll(Arrays.asList(adapter.getMergedInfos()));
+                }
+            }
+            String title = getTitle(file);
+            myReplaceSelectedButton.setText(FindBundle.message("find.popup.replace.selected.button", selection.size()));
+            //FindInProjectUtil.setupViewPresentation(myUsageViewPresentation, FindSettings.getInstance().isShowResultsInSeparateView(), myHelper.getModel().clone());
+            myUsagePreviewPanel.updateLayout(selection);
+            if (myUsagePreviewPanel.getCannotPreviewMessage(selection) == null && title != null) {
+                myUsagePreviewPanel.setBorder(IdeBorderFactory.createTitledBorder(title, false, new JBInsets(8, 0, 0, 0)).setShowLine(false));
+            } else {
+                myUsagePreviewPanel.setBorder(JBUI.Borders.empty());
+            }
+        };
+        myResultsPreviewTable.getSelectionModel().addListSelectionListener(e -> {
+            if (e.getValueIsAdjusting()) return;
+            myPreviewUpdater.addRequest(updatePreviewRunnable, 50); //todo[vasya]: remove this dirty hack of updating preview panel after clicking on Replace button
+        });
+        DocumentAdapter documentAdapter = new DocumentAdapter() {
+            @Override
+            protected void textChanged(DocumentEvent e) {
+                String text = mySearchComponent.getText();
+                int len = text.length();
+                mySearchComponent.setRows(Math.max(1, Math.min(3, StringUtil.countChars(mySearchComponent.getText(), '\n') + 1)));
+                myReplaceComponent.setRows(Math.max(1, Math.min(3, StringUtil.countChars(myReplaceComponent.getText(), '\n') + 1)));
+
+                if (myBalloon == null) return;
+                if (e.getDocument() == mySearchComponent.getDocument()) {
+                    scheduleResultsUpdate();
+                }
+                if (e.getDocument() == myReplaceComponent.getDocument()) {
+                    applyTo(myHelper.getModel());
+                    ApplicationManager.getApplication().invokeLater(updatePreviewRunnable);
+                }
+            }
+        };
+        mySearchComponent.getDocument().addDocumentListener(documentAdapter);
+        myReplaceComponent.getDocument().addDocumentListener(documentAdapter);
+
+        mySearchRescheduleOnCancellationsAlarm = new Alarm();
+
+        JBSplitter splitter = new JBSplitter(true, .33f);
+        splitter.setSplitterProportionKey(SPLITTER_SERVICE_KEY);
+        splitter.setDividerWidth(JBUI.scale(2));
+        splitter.getDivider().setBackground(OnePixelDivider.BACKGROUND);
+        JBScrollPane scrollPane = new JBScrollPane(myResultsPreviewTable) {
+            @Override
+            public Dimension getMinimumSize() {
+                Dimension size = super.getMinimumSize();
+                size.height = myResultsPreviewTable.getPreferredScrollableViewportSize().height;
+                return size;
+            }
+        };
+        scrollPane.setBorder(JBUI.Borders.empty());
+        splitter.setFirstComponent(scrollPane);
+        JPanel bottomPanel = new JPanel(new MigLayout("flowx, ins 4 4 0 4, fillx, hidemode 2, gap 0"));
+        bottomPanel.add(myTabResultsButton);
+        bottomPanel.add(Box.createHorizontalGlue(), "growx, pushx");
+        myOKHintLabel = new JBLabel("");
+        myOKHintLabel.setEnabled(false);
+        Insets insets = myOKButton.getInsets();
+        bottomPanel.add(myOKHintLabel);
+        String btnGapLeft = "gapleft " + Math.max(0, (JBUI.scale(12) - insets.left - insets.right));
+        bottomPanel.add(myOKButton, btnGapLeft);
+
+        if (myHelper.isReplaceState()) {
+            bottomPanel.add(myReplaceAllButton, btnGapLeft);
+            bottomPanel.add(myReplaceSelectedButton, btnGapLeft);
         }
-      }
-      String title = getTitle(file);
-      myReplaceSelectedButton.setText(FindBundle.message("find.popup.replace.selected.button", selection.size()));
-      //FindInProjectUtil.setupViewPresentation(myUsageViewPresentation, FindSettings.getInstance().isShowResultsInSeparateView(), myHelper.getModel().clone());
-      myUsagePreviewPanel.updateLayout(selection);
-      if (myUsagePreviewPanel.getCannotPreviewMessage(selection) == null && title != null) {
-        myUsagePreviewPanel.setBorder(IdeBorderFactory.createTitledBorder(title, false, new JBInsets(8, 0, 0, 0)).setShowLine(false));
-      }
-      else {
-        myUsagePreviewPanel.setBorder(JBUI.Borders.empty());
-      }
-    };
-    myResultsPreviewTable.getSelectionModel().addListSelectionListener(e -> {
-      if (e.getValueIsAdjusting()) return;
-      myPreviewUpdater.addRequest(updatePreviewRunnable, 50); //todo[vasya]: remove this dirty hack of updating preview panel after clicking on Replace button
-    });
-    DocumentAdapter documentAdapter = new DocumentAdapter() {
-      @Override
-      protected void textChanged(DocumentEvent e) {
-        String text = mySearchComponent.getText();
-        int len = text.length();
-        mySearchComponent.setRows(Math.max(1, Math.min(3, StringUtil.countChars(mySearchComponent.getText(), '\n') + 1)));
-        myReplaceComponent.setRows(Math.max(1, Math.min(3, StringUtil.countChars(myReplaceComponent.getText(), '\n') + 1)));
 
-        if (myBalloon == null) return;
-        if (e.getDocument() == mySearchComponent.getDocument()) {
-          scheduleResultsUpdate();
-        }
-        if (e.getDocument() == myReplaceComponent.getDocument()) {
-          applyTo(myHelper.getModel());
-          ApplicationManager.getApplication().invokeLater(updatePreviewRunnable);
-        }
-      }
-    };
-    mySearchComponent.getDocument().addDocumentListener(documentAdapter);
-    myReplaceComponent.getDocument().addDocumentListener(documentAdapter);
-
-    mySearchRescheduleOnCancellationsAlarm = new Alarm();
-
-    JBSplitter splitter = new JBSplitter(true, .33f);
-    splitter.setSplitterProportionKey(SPLITTER_SERVICE_KEY);
-    splitter.setDividerWidth(JBUI.scale(2));
-    splitter.getDivider().setBackground(OnePixelDivider.BACKGROUND);
-    JBScrollPane scrollPane = new JBScrollPane(myResultsPreviewTable) {
-      @Override
-      public Dimension getMinimumSize() {
-        Dimension size = super.getMinimumSize();
-        size.height = myResultsPreviewTable.getPreferredScrollableViewportSize().height;
-        return size;
-      }
-    };
-    scrollPane.setBorder(JBUI.Borders.empty());
-    splitter.setFirstComponent(scrollPane);
-    JPanel bottomPanel = new JPanel(new MigLayout("flowx, ins 4 4 0 4, fillx, hidemode 2, gap 0"));
-    bottomPanel.add(myTabResultsButton);
-    bottomPanel.add(Box.createHorizontalGlue(), "growx, pushx");
-    myOKHintLabel = new JBLabel("");
-    myOKHintLabel.setEnabled(false);
-    Insets insets = myOKButton.getInsets();
-    bottomPanel.add(myOKHintLabel);
-    String btnGapLeft = "gapleft " + Math.max(0, (JBUI.scale(12) - insets.left - insets.right));
-    bottomPanel.add(myOKButton, btnGapLeft);
-
-    if (myHelper.isReplaceState()) {
-      bottomPanel.add(myReplaceAllButton, btnGapLeft);
-      bottomPanel.add(myReplaceSelectedButton, btnGapLeft);
-    }
-
-    myCodePreviewComponent = myUsagePreviewPanel.createComponent();
-    splitter.setSecondComponent(myCodePreviewComponent);
-    JPanel scopesPanel = new JPanel(new MigLayout("flowx, gap 26, ins 0"));
-    scopesPanel.add(myScopeSelectionToolbar.getComponent());
-    scopesPanel.add(myScopeDetailsPanel, "growx, pushx");
-    setLayout(new MigLayout("flowx, ins 4, gap 0, fillx, hidemode 3"));
-    int cbGapLeft = myCbCaseSensitive.getInsets().left;
-    int cbGapRight = myCbCaseSensitive.getInsets().right;
-    myTitlePanel = new JPanel(new MigLayout("flowx, ins 0, gap 0, fillx, filly"));
-    myTitlePanel.add(myTitleLabel);
-    myTitlePanel.add(myLoadingDecorator.getComponent(), "w 24, wmin 24");
-    myTitlePanel.add(Box.createHorizontalGlue(), "growx, pushx");
-    int gap = Math.max(0, JBUI.scale(16) - cbGapLeft - cbGapRight);
-    JPanel regexpPanel = new JPanel(new BorderLayout(4, 5));
-    regexpPanel.add(myCbRegularExpressions, BorderLayout.CENTER);
-    regexpPanel.add(RegExHelpPopup.createRegExLink("<html><body><b>?</b></body></html>", myCbRegularExpressions, LOG), BorderLayout.EAST);
-    AnAction[] actions = {
+        myCodePreviewComponent = myUsagePreviewPanel.createComponent();
+        splitter.setSecondComponent(myCodePreviewComponent);
+        JPanel scopesPanel = new JPanel(new MigLayout("flowx, gap 26, ins 0"));
+        scopesPanel.add(myScopeSelectionToolbar.getComponent());
+        scopesPanel.add(myScopeDetailsPanel, "growx, pushx");
+        setLayout(new MigLayout("flowx, ins 4, gap 0, fillx, hidemode 3"));
+        int cbGapLeft = myCbCaseSensitive.getInsets().left;
+        int cbGapRight = myCbCaseSensitive.getInsets().right;
+        myTitlePanel = new JPanel(new MigLayout("flowx, ins 0, gap 0, fillx, filly"));
+        myTitlePanel.add(myTitleLabel);
+        myTitlePanel.add(myLoadingDecorator.getComponent(), "w 24, wmin 24");
+        myTitlePanel.add(Box.createHorizontalGlue(), "growx, pushx");
+        int gap = Math.max(0, JBUI.scale(16) - cbGapLeft - cbGapRight);
+        JPanel regexpPanel = new JPanel(new BorderLayout(4, 5));
+        regexpPanel.add(myCbRegularExpressions, BorderLayout.CENTER);
+        regexpPanel.add(RegExHelpPopup.createRegExLink("<html><body><b>?</b></body></html>", myCbRegularExpressions, LOG), BorderLayout.EAST);
+        AnAction[] actions = {
 /*      new DefaultCustomComponentAction(() -> myCbCaseSensitive),
       new DefaultCustomComponentAction(() -> JBUI.Borders.emptyLeft(gap).wrap(myCbPreserveCase)),
       new DefaultCustomComponentAction(() -> JBUI.Borders.emptyLeft(gap).wrap(myCbWholeWordsOnly)),
       new DefaultCustomComponentAction(() -> JBUI.Borders.emptyLeft(gap).wrap(regexpPanel)),*/
-    };
+        };
 
-    @SuppressWarnings("InspectionUniqueToolbarId")
-    ActionToolbarImpl checkboxesToolbar =
-      (ActionToolbarImpl)ActionManager.getInstance().createActionToolbar(ActionPlaces.UNKNOWN, new DefaultActionGroup(actions), true);
+        @SuppressWarnings("InspectionUniqueToolbarId")
+        ActionToolbarImpl checkboxesToolbar =
+                (ActionToolbarImpl) ActionManager.getInstance().createActionToolbar(ActionPlaces.UNKNOWN, new DefaultActionGroup(actions), true);
 /*    checkboxesToolbar.setForceShowFirstComponent(true);
     checkboxesToolbar.setSkipWindowAdjustments(true);*/
 
-    add(myTitlePanel, "sx 2, growx, growx 200, growy");
-    add(checkboxesToolbar, "gapright 8");
-    add(myCbFileFilter);
-    add(myFileMaskField, "gapleft 4, gapright 16");
-    if (Registry.is("ide.find.as.popup.allow.pin") || ApplicationManager.getApplication().isInternal()) {
-      myIsPinned.set(UISettings.getInstance().getPinFindInPath());
-      JPanel twoButtons = new JPanel(new GridLayout(1, 2, 4, 0));
-      twoButtons.add(myFilterContextButton);
-      twoButtons.add(myPinButton);
-      add(twoButtons, "wrap");
-    }
-    else {
-      add(myFilterContextButton, "wrap");
-    }
-    add(mySearchTextArea, "pushx, growx, sx 10, gaptop 4, wrap");
-    add(myReplaceTextArea, "pushx, growx, sx 10, gaptop 4, wrap");
-    add(scopesPanel, "sx 10, pushx, growx, ax left, wrap, gaptop 4, gapbottom 4");
-    add(splitter, "pushx, growx, growy, pushy, sx 10, wrap, pad -4 -4 4 4");
-    add(bottomPanel, "pushx, growx, dock south, sx 10");
+        add(myTitlePanel, "sx 2, growx, growx 200, growy");
+        add(checkboxesToolbar, "gapright 8");
+        add(myCbFileFilter);
+        add(myFileMaskField, "gapleft 4, gapright 16");
+        if (Registry.is("ide.find.as.popup.allow.pin") || ApplicationManager.getApplication().isInternal()) {
+            myIsPinned.set(UISettings.getInstance().getPinFindInPath());
+            JPanel twoButtons = new JPanel(new GridLayout(1, 2, 4, 0));
+            twoButtons.add(myFilterContextButton);
+            twoButtons.add(myPinButton);
+            add(twoButtons, "wrap");
+        } else {
+            add(myFilterContextButton, "wrap");
+        }
+        add(mySearchTextArea, "pushx, growx, sx 10, gaptop 4, wrap");
+        add(myReplaceTextArea, "pushx, growx, sx 10, gaptop 4, wrap");
+        add(scopesPanel, "sx 10, pushx, growx, ax left, wrap, gaptop 4, gapbottom 4");
+        add(splitter, "pushx, growx, growy, pushy, sx 10, wrap, pad -4 -4 4 4");
+        add(bottomPanel, "pushx, growx, dock south, sx 10");
 
-    MnemonicHelper.init(this);
-    setFocusCycleRoot(true);
-    setFocusTraversalPolicy(new LayoutFocusTraversalPolicy() {
-      @Override
-      public Component getComponentAfter(Container container, Component c) {
-        return c == myResultsPreviewTable ? mySearchComponent : super.getComponentAfter(container, c);
-      }
-    });
-  }
-
-  private void onFileMaskChanged() {
-    Object item = myFileMaskField.getEditor().getItem();
-    if (item != null && !item.equals(myFileMaskField.getSelectedItem())){
-      myFileMaskField.setSelectedItem(item);
-    }
-    scheduleResultsUpdate();
-  }
-
-  private void closeImmediately() {
-    if (canBeClosedImmediately() && myBalloon != null && myBalloon.isVisible()) {
-      myIsPinned.set(false);
-      myBalloon.cancel();
-    }
-  }
-
-  //Some popups shown above may prevent panel closing, first of all we should close them
-  private boolean canBeClosedImmediately() {
-    boolean state = myIsPinned.get();
-    myIsPinned.set(false);
-    try {
-      //Here we actually close popups
-      return myBalloon != null && canBeClosed();
-    } finally {
-      myIsPinned.set(state);
-    }
-  }
-
-  private void doOK(boolean promptOnReplace) {
-    if (!canBeClosedImmediately()) {
-      return;
+        MnemonicHelper.init(this);
+        setFocusCycleRoot(true);
+        setFocusTraversalPolicy(new LayoutFocusTraversalPolicy() {
+            @Override
+            public Component getComponentAfter(Container container, Component c) {
+                return c == myResultsPreviewTable ? mySearchComponent : super.getComponentAfter(container, c);
+            }
+        });
     }
 
-    FindModel validateModel = myHelper.getModel().clone();
-    applyTo(validateModel);
-
-    ValidationInfo validationInfo = getValidationInfo(validateModel);
-
-    if (validationInfo == null) {
-      myHelper.getModel().copyFrom(validateModel);
-      myHelper.getModel().setPromptOnReplace(promptOnReplace);
-      myHelper.doOKAction();
-    }
-    else {
-      String message = validationInfo.message;
-      Messages.showMessageDialog(
-        this,
-        message,
-        CommonBundle.getErrorTitle(),
-        Messages.getErrorIcon()
-      );
-      return;
-    }
-    myIsPinned.set(false);
-    myBalloon.cancel();
-  }
-
-  @Nullable
-  private String getTitle(@Nullable VirtualFile file) {
-    if (file == null) return null;
-    String path = VfsUtilCore.getRelativePath(file, myProject.getBaseDir());
-    if (path == null) path = file.getPath();
-    return "<html><body>&nbsp;&nbsp;&nbsp;" + path.replace(file.getName(), "<b>" + file.getName() + "</b>") + "</body></html>";
-  }
-
-  @NotNull
-  private static StateRestoringCheckBox createCheckBox(String message) {
-    StateRestoringCheckBox checkBox = new StateRestoringCheckBox(FindBundle.message(message));
-    checkBox.setFocusable(false);
-    return checkBox;
-  }
-
-  private void registerCloseAction(JBPopup popup) {
-    final AnAction escape = ActionManager.getInstance().getAction("EditorEscape");
-    DumbAwareAction.create(e -> closeImmediately())
-                   .registerCustomShortcutSet(escape == null ? CommonShortcuts.ESCAPE : escape.getShortcutSet(), popup.getContent(), popup);
-  }
-
-  @Override
-  public void addNotify() {
-    super.addNotify();
-    ApplicationManager.getApplication().invokeLater(() -> ScrollingUtil.ensureSelectionExists(myResultsPreviewTable), ModalityState.any());
-    myScopeSelectionToolbar.updateActionsImmediately();
-  }
-
-  @Override
-  public void initByModel() {
-    FindModel myModel = myHelper.getModel();
-    myCbCaseSensitive.setSelected(myModel.isCaseSensitive());
-    myCbWholeWordsOnly.setSelected(myModel.isWholeWordsOnly());
-    myCbRegularExpressions.setSelected(myModel.isRegularExpressions());
-
-    mySelectedContextName = "halloa";/*FindDialog.getSearchContextName(myModel);*/
-    if (myModel.isReplaceState()) {
-      myCbPreserveCase.setSelected(myModel.isPreserveCase());
+    private void onFileMaskChanged() {
+        Object item = myFileMaskField.getEditor().getItem();
+        if (item != null && !item.equals(myFileMaskField.getSelectedItem())) {
+            myFileMaskField.setSelectedItem(item);
+        }
+        scheduleResultsUpdate();
     }
 
-
-    boolean isThereFileFilter = myModel.getFileFilter() != null && !myModel.getFileFilter().isEmpty();
-    try {
-      myCbFileFilter.putClientProperty("dontRequestFocus", Boolean.TRUE);
-      myCbFileFilter.setSelected(isThereFileFilter);
-    } finally {
-      myCbFileFilter.putClientProperty("dontRequestFocus", null);
-    }
-    myFileMaskField.removeAllItems();
-    List<String> variants = Arrays.asList(ArrayUtil.reverseArray(FindSettings.getInstance().getRecentFileMasks()));
-    for (String variant : variants) {
-      myFileMaskField.addItem(variant);
-    }
-    if (!variants.isEmpty()) {
-      myFileMaskField.setSelectedItem(variants.get(0));
-    }
-    myFileMaskField.setEnabled(isThereFileFilter);
-    String toSearch = WSUtil.getWordAtCaret(WSProjectListener.getInstance().getJBProject());  //myModel.getStringToFind();
-    FindInProjectSettings findInProjectSettings = FindInProjectSettings.getInstance(myProject);
-
-    if (StringUtil.isEmpty(toSearch)) {
-      String[] history = findInProjectSettings.getRecentFindStrings();
-      toSearch = history.length > 0 ? history[history.length - 1] : "";
+    private void closeImmediately() {
+        if (canBeClosedImmediately() && myBalloon != null && myBalloon.isVisible()) {
+            myIsPinned.set(false);
+            myBalloon.cancel();
+        }
     }
 
-    mySearchComponent.setText(toSearch);
-    String toReplace = myModel.getStringToReplace();
-
-    if (StringUtil.isEmpty(toReplace)) {
-      String[] history = findInProjectSettings.getRecentReplaceStrings();
-      toReplace = history.length > 0 ? history[history.length - 1] : "";
+    //Some popups shown above may prevent panel closing, first of all we should close them
+    private boolean canBeClosedImmediately() {
+        boolean state = myIsPinned.get();
+        myIsPinned.set(false);
+        try {
+            //Here we actually close popups
+            return myBalloon != null && canBeClosed();
+        } finally {
+            myIsPinned.set(state);
+        }
     }
-    myReplaceComponent.setText(toReplace);
-    updateControls();
-    updateScopeDetailsPanel();
 
-    boolean isReplaceState = myHelper.isReplaceState();
-    myTitleLabel.setText(myHelper.getTitle());
-    myReplaceTextArea.setVisible(isReplaceState);
-    myCbPreserveCase.setVisible(isReplaceState);
-    if (Registry.is("ide.find.enter.as.ok", false)) {
-      myOKHintLabel.setText(KeymapUtil.getKeystrokeText(ENTER));
-    } else {
-      myOKHintLabel.setText(KeymapUtil.getKeystrokeText(ENTER_WITH_MODIFIERS));
+    private void doOK(boolean promptOnReplace) {
+        if (!canBeClosedImmediately()) {
+            return;
+        }
+
+        FindModel validateModel = myHelper.getModel().clone();
+        applyTo(validateModel);
+
+        ValidationInfo validationInfo = getValidationInfo(validateModel);
+
+        if (validationInfo == null) {
+            myHelper.getModel().copyFrom(validateModel);
+            myHelper.getModel().setPromptOnReplace(promptOnReplace);
+            myHelper.doOKAction();
+        } else {
+            String message = validationInfo.message;
+            Messages.showMessageDialog(
+                    this,
+                    message,
+                    CommonBundle.getErrorTitle(),
+                    Messages.getErrorIcon()
+            );
+            return;
+        }
+        myIsPinned.set(false);
+        myBalloon.cancel();
     }
-    myOKButton.setText(FindBundle.message("find.popup.find.button"));
-  }
 
-  private void updateControls() {
-    FindModel myModel = myHelper.getModel();
-    if (myCbRegularExpressions.isSelected()) {
-      myCbWholeWordsOnly.makeUnselectable(false);
+    @Nullable
+    private String getTitle(@Nullable VirtualFile file) {
+        if (file == null) return null;
+        String path = VfsUtilCore.getRelativePath(file, myProject.getBaseDir());
+        if (path == null) path = file.getPath();
+        return "<html><body>&nbsp;&nbsp;&nbsp;" + path.replace(file.getName(), "<b>" + file.getName() + "</b>") + "</body></html>";
     }
-    else {
-      myCbWholeWordsOnly.makeSelectable();
+
+    @NotNull
+    private static StateRestoringCheckBox createCheckBox(String message) {
+        StateRestoringCheckBox checkBox = new StateRestoringCheckBox(FindBundle.message(message));
+        checkBox.setFocusable(false);
+        return checkBox;
     }
-    if (myModel.isReplaceState()) {
-      if (myCbRegularExpressions.isSelected() || myCbCaseSensitive.isSelected()) {
-        myCbPreserveCase.makeUnselectable(false);
-      }
-      else {
-        myCbPreserveCase.makeSelectable();
-      }
 
-      if (myCbPreserveCase.isSelected()) {
-        myCbRegularExpressions.makeUnselectable(false);
-        myCbCaseSensitive.makeUnselectable(false);
-      }
-      else {
-        myCbRegularExpressions.makeSelectable();
-        myCbCaseSensitive.makeSelectable();
-      }
+    private void registerCloseAction(JBPopup popup) {
+        final AnAction escape = ActionManager.getInstance().getAction("EditorEscape");
+        DumbAwareAction.create(e -> closeImmediately())
+                .registerCustomShortcutSet(escape == null ? CommonShortcuts.ESCAPE : escape.getShortcutSet(), popup.getContent(), popup);
     }
-    myReplaceAllButton.setVisible(myHelper.isReplaceState());
-    myReplaceSelectedButton.setVisible(myHelper.isReplaceState());
-  }
 
-  private void updateScopeDetailsPanel() {
-    ((CardLayout)myScopeDetailsPanel.getLayout()).show(myScopeDetailsPanel, "myScope"/*mySelectedScope.name*/);
-    Component firstFocusableComponent =
-      UIUtil.uiTraverser(myScopeDetailsPanel).bfsTraversal().find(c -> c.isFocusable() && c.isEnabled() && c.isShowing() &&
-                                                                       (c instanceof JComboBox ||
-                                                                        c instanceof AbstractButton ||
-                                                                        c instanceof JTextComponent));
-    myScopeDetailsPanel.revalidate();
-    myScopeDetailsPanel.repaint();
-    if (firstFocusableComponent != null) {
-      ApplicationManager.getApplication().invokeLater(
-        () -> IdeFocusManager.getInstance(myProject).requestFocus(firstFocusableComponent, true));
+    @Override
+    public void addNotify() {
+        super.addNotify();
+        ApplicationManager.getApplication().invokeLater(() -> ScrollingUtil.ensureSelectionExists(myResultsPreviewTable), ModalityState.any());
+        myScopeSelectionToolbar.updateActionsImmediately();
     }
-    if (firstFocusableComponent == null && !mySearchComponent.isFocusOwner() && !myReplaceComponent.isFocusOwner()) {
-      ApplicationManager.getApplication().invokeLater(
-        () -> IdeFocusManager.getInstance(myProject).requestFocus(mySearchComponent, true));
+
+    @Override
+    public void initByModel() {
+        FindModel myModel = myHelper.getModel();
+        myCbCaseSensitive.setSelected(myModel.isCaseSensitive());
+        myCbWholeWordsOnly.setSelected(myModel.isWholeWordsOnly());
+        myCbRegularExpressions.setSelected(myModel.isRegularExpressions());
+
+        mySelectedContextName = "halloa";/*FindDialog.getSearchContextName(myModel);*/
+        if (myModel.isReplaceState()) {
+            myCbPreserveCase.setSelected(myModel.isPreserveCase());
+        }
+
+
+        boolean isThereFileFilter = myModel.getFileFilter() != null && !myModel.getFileFilter().isEmpty();
+        try {
+            myCbFileFilter.putClientProperty("dontRequestFocus", Boolean.TRUE);
+            myCbFileFilter.setSelected(isThereFileFilter);
+        } finally {
+            myCbFileFilter.putClientProperty("dontRequestFocus", null);
+        }
+        myFileMaskField.removeAllItems();
+        List<String> variants = Arrays.asList(ArrayUtil.reverseArray(FindSettings.getInstance().getRecentFileMasks()));
+        for (String variant : variants) {
+            myFileMaskField.addItem(variant);
+        }
+        if (!variants.isEmpty()) {
+            myFileMaskField.setSelectedItem(variants.get(0));
+        }
+        myFileMaskField.setEnabled(isThereFileFilter);
+        String toSearch = WSUtil.getWordAtCaret(WSProjectListener.getInstance().getJBProject());  //myModel.getStringToFind();
+        FindInProjectSettings findInProjectSettings = FindInProjectSettings.getInstance(myProject);
+
+        if (StringUtil.isEmpty(toSearch)) {
+            String[] history = findInProjectSettings.getRecentFindStrings();
+            toSearch = history.length > 0 ? history[history.length - 1] : "";
+        }
+
+        mySearchComponent.setText(toSearch);
+        String toReplace = myModel.getStringToReplace();
+
+        if (StringUtil.isEmpty(toReplace)) {
+            String[] history = findInProjectSettings.getRecentReplaceStrings();
+            toReplace = history.length > 0 ? history[history.length - 1] : "";
+        }
+        myReplaceComponent.setText(toReplace);
+        updateControls();
+        updateScopeDetailsPanel();
+
+        boolean isReplaceState = myHelper.isReplaceState();
+        myTitleLabel.setText(myHelper.getTitle());
+        myReplaceTextArea.setVisible(isReplaceState);
+        myCbPreserveCase.setVisible(isReplaceState);
+        if (Registry.is("ide.find.enter.as.ok", false)) {
+            myOKHintLabel.setText(KeymapUtil.getKeystrokeText(ENTER));
+        } else {
+            myOKHintLabel.setText(KeymapUtil.getKeystrokeText(ENTER_WITH_MODIFIERS));
+        }
+        myOKButton.setText(FindBundle.message("find.popup.find.button"));
     }
-  }
 
-  @SuppressWarnings("WeakerAccess")
-  public void scheduleResultsUpdate() {
-    if (myBalloon == null || !myBalloon.isVisible()) return;
-    if (mySearchRescheduleOnCancellationsAlarm == null || mySearchRescheduleOnCancellationsAlarm.isDisposed()) return;
-    updateControls();
-    mySearchRescheduleOnCancellationsAlarm.cancelAllRequests();
-    mySearchRescheduleOnCancellationsAlarm.addRequest(this::findSettingsChanged, 100);
-  }
+    private void updateControls() {
+        FindModel myModel = myHelper.getModel();
+        if (myCbRegularExpressions.isSelected()) {
+            myCbWholeWordsOnly.makeUnselectable(false);
+        } else {
+            myCbWholeWordsOnly.makeSelectable();
+        }
+        if (myModel.isReplaceState()) {
+            if (myCbRegularExpressions.isSelected() || myCbCaseSensitive.isSelected()) {
+                myCbPreserveCase.makeUnselectable(false);
+            } else {
+                myCbPreserveCase.makeSelectable();
+            }
 
-  private void finishPreviousPreviewSearch() {
-    if (myResultsPreviewSearchProgress != null && !myResultsPreviewSearchProgress.isCanceled()) {
-      myResultsPreviewSearchProgress.cancel();
+            if (myCbPreserveCase.isSelected()) {
+                myCbRegularExpressions.makeUnselectable(false);
+                myCbCaseSensitive.makeUnselectable(false);
+            } else {
+                myCbRegularExpressions.makeSelectable();
+                myCbCaseSensitive.makeSelectable();
+            }
+        }
+        myReplaceAllButton.setVisible(myHelper.isReplaceState());
+        myReplaceSelectedButton.setVisible(myHelper.isReplaceState());
     }
-  }
 
-  private void findSettingsChanged() {
-    if (isShowing()) {
-      ScrollingUtil.ensureSelectionExists(myResultsPreviewTable);
+    private void updateScopeDetailsPanel() {
+        ((CardLayout) myScopeDetailsPanel.getLayout()).show(myScopeDetailsPanel, "myScope"/*mySelectedScope.name*/);
+        Component firstFocusableComponent =
+                UIUtil.uiTraverser(myScopeDetailsPanel).bfsTraversal().find(c -> c.isFocusable() && c.isEnabled() && c.isShowing() &&
+                        (c instanceof JComboBox ||
+                                c instanceof AbstractButton ||
+                                c instanceof JTextComponent));
+        myScopeDetailsPanel.revalidate();
+        myScopeDetailsPanel.repaint();
+        if (firstFocusableComponent != null) {
+            ApplicationManager.getApplication().invokeLater(
+                    () -> IdeFocusManager.getInstance(myProject).requestFocus(firstFocusableComponent, true));
+        }
+        if (firstFocusableComponent == null && !mySearchComponent.isFocusOwner() && !myReplaceComponent.isFocusOwner()) {
+            ApplicationManager.getApplication().invokeLater(
+                    () -> IdeFocusManager.getInstance(myProject).requestFocus(mySearchComponent, true));
+        }
     }
-    final ModalityState state = ModalityState.current();
-    finishPreviousPreviewSearch();
-    mySearchRescheduleOnCancellationsAlarm.cancelAllRequests();
-    applyTo(myHelper.getModel());
-    ValidationInfo result = getValidationInfo(myHelper.getModel());
 
-    final ProgressIndicatorBase progressIndicatorWhenSearchStarted = new ProgressIndicatorBase() {
-      @Override
-      public void stop() {
-        super.stop();
-        onStop(System.identityHashCode(this));
-      }
-    };
-    myResultsPreviewSearchProgress = progressIndicatorWhenSearchStarted;
-    final int hash = System.identityHashCode(myResultsPreviewSearchProgress);
+    @SuppressWarnings("WeakerAccess")
+    public void scheduleResultsUpdate() {
+        if (myBalloon == null || !myBalloon.isVisible()) return;
+        if (mySearchRescheduleOnCancellationsAlarm == null || mySearchRescheduleOnCancellationsAlarm.isDisposed())
+            return;
+        updateControls();
+        mySearchRescheduleOnCancellationsAlarm.cancelAllRequests();
+        mySearchRescheduleOnCancellationsAlarm.addRequest(this::findSettingsChanged, 100);
+    }
 
-    //memo
-    final WSTableModel model = new WSTableModel() {
-      @Override
-      public boolean isCellEditable(int row, int column) {
-        return false;
-      }
-    };
+    private void finishPreviousPreviewSearch() {
+        if (myResultsPreviewSearchProgress != null && !myResultsPreviewSearchProgress.isCanceled()) {
+            myResultsPreviewSearchProgress.cancel();
+        }
+    }
 
-    model.addColumn("Usages");
-    // Use previously shown usage files as hint for faster search and better usage preview performance if pattern length increased
-    final LinkedHashSet<VirtualFile> filesToScanInitially = new LinkedHashSet<>();
+    private void findSettingsChanged() {
+        if (isShowing()) {
+            ScrollingUtil.ensureSelectionExists(myResultsPreviewTable);
+        }
+        final ModalityState state = ModalityState.current();
+        finishPreviousPreviewSearch();
+        mySearchRescheduleOnCancellationsAlarm.cancelAllRequests();
+        applyTo(myHelper.getModel());
+        ValidationInfo result = getValidationInfo(myHelper.getModel());
+
+        final ProgressIndicatorBase progressIndicatorWhenSearchStarted = new ProgressIndicatorBase() {
+            @Override
+            public void stop() {
+                super.stop();
+                onStop(System.identityHashCode(this));
+            }
+        };
+        myResultsPreviewSearchProgress = progressIndicatorWhenSearchStarted;
+        final int hash = System.identityHashCode(myResultsPreviewSearchProgress);
+
+        //memo
+        final WSTableModel model = new WSTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        model.addColumn("Usages");
+        // Use previously shown usage files as hint for faster search and better usage preview performance if pattern length increased
+        final LinkedHashSet<VirtualFile> filesToScanInitially = new LinkedHashSet<>();
 
    /* if (myHelper.myPreviousModel != null && myHelper.myPreviousModel.getStringToFind().length() < myHelper.getModel().getStringToFind().length()) {
       final DefaultTableModel previousModel = (DefaultTableModel)myResultsPreviewTable.getModel();
@@ -1029,45 +1025,45 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
       }
     }
 */
-    myHelper.myPreviousModel = myHelper.getModel().clone();
+        myHelper.myPreviousModel = myHelper.getModel().clone();
 
-    myReplaceAllButton.setEnabled(false);
-    myReplaceSelectedButton.setEnabled(false);
-    myReplaceSelectedButton.setText(FindBundle.message("find.popup.replace.selected.button", 0));
-    myCodePreviewComponent.setVisible(true);//test true;
+        myReplaceAllButton.setEnabled(false);
+        myReplaceSelectedButton.setEnabled(false);
+        myReplaceSelectedButton.setText(FindBundle.message("find.popup.replace.selected.button", 0));
+        myCodePreviewComponent.setVisible(true);//test true;
 
-    mySearchTextArea.setInfoText(null);
-    try {
-      myResultsPreviewTable.setModel(model);
+        mySearchTextArea.setInfoText(null);
+        try {
+            myResultsPreviewTable.setModel(model);
 
-    }catch (Exception e) {
-      FSLog.log.info("sdfsd");
-    }
+        } catch (Exception e) {
+            FSLog.log.info("sdfsd");
+        }
 
-    if (result != null) {
-      onStop(hash, result.message);
-      return;
-    }
-  GlobalSearchScope scope = GlobalSearchScopeUtil.toGlobalSearchScope(
-          WSFindInProjectUtil.getScopeFromModel(myProject, myHelper.myPreviousModel), myProject);
+        if (result != null) {
+            onStop(hash, result.message);
+            return;
+        }
+        GlobalSearchScope scope = GlobalSearchScopeUtil.toGlobalSearchScope(
+                WSFindInProjectUtil.getScopeFromModel(myProject, myHelper.myPreviousModel), myProject);
 
-    myResultsPreviewTable.getColumnModel().getColumn(0).setCellRenderer(
-            new WSTableCellRenderer(myCbFileFilter.isSelected(), false, scope)); //mariotodo
+        myResultsPreviewTable.getColumnModel().getColumn(0).setCellRenderer(
+                new WSTableCellRenderer(myCbFileFilter.isSelected(), false, scope)); //mariotodo
 
-    final AtomicInteger resultsCount = new AtomicInteger();
-    final AtomicInteger resultsFilesCount = new AtomicInteger();
-    FindSettings findSettings = FindSettings.getInstance();
-    //FindInProjectUtil.setupViewPresentation(myUsageViewPresentation, findSettings.isShowResultsInSeparateView(), findModel);
+        final AtomicInteger resultsCount = new AtomicInteger();
+        final AtomicInteger resultsFilesCount = new AtomicInteger();
+        FindSettings findSettings = FindSettings.getInstance();
+        //FindInProjectUtil.setupViewPresentation(myUsageViewPresentation, findSettings.isShowResultsInSeparateView(), findModel);
 
-    ProgressIndicatorUtils.scheduleWithWriteActionPriority(myResultsPreviewSearchProgress, new ReadTask() {
-      @Override
-      public Continuation performInReadAction(@NotNull ProgressIndicator indicator) {
-        final boolean showPanelIfOnlyOneUsage = !findSettings.isSkipResultsWithOneUsage();
+        ProgressIndicatorUtils.scheduleWithWriteActionPriority(myResultsPreviewSearchProgress, new ReadTask() {
+            @Override
+            public Continuation performInReadAction(@NotNull ProgressIndicator indicator) {
+                final boolean showPanelIfOnlyOneUsage = !findSettings.isSkipResultsWithOneUsage();
 
-        final FindUsagesProcessPresentation processPresentation =
-          FindInProjectUtil.setupProcessPresentation(myProject, showPanelIfOnlyOneUsage, myUsageViewPresentation);
-        ThreadLocal<VirtualFile> lastUsageFileRef = new ThreadLocal<>();
-        ThreadLocal<Usage> recentUsageRef = new ThreadLocal<>();
+                final FindUsagesProcessPresentation processPresentation =
+                        FindInProjectUtil.setupProcessPresentation(myProject, showPanelIfOnlyOneUsage, myUsageViewPresentation);
+                ThreadLocal<VirtualFile> lastUsageFileRef = new ThreadLocal<>();
+                ThreadLocal<Usage> recentUsageRef = new ThreadLocal<>();
 
 /*        FindInProjectUtil.findUsages(findModel, myProject, processPresentation, filesToScanInitially, info -> {
           if(isCancelled()) {
@@ -1142,34 +1138,34 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
           return continueSearch;
         });*/
 
-        return new Continuation(() -> {
-          if (!isCancelled()) {
-            if (resultsCount.get() == 0) {
-              showEmptyText(null);
+                return new Continuation(() -> {
+                    if (!isCancelled()) {
+                        if (resultsCount.get() == 0) {
+                            showEmptyText(null);
+                        }
+                    }
+                    onStop(hash);
+                }, state);
             }
-          }
-          onStop(hash);
-        }, state);
-      }
 
-      boolean isCancelled() {
-        return progressIndicatorWhenSearchStarted != myResultsPreviewSearchProgress || progressIndicatorWhenSearchStarted.isCanceled();
-      }
+            boolean isCancelled() {
+                return progressIndicatorWhenSearchStarted != myResultsPreviewSearchProgress || progressIndicatorWhenSearchStarted.isCanceled();
+            }
 
-      @Override
-      public void onCanceled(@NotNull ProgressIndicator indicator) {
-        if (isShowing() && progressIndicatorWhenSearchStarted == myResultsPreviewSearchProgress) {
-          scheduleResultsUpdate();
-        }
-      }
-    });
-  }
+            @Override
+            public void onCanceled(@NotNull ProgressIndicator indicator) {
+                if (isShowing() && progressIndicatorWhenSearchStarted == myResultsPreviewSearchProgress) {
+                    scheduleResultsUpdate();
+                }
+            }
+        });
+    }
 
-  private void showEmptyText(@Nullable String message) {
-    StatusText emptyText = myResultsPreviewTable.getEmptyText();
-    emptyText.clear();
-    emptyText.setText(message != null ? UIBundle.message("message.nothingToShow.with.problem", message)
-                                                                 : UIBundle.message("message.nothingToShow"));
+    private void showEmptyText(@Nullable String message) {
+        StatusText emptyText = myResultsPreviewTable.getEmptyText();
+        emptyText.clear();
+        emptyText.setText(message != null ? UIBundle.message("message.nothingToShow.with.problem", message)
+                : UIBundle.message("message.nothingToShow"));
     /*if (mySelectedScope == FindPopupScopeUIImpl.DIRECTORY && !myHelper.getModel().isWithSubdirectories()) {
       emptyText.appendSecondaryText(FindBundle.message("find.recursively.hint"),
                                                                SimpleTextAttributes.LINK_ATTRIBUTES,
@@ -1178,41 +1174,41 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
                                       scheduleResultsUpdate();
                                     });
     }*/
-  }
-
-  private void onStart(int hash) {
-    myLoadingHash = hash;
-    myLoadingDecorator.startLoading(false);
-    myResultsPreviewTable.getEmptyText().setText("Searching...");
-  }
-
-
-  private void onStop(int hash) {
-    onStop(hash, null);
-  }
-
-  private void onStop(int hash, String message) {
-    if (hash != myLoadingHash) {
-      return;
     }
-    UIUtil.invokeLaterIfNeeded(() -> {
-      showEmptyText(message);
-      myLoadingDecorator.stopLoading();
-    });
-  }
 
-  @Override
-  @Nullable
-  public String getFileTypeMask() {
-    String mask = null;
-    if (myCbFileFilter != null && myCbFileFilter.isSelected()) {
-      mask = (String)myFileMaskField.getSelectedItem();
+    private void onStart(int hash) {
+        myLoadingHash = hash;
+        myLoadingDecorator.startLoading(false);
+        myResultsPreviewTable.getEmptyText().setText("Searching...");
     }
-    return mask;
-  }
 
-  @Nullable("null means OK")
-  private ValidationInfo getValidationInfo(@NotNull FindModel model) {
+
+    private void onStop(int hash) {
+        onStop(hash, null);
+    }
+
+    private void onStop(int hash, String message) {
+        if (hash != myLoadingHash) {
+            return;
+        }
+        UIUtil.invokeLaterIfNeeded(() -> {
+            showEmptyText(message);
+            myLoadingDecorator.stopLoading();
+        });
+    }
+
+    @Override
+    @Nullable
+    public String getFileTypeMask() {
+        String mask = null;
+        if (myCbFileFilter != null && myCbFileFilter.isSelected()) {
+            mask = (String) myFileMaskField.getSelectedItem();
+        }
+        return mask;
+    }
+
+    @Nullable("null means OK")
+    private ValidationInfo getValidationInfo(@NotNull FindModel model) {
 //    ValidationInfo scopeValidationInfo = myScopeUI.validate(model, mySelectedScope);
 //    if (scopeValidationInfo != null) {
 //      return scopeValidationInfo;
@@ -1257,86 +1253,90 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
 //        }
 //      }
 //    }
-    return null;
-  }
-
-  @Override
-  @NotNull
-  public String getStringToFind() {
-    String text = mySearchComponent.getText();
-    FSLog.log.info("getStringToFind = " + text);
-    int len = text.length();
-    return text;
-  }
-
-  @NotNull
-  private String getStringToReplace() {
-    return myReplaceComponent.getText();
-  }
-
-  private void applyTo(@NotNull FindModel model) {
-    model.setCaseSensitive(myCbCaseSensitive.isSelected());
-
-    if (model.isReplaceState()) {
-      model.setPreserveCase(myCbPreserveCase.isSelected());
+        return null;
     }
 
-    model.setWholeWordsOnly(myCbWholeWordsOnly.isSelected());
+    @Override
+    @NotNull
+    public String getStringToFind() {
+        String text = mySearchComponent.getText();
+        FSLog.log.info("getStringToFind = " + text);
+        int len = text.length();
+        return text;
+    }
 
-    String selectedSearchContextInUi = mySelectedContextName;
+    @NotNull
+    private String getStringToReplace() {
+        return myReplaceComponent.getText();
+    }
+
+    private void applyTo(@NotNull FindModel model) {
+        model.setCaseSensitive(myCbCaseSensitive.isSelected());
+
+        if (model.isReplaceState()) {
+            model.setPreserveCase(myCbPreserveCase.isSelected());
+        }
+
+        model.setWholeWordsOnly(myCbWholeWordsOnly.isSelected());
+
+        String selectedSearchContextInUi = mySelectedContextName;
 /*    FindModel.SearchContext searchContext = FindDialog.parseSearchContext(selectedSearchContextInUi);
 
     model.setSearchContext(searchContext);*/
 
-    //model.setRegularExpressions(myCbRegularExpressions.isSelected());
+        //model.setRegularExpressions(myCbRegularExpressions.isSelected());
 
-    ///mariotodo
-    model.setStringToFind(getStringToFind());
-    FindTextRequest req = new FindTextRequest();
-    req.m_nMaxResult = 1000;
-    req.setString(getStringToFind().toLowerCase());
-    req.m_searchFiles = WSProjectListener.getInstance().getWSProject().getSolutionFileCopy();
+        ///mariotodo
+        model.setStringToFind(getStringToFind());
+        FindTextRequest req = new FindTextRequest();
+        req.m_nMaxResult = 1000;
+        req.setString(getStringToFind().toLowerCase());
+        req.m_searchFiles = WSProjectListener.getInstance().getWSProject().getSolutionFileCopy();
 
-    req.m_finishCallBack = (param)->{
-      WSFindTextArgs args = (WSFindTextArgs)param;
-      FSLog.log.info("find req callback result num = " + args.listResult.size());
-      for(int i = 0;i < args.listResult.size();++i) {
-        WSFindTextResult result = args.listResult.get(i);
-        //FSLog.log.info(result.tostring());
-      }
+        req.m_finishCallBack = (param) -> {
+            ApplicationManager.getApplication().invokeLater(() -> {
 
-      if(args.listResult.size() > 0) {
-        WSTableModel tableModel = (WSTableModel)myResultsPreviewTable.getModel();
-        Vector<Object> vec = new Vector<Object>(args.listResult);
-        tableModel.addRows(vec);
-        myResultsPreviewTable.setRowSelectionInterval(0, 0);
-      }
+                WSFindTextArgs args = (WSFindTextArgs) param;
+                FSLog.log.info("find req callback result num = " + args.listResult.size());
+                for (int i = 0; i < args.listResult.size(); ++i) {
+                    WSFindTextResult result = args.listResult.get(i);
+                    //FSLog.log.info(result.tostring());
+                }
+
+                if (args.listResult.size() > 0) {
+                    WSTableModel tableModel = (WSTableModel) myResultsPreviewTable.getModel();
+                    Vector<Object> vec = new Vector<Object>(args.listResult);
+                    tableModel.addRows(vec);
+                    myResultsPreviewTable.setRowSelectionInterval(0, 0);
+                }
 
 /*      for (int i = 0; i < args.listResult.size(); ++i) {
         WSFindTextResult result = args.listResult.get(i);
         tableModel.addRow(new Object[]{result});  //mariotodo
       }*/
-      String resultDesc = "";
-      if (args.listResult.size() > 0) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(args.listResult.size());
-        if (args.req.m_upToResultCntLimit) {
-          stringBuilder.append("+");
-        }
-        stringBuilder.append(" matches in " + args.req.m_nResultFileCnt);
-        if (args.req.m_upToResultCntLimit) {
-          stringBuilder.append("+");
-        }
-        stringBuilder.append(" files");
-        resultDesc = stringBuilder.toString();
-      }
+                String resultDesc = "";
+                if (args.listResult.size() > 0) {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    stringBuilder.append(args.listResult.size());
+                    if (args.req.m_upToResultCntLimit) {
+                        stringBuilder.append("+");
+                    }
+                    stringBuilder.append(" matches in " + args.req.m_nResultFileCnt);
+                    if (args.req.m_upToResultCntLimit) {
+                        stringBuilder.append("+");
+                    }
+                    stringBuilder.append(" files");
+                    resultDesc = stringBuilder.toString();
+                }
 
-      mySearchTextArea.setInfoText(resultDesc);
-      //tableModel.addRow(vec);
-      //tableModel.fireTableRowsUpdated(tableModel.getRowCount() - 1, tableModel.getRowCount() - 1);
-      return 0;
-    };
-    WSTextFinder.getInstance().start(req);
+                mySearchTextArea.setInfoText(resultDesc);
+                //tableModel.addRow(vec);
+                //tableModel.fireTableRowsUpdated(tableModel.getRowCount() - 1, tableModel.getRowCount() - 1);
+            });
+            return 0;
+        };
+
+        WSTextFinder.getInstance().start(req);
 
 
 /*    if (model.isReplaceState()) {
@@ -1344,37 +1344,36 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
     }*/
 
 
-    model.setProjectScope(false);
-    model.setDirectoryName(null);
-    model.setModuleName(null);
-    model.setCustomScopeName(null);
-    model.setCustomScope(null);
-    model.setCustomScope(false);
-    //myScopeUI.applyTo(model, mySelectedScope);
+        model.setProjectScope(false);
+        model.setDirectoryName(null);
+        model.setModuleName(null);
+        model.setCustomScopeName(null);
+        model.setCustomScope(null);
+        model.setCustomScope(false);
+        //myScopeUI.applyTo(model, mySelectedScope);
 
-    //model.setFindAll(false);
+        //model.setFindAll(false);
 
-    String mask = getFileTypeMask();
-    model.setFileFilter(mask);
-  }
-
-  // 点击跳转
-  private void navigateToSelectedUsage(AnActionEvent e) {
-    List<WSFindTextResult> usages = getSelectedResults();
-    if (usages != null) {
-      myBalloon.cancel();
-      boolean first = true;
-      for (WSFindTextResult usage : usages) {
-        if (first) {
-          WSUtil.navigateToFile(usage,true);
-        }
-        else {
-          //usage.highlightInEditor();
-        }
-        first = false;
-      }
+        String mask = getFileTypeMask();
+        model.setFileFilter(mask);
     }
-  }
+
+    // 点击跳转
+    private void navigateToSelectedUsage(AnActionEvent e) {
+        List<WSFindTextResult> usages = getSelectedResults();
+        if (usages != null) {
+            myBalloon.cancel();
+            boolean first = true;
+            for (WSFindTextResult usage : usages) {
+                if (first) {
+                    WSUtil.navigateToFile(usage, true);
+                } else {
+                    //usage.highlightInEditor();
+                }
+                first = false;
+            }
+        }
+    }
 
     private List<WSFindTextResult> getSelectedResults() {
         List<WSFindTextResult> result = null;
@@ -1388,124 +1387,124 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
         return result;
     }
 
-  public static ActionToolbarImpl createToolbar(AnAction... actions) {
-    ActionToolbarImpl toolbar = (ActionToolbarImpl)ActionManager.getInstance()
-      .createActionToolbar(ActionPlaces.EDITOR_TOOLBAR, new DefaultActionGroup(actions), true);
-    toolbar.setForceMinimumSize(true);
-    toolbar.setLayoutPolicy(ActionToolbar.NOWRAP_LAYOUT_POLICY);
-    return toolbar;
-  }
-
-  private static void applyFont(JBFont font, Component... components) {
-    for (Component component : components) {
-      component.setFont(font);
-    }
-  }
-
-  private class MySwitchContextToggleAction extends ToggleAction implements DumbAware {
-    MySwitchContextToggleAction(FindModel.SearchContext context) {
-      super(FindDialog.getPresentableName(context));
+    public static ActionToolbarImpl createToolbar(AnAction... actions) {
+        ActionToolbarImpl toolbar = (ActionToolbarImpl) ActionManager.getInstance()
+                .createActionToolbar(ActionPlaces.EDITOR_TOOLBAR, new DefaultActionGroup(actions), true);
+        toolbar.setForceMinimumSize(true);
+        toolbar.setLayoutPolicy(ActionToolbar.NOWRAP_LAYOUT_POLICY);
+        return toolbar;
     }
 
-    @Override
-    public boolean isSelected(AnActionEvent e) {
-      return Comparing.equal(mySelectedContextName, getTemplatePresentation().getText());
+    private static void applyFont(JBFont font, Component... components) {
+        for (Component component : components) {
+            component.setFont(font);
+        }
     }
 
-    @Override
-    public void setSelected(AnActionEvent e, boolean state) {
-      if (state) {
-        mySelectedContextName = getTemplatePresentation().getText();
-        scheduleResultsUpdate();
-      }
-    }
-  }
+    private class MySwitchContextToggleAction extends ToggleAction implements DumbAware {
+        MySwitchContextToggleAction(FindModel.SearchContext context) {
+            super(FindDialog.getPresentableName(context));
+        }
 
-  private class MySelectScopeToggleAction extends ToggleAction {
-    private final FindPopupScopeUI.ScopeType myScope;
+        @Override
+        public boolean isSelected(AnActionEvent e) {
+            return Comparing.equal(mySelectedContextName, getTemplatePresentation().getText());
+        }
 
-    MySelectScopeToggleAction(FindPopupScopeUI.ScopeType scope) {
-      super(scope.text, null, scope.icon);
-      getTemplatePresentation().setHoveredIcon(scope.icon);
-      getTemplatePresentation().setDisabledIcon(scope.icon);
-      myScope = scope;
-    }
-
-    @Override
-    public boolean displayTextInToolbar() {
-      return true;
+        @Override
+        public void setSelected(AnActionEvent e, boolean state) {
+            if (state) {
+                mySelectedContextName = getTemplatePresentation().getText();
+                scheduleResultsUpdate();
+            }
+        }
     }
 
-    @Override
-    public boolean isSelected(AnActionEvent e) {
-      return false;//mySelectedScope == myScope;
+    private class MySelectScopeToggleAction extends ToggleAction {
+        private final FindPopupScopeUI.ScopeType myScope;
+
+        MySelectScopeToggleAction(FindPopupScopeUI.ScopeType scope) {
+            super(scope.text, null, scope.icon);
+            getTemplatePresentation().setHoveredIcon(scope.icon);
+            getTemplatePresentation().setDisabledIcon(scope.icon);
+            myScope = scope;
+        }
+
+        @Override
+        public boolean displayTextInToolbar() {
+            return true;
+        }
+
+        @Override
+        public boolean isSelected(AnActionEvent e) {
+            return false;//mySelectedScope == myScope;
+        }
+
+        @Override
+        public void setSelected(AnActionEvent e, boolean state) {
+            if (state) {
+                //mySelectedScope = myScope;
+                myScopeSelectionToolbar.updateActionsImmediately();
+                updateScopeDetailsPanel();
+                scheduleResultsUpdate();
+            }
+        }
     }
 
-    @Override
-    public void setSelected(AnActionEvent e, boolean state) {
-      if (state) {
-        //mySelectedScope = myScope;
-        myScopeSelectionToolbar.updateActionsImmediately();
-        updateScopeDetailsPanel();
-        scheduleResultsUpdate();
-      }
-    }
-  }
+    private class MyShowFilterPopupAction extends DumbAwareAction {
+        private final DefaultActionGroup mySwitchContextGroup;
 
-  private class MyShowFilterPopupAction extends DumbAwareAction {
-    private final DefaultActionGroup mySwitchContextGroup;
+        MyShowFilterPopupAction() {
+            super(FindBundle.message("find.popup.show.filter.popup"), null, AllIcons.General.Filter);
+            LayeredIcon icon = JBUI.scale(new LayeredIcon(2));
+            icon.setIcon(AllIcons.General.Filter, 0);
+            icon.setIcon(AllIcons.General.Dropdown, 1, 3, 0);
+            getTemplatePresentation().setIcon(icon);
 
-    MyShowFilterPopupAction() {
-      super(FindBundle.message("find.popup.show.filter.popup"), null, AllIcons.General.Filter);
-      LayeredIcon icon = JBUI.scale(new LayeredIcon(2));
-      icon.setIcon(AllIcons.General.Filter, 0);
-      icon.setIcon(AllIcons.General.Dropdown, 1, 3, 0);
-      getTemplatePresentation().setIcon(icon);
+            setShortcutSet(new CustomShortcutSet(ShowMoreOptions.SHORT_CUT));
+            mySwitchContextGroup = new DefaultActionGroup();
+            mySwitchContextGroup.add(new MySwitchContextToggleAction(FindModel.SearchContext.ANY));
+            mySwitchContextGroup.add(new MySwitchContextToggleAction(FindModel.SearchContext.IN_COMMENTS));
+            mySwitchContextGroup.add(new MySwitchContextToggleAction(FindModel.SearchContext.IN_STRING_LITERALS));
+            mySwitchContextGroup.add(new MySwitchContextToggleAction(FindModel.SearchContext.EXCEPT_COMMENTS));
+            mySwitchContextGroup.add(new MySwitchContextToggleAction(FindModel.SearchContext.EXCEPT_STRING_LITERALS));
+            mySwitchContextGroup.add(new MySwitchContextToggleAction(FindModel.SearchContext.EXCEPT_COMMENTS_AND_STRING_LITERALS));
+            mySwitchContextGroup.setPopup(true);
+        }
 
-      setShortcutSet(new CustomShortcutSet(ShowMoreOptions.SHORT_CUT));
-      mySwitchContextGroup = new DefaultActionGroup();
-      mySwitchContextGroup.add(new MySwitchContextToggleAction(FindModel.SearchContext.ANY));
-      mySwitchContextGroup.add(new MySwitchContextToggleAction(FindModel.SearchContext.IN_COMMENTS));
-      mySwitchContextGroup.add(new MySwitchContextToggleAction(FindModel.SearchContext.IN_STRING_LITERALS));
-      mySwitchContextGroup.add(new MySwitchContextToggleAction(FindModel.SearchContext.EXCEPT_COMMENTS));
-      mySwitchContextGroup.add(new MySwitchContextToggleAction(FindModel.SearchContext.EXCEPT_STRING_LITERALS));
-      mySwitchContextGroup.add(new MySwitchContextToggleAction(FindModel.SearchContext.EXCEPT_COMMENTS_AND_STRING_LITERALS));
-      mySwitchContextGroup.setPopup(true);
-    }
+        @Override
+        public void actionPerformed(AnActionEvent e) {
+            if (PlatformDataKeys.CONTEXT_COMPONENT.getData(e.getDataContext()) == null) return;
 
-    @Override
-    public void actionPerformed(AnActionEvent e) {
-      if (PlatformDataKeys.CONTEXT_COMPONENT.getData(e.getDataContext()) == null) return;
-
-      ListPopup listPopup =
-        JBPopupFactory.getInstance().createActionGroupPopup(null, mySwitchContextGroup, e.getDataContext(), false, null, 10);
-      listPopup.showUnderneathOf(myFilterContextButton);
-    }
-  }
-
-  private static class MyLookupElement extends LookupElement {
-    private final String myValue;
-
-    MyLookupElement(String value) {
-      myValue = value;
+            ListPopup listPopup =
+                    JBPopupFactory.getInstance().createActionGroupPopup(null, mySwitchContextGroup, e.getDataContext(), false, null, 10);
+            listPopup.showUnderneathOf(myFilterContextButton);
+        }
     }
 
-    @NotNull
-    @Override
-    public String getLookupString() {
-      return myValue;
-    }
+    private static class MyLookupElement extends LookupElement {
+        private final String myValue;
 
-    @Nullable
-    @Override
-    public PsiElement getPsiElement() {
-      return null;
-    }
+        MyLookupElement(String value) {
+            myValue = value;
+        }
 
-    @Override
-    public boolean isValid() {
-      return true;
+        @NotNull
+        @Override
+        public String getLookupString() {
+            return myValue;
+        }
+
+        @Nullable
+        @Override
+        public PsiElement getPsiElement() {
+            return null;
+        }
+
+        @Override
+        public boolean isValid() {
+            return true;
+        }
     }
-  }
 
 }

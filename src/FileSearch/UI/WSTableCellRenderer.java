@@ -1,6 +1,8 @@
 package FileSearch.UI;
 
 import FileSearch.Core.WSFindTextResult;
+import FileSearch.Core.WSUtil;
+import FileSearch.tools.Result;
 import com.intellij.openapi.editor.colors.EditorColorsScheme;
 import com.intellij.openapi.editor.colors.EditorColorsUtil;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
@@ -13,6 +15,7 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.ui.ColoredTableCellRenderer;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.SimpleTextAttributes;
+import com.intellij.usageView.UsageInfo;
 import com.intellij.usages.TextChunk;
 import com.intellij.usages.UsageInfo2UsageAdapter;
 import com.intellij.util.ui.JBUI;
@@ -31,19 +34,33 @@ public class WSTableCellRenderer extends JPanel implements TableCellRenderer {
         protected void customizeCellRenderer(JTable table, Object value, boolean selected, boolean hasFocus, int row, int column) {
 
             WSFindTextResult result = (WSFindTextResult)value;
+            UsageInfo usageInfo = WSUtil.getUsageInfo((WSFindTextResult) result);
+            UsageInfo2UsageAdapter adapter = new UsageInfo2UsageAdapter(usageInfo);
 
-            TextAttributesKey USAGE_LOCATION = TextAttributesKey.createTextAttributesKey("$NUMBER_OF_USAGES");
+
+/*            TextAttributesKey USAGE_LOCATION = TextAttributesKey.createTextAttributesKey("$NUMBER_OF_USAGES");
             EditorColorsScheme myColorsScheme = EditorColorsUtil.getColorSchemeForBackground(UIUtil.getTreeTextBackground());
             TextChunk textChunk = new TextChunk(myColorsScheme.getAttributes(USAGE_LOCATION),result.m_strLine);
             SimpleTextAttributes attributes = getAttributes(textChunk);
             myUsageRenderer.append(textChunk.getText(), attributes);
 
             // skip line number / file info
-/*                for (int i = 1; i < text.length; ++i) {
+*//*                for (int i = 1; i < text.length; ++i) {
                     TextChunk textChunk = text[i];
                     SimpleTextAttributes attributes = getAttributes(textChunk);
                     myUsageRenderer.append(textChunk.getText(), attributes);
-                }*/
+                }*//*
+            setBorder(null);*/
+
+
+            TextChunk[] text = adapter.getPresentation().getText();
+
+            // skip line number / file info
+            for (int i = 1; i < text.length; ++i) {
+                TextChunk textChunk = text[i];
+                SimpleTextAttributes attributes = getAttributes(textChunk);
+                myUsageRenderer.append(textChunk.getText(), attributes);
+            }
             setBorder(null);
         }
 
@@ -66,7 +83,7 @@ public class WSTableCellRenderer extends JPanel implements TableCellRenderer {
         @Override
         protected void customizeCellRenderer(JTable table, Object value, boolean selected, boolean hasFocus, int row, int column) {
 
-            WSFindTextResult result = (WSFindTextResult)value;
+/*            WSFindTextResult result = (WSFindTextResult)value;
             VirtualFile file = result.m_virtualFile;
             //UsageInfo2UsageAdapter adapter = new UsageInfo2UsageAdapter(usageInfo);   //
             //String uniqueVirtualFilePath = getFilePath(adapter);
@@ -77,8 +94,21 @@ public class WSTableCellRenderer extends JPanel implements TableCellRenderer {
             append(uniqueVirtualFilePath, attributes);
 
             append(" " + result.m_nLineIndex + 1, ORDINAL_ATTRIBUTES);
-            setBorder(null);
+            setBorder(null);*/
 
+
+            WSFindTextResult result = (WSFindTextResult)value;
+            UsageInfo usageInfo = WSUtil.getUsageInfo((WSFindTextResult) result);
+            UsageInfo2UsageAdapter usageAdapter = new UsageInfo2UsageAdapter(usageInfo);
+            TextChunk[] text = usageAdapter.getPresentation().getText();
+            // line number / file info
+            VirtualFile file = usageAdapter.getFile();
+            String uniqueVirtualFilePath = getFilePath(usageAdapter);
+            VirtualFile prevFile = findPrevFile(table, row, column);
+            SimpleTextAttributes attributes = Comparing.equal(file, prevFile) ? REPEATED_FILE_ATTRIBUTES : ORDINAL_ATTRIBUTES;
+            append(uniqueVirtualFilePath, attributes);
+            if (text.length > 0) append(" " + text[0].getText(), ORDINAL_ATTRIBUTES);
+            setBorder(null);
         }
 
         @NotNull
