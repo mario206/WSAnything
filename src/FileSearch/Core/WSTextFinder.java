@@ -5,9 +5,6 @@ import FileSearch.FSLog;
 import com.google.common.collect.Lists;
 import com.intellij.openapi.vfs.VirtualFile;
 
-import javax.naming.PartialResultException;
-import java.io.Console;
-import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +50,9 @@ public class WSTextFinder {
     }
 
     public void findTask(Context context) {
+
+        WSProjectListener.getInstance().getWSProject().processUnSaveDocument();
+
         FindTextRequest req = (FindTextRequest)context.getArg();
         if(req.m_TextBoxText.isEmpty()) {
             FSLog.log.info("search pattern empty,return");
@@ -160,7 +160,7 @@ public class WSTextFinder {
             if(bAllMatch) {
                 WSFindTextResult oneLineResult = new WSFindTextResult();
                 oneLineResult.m_virtualFile = file;
-                oneLineResult.m_nLineNum = i;
+                oneLineResult.m_nLineIndex = i;
                 oneLineResult.nBeginIndex = startIndex;
                 oneLineResult.nEndIdex = endIndex;
                 oneLineResult.m_strLineLowercase = line;

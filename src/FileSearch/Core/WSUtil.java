@@ -1,47 +1,22 @@
 package FileSearch.Core;
 
-import com.intellij.find.FindInProjectSettings;
-import com.intellij.find.FindManager;
-import com.intellij.find.FindModel;
-import com.intellij.find.findInProject.FindInProjectManager;
-import com.intellij.find.impl.FindInProjectUtil;
-import com.intellij.injected.editor.VirtualFileWindow;
-import com.intellij.openapi.application.ApplicationManager;
+import FileSearch.FSLog;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.fileEditor.FileEditor;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
-import com.intellij.openapi.util.Segment;
-import com.intellij.openapi.util.TextRange;
-import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.LocalFileProvider;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileSystem;
+import com.intellij.openapi.vfs.*;
+import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.search.GlobalSearchScopesCore;
-import com.intellij.psi.search.ProjectScope;
-import com.intellij.psi.search.SearchScope;
 import com.intellij.psi.util.PsiUtilCore;
 import com.intellij.usageView.UsageInfo;
-import com.intellij.util.SmartList;
-import com.sun.java.accessibility.util.EventID;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 
 public class WSUtil {
     public static String getFileSuffix(String fileName) {
@@ -64,16 +39,29 @@ public class WSUtil {
     }
     public static OpenFileDescriptor getDescriptor(Project pro,WSFindTextResult result) {
         VirtualFile file = result.m_virtualFile;
-        return new OpenFileDescriptor(pro, file,result.m_nLineNum,result.nBeginIndex);
+        return new OpenFileDescriptor(pro, file,result.m_nLineIndex,result.nBeginIndex);
     }
 
+    //mariotodo
     public static UsageInfo getUsageInfo(WSFindTextResult result) {
         UsageInfo info = null;
         try {
             Pair.NonNull<PsiFile, VirtualFile> pair = ReadAction.compute(() -> findFile(result.m_virtualFile));
             PsiFile psiFile = pair.first;
-            VirtualFile sourceVirtualFile = pair.second;
-            info = new UsageInfo(psiFile,0,0,false);
+
+            Project project = psiFile.getProject();
+            Document document = PsiDocumentManager.getInstance(project).getDocument(psiFile);
+            final FileDocumentManager manager = FileDocumentManager.getInstance();
+
+            for (Document doc : manager.getUnsavedDocuments()) {
+                VirtualFile file = manager.getFile(document);
+                if (file == result.m_virtualFile) {
+                    document = doc;
+                    break;
+                }
+            }
+            int offSet = StringUtil.lineColToOffset(document.getCharsSequence(),result.m_nLineIndex,result.nBeginIndex + 1);
+            info = new UsageInfo(psiFile,offSet,offSet,false);
         } catch (Exception e) {
             return null;
         }
@@ -133,5 +121,16 @@ public class WSUtil {
         }
         result = text.subSequence(start, end).toString();
         return result;
+    }
+    public static boolean checkShouldCacheFile(VirtualFile file) {
+        if (!file.isDirectory() && WSConfig.ListSearchSuffix.contains(WSUtil.getFileSuffix(file.getName()))) {
+            VirtualFile ProjectDir = WSProjectListener.getInstance().getJBProject().getBaseDir();
+            if (!VfsUtilCore.isAncestor(ProjectDir, file, false)) {
+                FSLog.log.warn(file.getName() + " is not under Project");
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 }

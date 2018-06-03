@@ -3,7 +3,8 @@ package FileSearch.Core;
 
 import FileSearch.FSLog;
 import com.google.common.collect.Lists;
-import com.intellij.openapi.fileEditor.impl.LoadTextUtil;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 
 import com.intellij.openapi.roots.ProjectRootManager;
@@ -65,20 +66,22 @@ public class WSProject {
         m_solutionFile.clear();
         m_CacheFile.clear();
 
-        final String vecSearchSuffix[] = WSConfig.vecSearchSuffix;
+        final String vecSearchSuffix[] = WSConfig.VecSearchSuffix;
         final List<String> listSearchSuffix = Arrays.asList(vecSearchSuffix);
 
         List<VirtualFile> solutionFile = Lists.newArrayList();
         Map<VirtualFile, WSFileCache> cacheFile = new HashMap<VirtualFile, WSFileCache>();
 
         ProjectRootManager.getInstance(this.m_project).getFileIndex().iterateContent(fileOrDir -> {
-            if (!fileOrDir.isDirectory() && listSearchSuffix.contains(WSUtil.getFileSuffix(fileOrDir.getName()))) {
+            if (WSUtil.checkShouldCacheFile(fileOrDir)) {
                 try {
                     //String text = LoadTextUtil.loadText(fileOrDir).toString();
                     WSFileCache cache = new WSFileCache();
                     cache.init(fileOrDir);
-                    solutionFile.add(fileOrDir);
-                    cacheFile.put(fileOrDir,cache);
+                    if(cache.getIsSizeValid()) {
+                        solutionFile.add(fileOrDir);
+                        cacheFile.put(fileOrDir,cache);
+                    }
                     //FSLog.log.info(text);
                 } catch (Exception e) {
                     FSLog.log.error("scanFileMain Exception");
@@ -97,12 +100,55 @@ public class WSProject {
     public void updateCache(VirtualFile file,WSFileCache cache) {
         synchronized (this) {
             if(m_CacheFile.get(file) != null) {
-                FSLog.log.error("updateCache file:" + file.getName());
-                m_CacheFile.put(file,cache);
+                FSLog.log.info("updateCache file:" + file.getName());
+                if(cache.getIsSizeValid()) {
+                    m_CacheFile.put(file,cache);
+                } else {
+                    FSLog.log.error(cache.m_fileName + "is size invalid,will remove");
+                    m_CacheFile.remove(file);
+                    m_solutionFile.remove(file);
+                }
             } else {
-                //FSLog.log.error("updateCache can't find file:" + file.getName());
+                FSLog.log.error("updateCache can't find file:" + file.getName());
             }
         }
     }
+    public void addCache(VirtualFile file,WSFileCache cache) {
+        synchronized (this) {
+            if(m_CacheFile.get(file) == null) {
+                if(cache.getIsSizeValid()) {
+                    FSLog.log.info("addCache file:" + file.getName());
+                    m_CacheFile.put(file,cache);
+                    m_solutionFile.add(file);
+                }
+            } else {
+                FSLog.log.error("addCache file already exist" + file.getName());
+            }
+        }
+    }
+    public void deleteCache(VirtualFile file) {
+        synchronized (this) {
+            if(m_CacheFile.get(file) != null) {
+                FSLog.log.info("do delete file:" + file.getName());
+                m_CacheFile.remove(file);
+                m_solutionFile.remove(file);
+            }
+        }
+    }
+
+    public void processUnSaveDocument() {
+        final FileDocumentManager manager = FileDocumentManager.getInstance();
+        for (Document document : manager.getUnsavedDocuments()) {
+            VirtualFile file = manager.getFile(document);
+            synchronized (this) {
+                WSFileCache cache = m_CacheFile.get(file);
+                if(cache != null) {
+                    cache.updateFromUnSaveDocument(file,document);
+                }
+            }
+
+        }
+    }
+
 }
 

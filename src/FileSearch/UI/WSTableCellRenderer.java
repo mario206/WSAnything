@@ -1,7 +1,6 @@
 package FileSearch.UI;
 
 import FileSearch.Core.WSFindTextResult;
-import FileSearch.Core.WSUtil;
 import com.intellij.openapi.editor.colors.EditorColorsScheme;
 import com.intellij.openapi.editor.colors.EditorColorsUtil;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
@@ -14,8 +13,6 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.ui.ColoredTableCellRenderer;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.SimpleTextAttributes;
-import com.intellij.usageView.UsageInfo;
-import com.intellij.usageView.UsageViewBundle;
 import com.intellij.usages.TextChunk;
 import com.intellij.usages.UsageInfo2UsageAdapter;
 import com.intellij.util.ui.JBUI;
@@ -79,7 +76,7 @@ public class WSTableCellRenderer extends JPanel implements TableCellRenderer {
             SimpleTextAttributes attributes = Comparing.equal(file, prevFile) ? REPEATED_FILE_ATTRIBUTES : ORDINAL_ATTRIBUTES;
             append(uniqueVirtualFilePath, attributes);
 
-            append(" " + result.m_nLineNum, ORDINAL_ATTRIBUTES);
+            append(" " + result.m_nLineIndex + 1, ORDINAL_ATTRIBUTES);
             setBorder(null);
 
         }

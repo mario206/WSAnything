@@ -1,6 +1,72 @@
 package FileSearch.Core;
 
-public class WSConfig {
-    public static String vecSearchSuffix[] = {".java",".cpp",".cs",".js"};
+import java.util.Arrays;
+import java.util.List;
 
+public class WSConfig {
+    public static int MaxFileSize = 1024 * 1024;    // 1Mb
+    public static String VecSearchSuffix[] = {
+            ".asm",
+            ".bat",
+            ".c",
+            ".cc",
+            ".cpp",
+            ".cs",
+            ".css",
+            ".csv",
+            ".cxx",
+            ".def",
+            ".disco",
+            ".dtd",
+            ".fx",
+            ".h",
+            ".hh",
+            ".hpp",
+            ".hlsl",
+            ".htm",
+            ".html",
+            ".hxx",
+            ".idl",
+            ".inc",
+            ".inl",
+            ".java",
+            ".js",
+            ".l",
+            ".ll",
+            ".lnx",
+            ".log",
+            ".mk",
+            ".pl",
+            ".pmk",
+            ".ps",
+            ".py",
+            ".s",
+            ".sh",
+            ".src",
+            ".srf",
+            ".tlh",
+            ".tli",
+            ".txt",
+            ".vb",
+            ".vsh",
+            ".wsdl",
+            ".xaml",
+            ".xml",
+            ".xsd",
+            ".xsl",
+            ".xslt",
+            ".y",
+            ".psh",
+            ".fsh",
+            ".sh",
+            ".shader",
+            ".vsct",
+            ".resx",
+            ".wxs",
+            ".php",
+            ".vsixmanifest",
+            ".uc",
+            ".sql"
+    };
+    public static final List<String> ListSearchSuffix = Arrays.asList(VecSearchSuffix);
 }

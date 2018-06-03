@@ -29,9 +29,9 @@
 
   <actions>
   <!-- Add your actions here -->
-    <group id="WSAnything.SampleMenu" text="_Sample Menu" description="Sample menu">\
+    <group id="WSAnything.WSAnything" text="_WSAnything" description="WSAnything">\
       <add-to-group group-id="MainMenu" anchor="last"  />
-      <action id="WSAnything.Open" class="FileSearch.actions.OpenFileSearch" text="Find Files by Name" description="Find files by name or path"/>
+      <action id="WSAnything.Open" class="FileSearch.actions.OpenFileSearch" text="WSAnything Show" description="Find files by name or path"/>
     </group>
     <!--<add-to-group group-id="ToolsMenu" anchor="last"/>-->
 </actions>
