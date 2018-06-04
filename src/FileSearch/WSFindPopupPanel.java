@@ -195,6 +195,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
                     .setRequestFocus(true)
                     .setCancelKeyEnabled(false)
                     .setCancelCallback(() -> {
+                        //mario memo close
                         boolean canBeClosed = canBeClosed();
                         if (canBeClosed) {
                             saveSettings();
@@ -296,6 +297,11 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
     }
 
     public void saveSettings() {
+        // save last search string
+        FindInProjectSettings findInProjectSettings = FindInProjectSettings.getInstance(myProject);
+        String str = this.getStringToFind();
+        findInProjectSettings.addStringToFind(str);
+
  /*   DimensionService.getInstance().setSize(SERVICE_KEY, myBalloon.getSize(), myHelper.getProject() );
     DimensionService.getInstance().setLocation(SERVICE_KEY, myBalloon.getLocationOnScreen(), myHelper.getProject() );
     FindSettings findSettings = FindSettings.getInstance();
