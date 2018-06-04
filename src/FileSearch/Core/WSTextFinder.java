@@ -165,6 +165,7 @@ public class WSTextFinder {
                 oneLineResult.nEndIdex = endIndex;
                 oneLineResult.m_strLineLowercase = line;
                 oneLineResult.m_strLine = cache.m_Lines.get(i);
+                oneLineResult.m_nLineOffset = cache.m_LineOffSets.get(i);
                 result.add(oneLineResult);
             }
         }

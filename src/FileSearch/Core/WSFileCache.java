@@ -19,6 +19,7 @@ public class WSFileCache {
 
     List<String> m_Lines;
     List<String> m_LinesLowercase = new ArrayList<String>();
+    List<Integer> m_LineOffSets = new ArrayList<Integer>();
 
     boolean m_bIsSizeValid = true;
     boolean m_bReadSuccess = true;
@@ -55,10 +56,15 @@ public class WSFileCache {
         }
         m_Lines = Arrays.asList(text.split("\n"));
         m_LinesLowercase.clear();
+        m_LineOffSets.clear();
+
+        int nOffSet = 0;
         for(int i = 0;i < m_Lines.size();++i) {
             //m_Lines.set(i,m_Lines.get(i).trim());
-            m_Lines.set(i,m_Lines.get(i));
+            //m_Lines.set(i,m_Lines.get(i));
             m_LinesLowercase.add(m_Lines.get(i).toLowerCase());
+            m_LineOffSets.add(nOffSet);
+            nOffSet += m_Lines.get(i).length() + 1;
         }
         m_virtualFile = file;
         m_fileName = file.getName();

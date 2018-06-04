@@ -1,6 +1,7 @@
 package FileSearch.Core;
 
 import FileSearch.FSLog;
+import FileSearch.tools.FileUtils;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -9,6 +10,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
+import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.*;
 import com.intellij.psi.PsiDocumentManager;
@@ -17,6 +19,7 @@ import com.intellij.psi.PsiManager;
 import com.intellij.psi.util.PsiUtilCore;
 import com.intellij.usageView.UsageInfo;
 import org.jetbrains.annotations.NotNull;
+import java.io.File;
 
 public class WSUtil {
     public static String getFileSuffix(String fileName) {
@@ -60,11 +63,16 @@ public class WSUtil {
                     break;
                 }
             }
-            int offSet = StringUtil.lineColToOffset(document.getCharsSequence(),result.m_nLineIndex,result.nBeginIndex);
-            int endOffSet = StringUtil.lineColToOffset(document.getCharsSequence(),result.m_nLineIndex,result.nEndIdex + 1);
+
+            //int beginOffset = StringUtil.lineColToOffset(document.getCharsSequence(),result.m_nLineIndex,result.nBeginIndex);
+            //int endOffset = StringUtil.lineColToOffset(document.getCharsSequence(),result.m_nLineIndex,result.nEndIdex + 1);
+
+
+            int beginOffset = result.m_nLineOffset + result.nBeginIndex;
+            int endOffset = result.m_nLineOffset + result.nEndIdex + 1;
 
             info = ReadAction.compute(() -> {
-                UsageInfo tmp_info = new UsageInfo(psiFile,offSet,endOffSet,false);
+                UsageInfo tmp_info = new UsageInfo(psiFile,beginOffset,endOffset,false);
                 return tmp_info;
             });
         } catch (Exception e) {
@@ -128,10 +136,20 @@ public class WSUtil {
         return result;
     }
     public static boolean checkShouldCacheFile(VirtualFile file) {
-        if (!file.isDirectory() && WSConfig.ListSearchSuffix.contains(WSUtil.getFileSuffix(file.getName()))) {
-            VirtualFile ProjectDir = WSProjectListener.getInstance().getJBProject().getBaseDir();
+        Project pro = WSProjectListener.getInstance().getJBProject();
+        File ideaFloderPath = new File(pro.getBasePath(),pro.DIRECTORY_STORE_FOLDER);
+
+        if (!file.isDirectory()
+            && !FileUtil.isAncestor(ideaFloderPath,new File(file.getPath()),false)
+            && WSConfig.ListSearchSuffix.contains(WSUtil.getFileSuffix(file.getName()))
+            ) {
+            VirtualFile ProjectDir = pro.getBaseDir();
+            FSLog.log.info(pro.getBasePath());
+            FSLog.log.info(pro.getProjectFile().getName());
+            FSLog.log.info(pro.getWorkspaceFile().getName());
+
             if (!VfsUtilCore.isAncestor(ProjectDir, file, false)) {
-                FSLog.log.warn(file.getName() + " is not under Project");
+                //FSLog.log.warn(file.getName() + " is not under Project");
                 return false;
             }
             return true;
