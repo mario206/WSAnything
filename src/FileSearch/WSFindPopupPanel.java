@@ -120,6 +120,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
     private StateRestoringCheckBox myCbWholeWordsOnly;
     private StateRestoringCheckBox myCbRegularExpressions;
     private StateRestoringCheckBox myCbFileFilter;
+    private StateRestoringCheckBox myConsiderFileName;
     private ActionToolbarImpl myScopeSelectionToolbar;
     private ComboBox myFileMaskField;
     private ActionButton myFilterContextButton;
@@ -355,6 +356,12 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
         myCbRegularExpressions = createCheckBox("find.popup.regex");
         myCbRegularExpressions.addItemListener(liveResultsPreviewUpdateListener);
         myCbFileFilter = createCheckBox("find.popup.filemask");
+        myConsiderFileName = createCheckBox("Consider FileName");
+        myConsiderFileName.setName("Consider FileName");
+        myConsiderFileName.addItemListener(__ ->{
+            this.findSettingsChanged();
+        });
+
         myCbFileFilter.addItemListener(__ -> {
             if (myCbFileFilter.isSelected()) {
                 myFileMaskField.setEnabled(true);
@@ -761,16 +768,17 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
 
         add(myTitlePanel, "sx 2, growx, growx 200, growy");
         add(checkboxesToolbar, "gapright 8");
-        add(myCbFileFilter);
-        add(myFileMaskField, "gapleft 4, gapright 16");
+        add(myConsiderFileName,"gapleft 4, gapright 16");
+        //add(myCbFileFilter);
+        //add(myFileMaskField, "gapleft 4, gapright 16");
         if (Registry.is("ide.find.as.popup.allow.pin") || ApplicationManager.getApplication().isInternal()) {
             myIsPinned.set(UISettings.getInstance().getPinFindInPath());
             JPanel twoButtons = new JPanel(new GridLayout(1, 2, 4, 0));
-            twoButtons.add(myFilterContextButton);
+            //twoButtons.add(myFilterContextButton);
             twoButtons.add(myPinButton);
             add(twoButtons, "wrap");
         } else {
-            add(myFilterContextButton, "wrap");
+            //add(myFilterContextButton, "wrap");
         }
         add(mySearchTextArea, "pushx, growx, sx 10, gaptop 4, wrap");
         add(myReplaceTextArea, "pushx, growx, sx 10, gaptop 4, wrap");
@@ -1045,7 +1053,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
             myResultsPreviewTable.setModel(model);
 
         } catch (Exception e) {
-            FSLog.log.info("sdfsd");
+            FSLog.log.info(e);
         }
 
         if (result != null) {
@@ -1296,6 +1304,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
         ///mariotodo
         model.setStringToFind(getStringToFind());
         FindTextRequest req = new FindTextRequest();
+        req.m_bConsiderFileName = myConsiderFileName.isSelected();
         req.m_nMaxResult = 1000;
         req.setString(getStringToFind().toLowerCase());
         req.m_searchFiles = WSProjectListener.getInstance().getWSProject().getSolutionFileCopy();

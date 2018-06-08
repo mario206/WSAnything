@@ -9,8 +9,10 @@ import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileEditor.UniqueVFilePathBuilder;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Comparing;
+import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.io.FileUtilRt;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.search.FilenameIndex;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.ui.ColoredTableCellRenderer;
 import com.intellij.ui.JBColor;
@@ -26,6 +28,9 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 
 public class WSTableCellRenderer extends JPanel implements TableCellRenderer {
@@ -60,7 +65,8 @@ public class WSTableCellRenderer extends JPanel implements TableCellRenderer {
             for (int i = 1; i < text.length; ++i) {
                 TextChunk textChunk = text[i];
                 SimpleTextAttributes attributes = getAttributes(textChunk);
-                myUsageRenderer.append(textChunk.getText(), attributes);
+                //myUsageRenderer.append(textChunk.getText(), attributes);
+                append(textChunk.getText(), attributes);
             }
             setBorder(null);
         }
@@ -97,19 +103,71 @@ public class WSTableCellRenderer extends JPanel implements TableCellRenderer {
             append(" " + result.m_nLineIndex + 1, ORDINAL_ATTRIBUTES);
             setBorder(null);*/
 
-
             WSFindTextResult result = (WSFindTextResult)value;
-            UsageInfo usageInfo = WSUtil.getUsageInfo((WSFindTextResult) result);
-            UsageInfo2UsageAdapter usageAdapter = new UsageInfo2UsageAdapter(usageInfo);
-            TextChunk[] text = usageAdapter.getPresentation().getText();
-            // line number / file info
-            VirtualFile file = usageAdapter.getFile();
-            String uniqueVirtualFilePath = getFilePath(usageAdapter);
+            VirtualFile file = result.m_virtualFile;
+
             VirtualFile prevFile = findPrevFile(table, row, column);
             SimpleTextAttributes attributes = Comparing.equal(file, prevFile) ? REPEATED_FILE_ATTRIBUTES : ORDINAL_ATTRIBUTES;
-            append(uniqueVirtualFilePath, attributes);
-            if (text.length > 0) append(" " + text[0].getText(), ORDINAL_ATTRIBUTES);
+
+            if(!result.m_bConsiderFileName) {
+                // fileName is normally display
+                append(result.m_strFileName, attributes);
+            } else {
+                /// split fileName to different parts : the highlight part / normal part
+                List<Pair<String,Boolean>> list = splitFileName(result.m_strFileName,result.m_ListMatchFileNameIndex);
+                for(int i = 0;i < list.size();++i) {
+                    Pair<String,Boolean> pair = list.get(i);
+                    append(pair.first,getAttributes(attributes,pair.second));
+                }
+            }
+
+            append(" " + (result.m_nLineIndex + 1), ORDINAL_ATTRIBUTES);
             setBorder(null);
+        }
+
+        private SimpleTextAttributes getAttributes(SimpleTextAttributes at,boolean bMatch) {
+            if (myUseBold) return at;
+            boolean highlighted = bMatch || at.getFontStyle() == Font.BOLD;
+            return highlighted
+                    ? new SimpleTextAttributes(null, at.getFgColor(), at.getWaveColor(),
+                    (at.getStyle() & ~SimpleTextAttributes.STYLE_BOLD) |
+                            SimpleTextAttributes.STYLE_SEARCH_MATCH)
+                    : at;
+        }
+        /// split fileName to different parts : the highlight part / normal part
+        private List<Pair<String,Boolean>> splitFileName(String fileName,List<Pair<Integer, Integer>> m_ListMatchFileNameIndex) {
+            List<Pair<String,Boolean>> result = new ArrayList<>();  // true if highlight
+
+            int length = fileName.length();
+            Boolean[] flags = new Boolean[length];
+
+            for(int i = 0;i < length;++i) flags[i] = false;
+
+            for(int i = 0;i < m_ListMatchFileNameIndex.size();++i) {
+                Pair<Integer,Integer> pair = m_ListMatchFileNameIndex.get(i);
+                for(int j = pair.first;j <= pair.second;++j) {
+                    flags[j] = true;
+                }
+            }
+
+            int lastIndex = 0;
+            Boolean lastFlag = flags[0];
+
+
+            for(int i = 1;i < length;++i) {
+                /// split [lastIndex,i]
+                if(lastFlag != flags[i]) {
+                    String tmp = fileName.substring(lastIndex,i);
+                    result.add(new Pair<>(tmp,lastFlag));
+                    lastFlag = flags[i];
+                    lastIndex = i;
+                }
+            }
+
+            String tmp = fileName.substring(lastIndex,length);
+            result.add(new Pair<>(tmp,lastFlag));
+
+            return result;
         }
 
         @NotNull
@@ -139,7 +197,7 @@ public class WSTableCellRenderer extends JPanel implements TableCellRenderer {
         setLayout(new BorderLayout());
         add(myUsageRenderer, BorderLayout.CENTER);
         add(myFileAndLineNumber, BorderLayout.EAST);
-        setBorder(JBUI.Borders.empty(MARGIN, MARGIN, MARGIN, 0));
+        setBorder(JBUI.Borders.empty(MARGIN, MARGIN, MARGIN, MARGIN));
     }
 
     @Override

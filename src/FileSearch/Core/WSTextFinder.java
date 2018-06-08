@@ -141,7 +141,7 @@ public class WSTextFinder {
         List<WSFindTextResult> result = null;
         WSFileCache cache = WSProjectListener.getInstance().getWSProject().getCache(file);
         for(int i = 0;i < cache.m_LinesLowercase.size();++i) {
-            String line = cache.m_LinesLowercase cla .get(i);
+            String line = cache.m_LinesLowercase.get(i);
 
             WSFindTextResult oneLineResult = searchLine(i, line, file, req, cache);
             if (oneLineResult != null) {
@@ -156,9 +156,13 @@ public class WSTextFinder {
         WSFindTextResult result = null;
 
         FindTextRequest.Pattern pattern = req.m_pattern;
-        List<Pair<Integer,Integer>> listMatchIndexs = null;
+        String fileName = cache.m_fileName;
+        List<Pair<Integer,Integer>> listMatchTextIndexs = null;
+        List<Pair<Integer,Integer>> listMatchFileIndexs = null;
+
 
         int nWordMatchCount = 0;
+        int nFileMatchCount = 0;
         boolean bAllMatch = true;
         int startIndex = -1;
         int endIndex = -1;
@@ -166,20 +170,36 @@ public class WSTextFinder {
         for(int j = 0;j < pattern.vec.length && bAllMatch;++j) {
             String word = pattern.vec[j];
             int index = startIndex = line.indexOf(word);
+
             if(index != -1) {
-                // pattern[j] match
+                // the word is matched!
                 nWordMatchCount++;
                 startIndex = index;
                 endIndex = index + word.length() - 1;
-                if(listMatchIndexs == null) listMatchIndexs = new ArrayList<>();
-                listMatchIndexs.add(new Pair(index,endIndex));
+                if(listMatchTextIndexs == null) listMatchTextIndexs = new ArrayList<>();
+                listMatchTextIndexs.add(new Pair(index,endIndex));
             } else {
-                // not found
-                bAllMatch = false;
-                break;
+                if(!req.m_bConsiderFileName) {
+                    // no chance !
+                    bAllMatch = false;
+                    break;
+                } else {
+                    /// try if pattern[j] match fileName
+                    int fIndex = fileName.indexOf(word);
+                    if(fIndex != -1) {
+                        /// success to match the file name !!!
+                        nFileMatchCount++;
+                        if(listMatchFileIndexs == null) listMatchFileIndexs = new ArrayList<>();
+                        listMatchFileIndexs.add(new Pair<>(fIndex,fIndex + word.length() -1));
+                    } else {
+                        bAllMatch = false;
+                        break;
+                    }
+                }
+
             }
         }
-        if(bAllMatch) {
+        if(bAllMatch && nWordMatchCount > 0) {
             WSFindTextResult oneLineResult = new WSFindTextResult();
             oneLineResult.m_virtualFile = file;
             oneLineResult.m_nLineIndex = nLineNum;
@@ -188,7 +208,10 @@ public class WSTextFinder {
             oneLineResult.m_strLineLowercase = line;
             oneLineResult.m_strLine = cache.m_Lines.get(nLineNum);
             oneLineResult.m_nLineOffset = cache.m_LineOffSets.get(nLineNum);
-            oneLineResult.m_ListMatchTextIndexs = listMatchIndexs;
+            oneLineResult.m_ListMatchTextIndexs = listMatchTextIndexs;
+            oneLineResult.m_ListMatchFileNameIndex = listMatchFileIndexs;
+            oneLineResult.m_strFileName = fileName;
+            oneLineResult.m_bConsiderFileName = nFileMatchCount > 0;
             result = oneLineResult;
         }
         return result;
