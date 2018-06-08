@@ -34,9 +34,10 @@ public class WSTableCellRenderer extends JPanel implements TableCellRenderer {
         protected void customizeCellRenderer(JTable table, Object value, boolean selected, boolean hasFocus, int row, int column) {
 
             WSFindTextResult result = (WSFindTextResult)value;
-            UsageInfo usageInfo = WSUtil.getUsageInfo((WSFindTextResult) result);
-            UsageInfo2UsageAdapter adapter = new UsageInfo2UsageAdapter(usageInfo);
+            UsageInfo2UsageAdapter adapter = WSUtil.getMergedUsageAdapter(result);
 
+ /*           UsageInfo usageIn = WSUtil.getUsageInfo((WSFindTextResult) result);
+            UsageInfo2UsageAdapter adapter = new UsageInfo2UsageAdapter(usageInfo);*/
 
 /*            TextAttributesKey USAGE_LOCATION = TextAttributesKey.createTextAttributesKey("$NUMBER_OF_USAGES");
             EditorColorsScheme myColorsScheme = EditorColorsUtil.getColorSchemeForBackground(UIUtil.getTreeTextBackground());

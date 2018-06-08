@@ -178,6 +178,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
 
     @Override
     public void showUI() {
+        FSLog.log.info("ShowUI begin");
         if (myBalloon != null && myBalloon.isVisible()) {
             return;
         }
@@ -254,6 +255,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
                 rootPane.setDefaultButton(myReplaceSelectedButton);
             }
         }
+        FSLog.log.info("ShowUI end");
     }
 
     @Override
@@ -1266,7 +1268,6 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
     @NotNull
     public String getStringToFind() {
         String text = mySearchComponent.getText();
-        FSLog.log.info("getStringToFind = " + text);
         int len = text.length();
         return text;
     }
@@ -1303,7 +1304,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
             ApplicationManager.getApplication().invokeLater(() -> {
 
                 WSFindTextArgs args = (WSFindTextArgs) param;
-                FSLog.log.info("find req callback result num = " + args.listResult.size());
+                FSLog.log.info(String.format("[%d]find req callback result num = %d", args.req.m_nTag,args.listResult.size()));
                 for (int i = 0; i < args.listResult.size(); ++i) {
                     WSFindTextResult result = args.listResult.get(i);
                     //FSLog.log.info(result.tostring());

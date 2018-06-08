@@ -1,7 +1,6 @@
 package FileSearch.Core;
 
 import FileSearch.FSLog;
-import FileSearch.tools.FileUtils;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -11,15 +10,17 @@ import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.*;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.util.PsiUtilCore;
 import com.intellij.usageView.UsageInfo;
+import com.intellij.usages.UsageInfo2UsageAdapter;
 import org.jetbrains.annotations.NotNull;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WSUtil {
     public static String getFileSuffix(String fileName) {
@@ -80,6 +81,70 @@ public class WSUtil {
         }
         return info;
     }
+
+
+    public static List<UsageInfo> getUsageInfoList(WSFindTextResult result) {
+
+        List<UsageInfo> list = new ArrayList<>();
+
+        for(int i = 0; i < result.m_ListMatchTextIndexs.size(); ++i) {
+            UsageInfo info = null;
+            Pair<Integer,Integer> indexPair = result.m_ListMatchTextIndexs.get(i);
+
+            try {
+                Pair.NonNull<PsiFile, VirtualFile> pair = ReadAction.compute(() -> findFile(result.m_virtualFile));
+                PsiFile psiFile = pair.first;
+
+                Project project = psiFile.getProject();
+                Document document = PsiDocumentManager.getInstance(project).getDocument(psiFile);
+                final FileDocumentManager manager = FileDocumentManager.getInstance();
+
+                for (Document doc : manager.getUnsavedDocuments()) {
+                    VirtualFile file = manager.getFile(document);
+                    if (file == result.m_virtualFile) {
+                        document = doc;
+                        break;
+                    }
+                }
+                int beginOffset = result.m_nLineOffset + indexPair.first;
+                int endOffset = result.m_nLineOffset + indexPair.second + 1;
+
+                info = ReadAction.compute(() -> {
+                    UsageInfo tmp_info = new UsageInfo(psiFile,beginOffset,endOffset,false);
+                    return tmp_info;
+                });
+            } catch (Exception e) {
+                FSLog.log.info(e);
+            }
+
+            if(info != null){
+                list.add(info);
+            }
+        }
+        return list;
+    }
+
+    public static UsageInfo2UsageAdapter getMergedUsageAdapter(WSFindTextResult result) {
+        List<UsageInfo> list = getUsageInfoList(result);
+        UsageInfo2UsageAdapter adapter = null;
+        for(int i = 0;i < list.size();++i) {
+            UsageInfo2UsageAdapter tmp = new UsageInfo2UsageAdapter(list.get(i));
+            try {
+                if(adapter == null) {
+                    adapter = tmp;
+                } else {
+                    adapter.merge(tmp);
+                }
+            }catch (Exception e) {
+                FSLog.log.info(e);
+            }
+
+        }
+        return adapter;
+    }
+
+
+
     private static Pair.NonNull<PsiFile, VirtualFile> findFile(@NotNull final VirtualFile virtualFile) {
         Project project = WSProjectListener.getInstance().getJBProject();
         PsiManager myPsiManager = PsiManager.getInstance(project);
@@ -144,9 +209,9 @@ public class WSUtil {
             && WSConfig.ListSearchSuffix.contains(WSUtil.getFileSuffix(file.getName()))
             ) {
             VirtualFile ProjectDir = pro.getBaseDir();
-            FSLog.log.info(pro.getBasePath());
-            FSLog.log.info(pro.getProjectFile().getName());
-            FSLog.log.info(pro.getWorkspaceFile().getName());
+//            FSLog.log.info(pro.getBasePath());
+//            FSLog.log.info(pro.getProjectFile().getName());
+//            FSLog.log.info(pro.getWorkspaceFile().getName());
 
             if (!VfsUtilCore.isAncestor(ProjectDir, file, false)) {
                 //FSLog.log.warn(file.getName() + " is not under Project");

@@ -4,6 +4,8 @@ package FileSearch.Core;
 import FileSearch.FSLog;
 import com.google.common.collect.Lists;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.util.Pair;
+import com.siyeh.ig.dataflow.ReuseOfLocalVariableInspection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,9 +65,8 @@ public class WSTextFinder {
             return;
         }
 
-        FSLog.log.info("search text:" + req.m_TextBoxText);
+        FSLog.log.info(String.format("[%d]search text:[%s]", req.m_nTag,req.m_TextBoxText));
         FSLog.log.info("searchFileNums = " + req.m_searchFiles.size());
-
         WSFindTextArgs args = new WSFindTextArgs();
         args.req = req;
         args.activeThreadCnt = MAX_SEARCH_THREAD;
@@ -92,7 +93,6 @@ public class WSTextFinder {
     public void findTextThreadMain(Context context) {
         FSLog.log.info("findTextThreadMain begin");
         WSFindTextArgs args = (WSFindTextArgs) context.getArg();
-        FindTextRequest.Pattern pattern = args.req.m_pattern;
         List<WSFindTextResult> result = new ArrayList<WSFindTextResult>();
         VirtualFile file = null;
         while (true) {
@@ -107,22 +107,23 @@ public class WSTextFinder {
                         break;
                     }
                     file = args.req.m_searchFiles.get(args.req.m_currIndex++);
-                    //FSLog.log.info("search File" + file.getName());
+                    //FSLog.log.info("search File" + file.getName())
                 } else {
                     FSLog.log.info("search file empty,break");
                     break;
                 }
             }
             if(file != null) {
-                List<WSFindTextResult> tmpRsult = searchFile(file,pattern);
-                result.addAll(tmpRsult);
-                if(tmpRsult.size() > 0) {
-                    synchronized (args) {
-                        args.req.m_nResultFileCnt++;
-                        args.m_currResultCnt += tmpRsult.size();
+                List<WSFindTextResult> tmpRsult = searchFile(file,args.req);
+                if(tmpRsult != null) {
+                    result.addAll(tmpRsult);
+                    if(tmpRsult.size() > 0) {
+                        synchronized (args) {
+                            args.req.m_nResultFileCnt++;
+                            args.m_currResultCnt += tmpRsult.size();
+                        }
                     }
                 }
-
             }
 
         }
@@ -136,38 +137,59 @@ public class WSTextFinder {
         }
     }
 
-    public static List<WSFindTextResult> searchFile(VirtualFile file, FindTextRequest.Pattern pattern) {
-        List<WSFindTextResult> result = new ArrayList<WSFindTextResult>();
+    public static List<WSFindTextResult> searchFile(VirtualFile file, FindTextRequest req) {
+        List<WSFindTextResult> result = null;
         WSFileCache cache = WSProjectListener.getInstance().getWSProject().getCache(file);
         for(int i = 0;i < cache.m_LinesLowercase.size();++i) {
-            String line = cache.m_LinesLowercase.get(i);
+            String line = cache.m_LinesLowercase cla .get(i);
 
-            boolean bAllMatch = true;
-            int startIndex = -1;
-            int endIndex = -1;
-
-            for(int j = 0;j < pattern.vec.length && bAllMatch;++j) {
-                String word = pattern.vec[j];
-                startIndex = line.indexOf(word);
-                if(startIndex == -1) {
-                    // not found
-                    bAllMatch = false;
-                    break;
-                } else {
-                    endIndex = startIndex + word.length() - 1;
-                }
-            }
-            if(bAllMatch) {
-                WSFindTextResult oneLineResult = new WSFindTextResult();
-                oneLineResult.m_virtualFile = file;
-                oneLineResult.m_nLineIndex = i;
-                oneLineResult.nBeginIndex = startIndex;
-                oneLineResult.nEndIdex = endIndex;
-                oneLineResult.m_strLineLowercase = line;
-                oneLineResult.m_strLine = cache.m_Lines.get(i);
-                oneLineResult.m_nLineOffset = cache.m_LineOffSets.get(i);
+            WSFindTextResult oneLineResult = searchLine(i, line, file, req, cache);
+            if (oneLineResult != null) {
+                if(result == null)  result = new ArrayList<>();
                 result.add(oneLineResult);
             }
+        }
+        return result;
+    }
+
+    public static WSFindTextResult searchLine(int nLineNum,String line,VirtualFile file,FindTextRequest req,WSFileCache cache) {
+        WSFindTextResult result = null;
+
+        FindTextRequest.Pattern pattern = req.m_pattern;
+        List<Pair<Integer,Integer>> listMatchIndexs = null;
+
+        int nWordMatchCount = 0;
+        boolean bAllMatch = true;
+        int startIndex = -1;
+        int endIndex = -1;
+
+        for(int j = 0;j < pattern.vec.length && bAllMatch;++j) {
+            String word = pattern.vec[j];
+            int index = startIndex = line.indexOf(word);
+            if(index != -1) {
+                // pattern[j] match
+                nWordMatchCount++;
+                startIndex = index;
+                endIndex = index + word.length() - 1;
+                if(listMatchIndexs == null) listMatchIndexs = new ArrayList<>();
+                listMatchIndexs.add(new Pair(index,endIndex));
+            } else {
+                // not found
+                bAllMatch = false;
+                break;
+            }
+        }
+        if(bAllMatch) {
+            WSFindTextResult oneLineResult = new WSFindTextResult();
+            oneLineResult.m_virtualFile = file;
+            oneLineResult.m_nLineIndex = nLineNum;
+            oneLineResult.nBeginIndex = startIndex;
+            oneLineResult.nEndIdex = endIndex;
+            oneLineResult.m_strLineLowercase = line;
+            oneLineResult.m_strLine = cache.m_Lines.get(nLineNum);
+            oneLineResult.m_nLineOffset = cache.m_LineOffSets.get(nLineNum);
+            oneLineResult.m_ListMatchTextIndexs = listMatchIndexs;
+            result = oneLineResult;
         }
         return result;
     }

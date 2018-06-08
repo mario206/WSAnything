@@ -6,9 +6,14 @@ import java.util.List;
 import java.util.function.Function;
 
 public class FindTextRequest {
+    public static int s_nTag = 0;
+    public FindTextRequest() {
+        m_nTag = s_nTag++;
+    }
     static class Pattern {
         String[] vec = new String[0];
     }
+    public int m_nTag;
     public Pattern m_pattern = new Pattern();
     public int m_nMaxResult;
     public boolean m_upToResultCntLimit = false;

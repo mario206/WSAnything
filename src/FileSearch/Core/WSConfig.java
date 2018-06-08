@@ -66,7 +66,8 @@ public class WSConfig {
             ".php",
             ".vsixmanifest",
             ".uc",
-            ".sql"
+            ".sql",
+            ".json"
     };
     public static final List<String> ListSearchSuffix = Arrays.asList(VecSearchSuffix);
 }

@@ -60,6 +60,7 @@ public class AsyncTask {
                         m_threadMain.apply(newContext);
                     } catch (Exception ex) {
                         FSLog.log.error("AsyncTask wait exception2 :" + m_threadName);
+                        FSLog.log.error(ex);
                     }
                 } else {
                     FSLog.log.info(m_threadName + " task is cancel");
