@@ -17,8 +17,8 @@ public class WSFileCache {
     long m_timeStamp;
     long m_DocumentModifiedTime = 0;
 
-    List<String> m_Lines;
-    List<String> m_LinesLowercase = new ArrayList<String>();
+    List<String> m_Lines = new ArrayList<>();
+    List<String> m_LinesLowercase = new ArrayList<>();
     List<Integer> m_LineOffSets = new ArrayList<Integer>();
 
     boolean m_bIsSizeValid = true;

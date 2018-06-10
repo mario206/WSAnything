@@ -3,13 +3,11 @@ package FileSearch;
 
 import FileSearch.Core.*;
 import FileSearch.UI.*;
-import FileSearch.actions.OpenFileSearch;
 import com.intellij.CommonBundle;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.find.*;
 import com.intellij.find.editorHeaderActions.ShowMoreOptions;
 import com.intellij.find.impl.*;
-import com.intellij.find.replaceInProject.ReplaceInProjectManager;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.IdeEventQueue;
 import com.intellij.ide.ui.UISettings;
@@ -21,7 +19,6 @@ import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
 import com.intellij.openapi.application.ApplicationActivationListener;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
-import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.help.HelpManager;
@@ -47,7 +44,6 @@ import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.openapi.wm.IdeFrame;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.openapi.wm.impl.IdeFrameImpl;
-import com.intellij.pom.Navigatable;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.GlobalSearchScopeUtil;
@@ -66,7 +62,6 @@ import com.intellij.usages.UsageViewPresentation;
 import com.intellij.usages.impl.UsagePreviewPanel;
 import com.intellij.util.Alarm;
 import com.intellij.util.ArrayUtil;
-import com.intellij.util.OpenSourceUtil;
 import com.intellij.util.SmartList;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.ui.*;
@@ -76,7 +71,6 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.*;
@@ -110,7 +104,8 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
     private ActionListener myOkActionListener;
     private final AtomicBoolean myCanClose = new AtomicBoolean(true);
     private final AtomicBoolean myIsPinned = new AtomicBoolean(false);
-    private JBLabel myOKHintLabel;
+    private JBLabel myFileCountHintLabel;
+    private JBLabel myLineCountHintLabel;
     private Alarm mySearchRescheduleOnCancellationsAlarm;
     private volatile ProgressIndicatorBase myResultsPreviewSearchProgress;
 
@@ -722,20 +717,24 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
         };
         scrollPane.setBorder(JBUI.Borders.empty());
         splitter.setFirstComponent(scrollPane);
-        JPanel bottomPanel = new JPanel(new MigLayout("flowx, ins 4 4 0 4, fillx, hidemode 2, gap 0"));
-        bottomPanel.add(myTabResultsButton);
-        bottomPanel.add(Box.createHorizontalGlue(), "growx, pushx");
-        myOKHintLabel = new JBLabel("");
-        myOKHintLabel.setEnabled(false);
-        Insets insets = myOKButton.getInsets();
-        bottomPanel.add(myOKHintLabel);
-        String btnGapLeft = "gapleft " + Math.max(0, (JBUI.scale(12) - insets.left - insets.right));
-        bottomPanel.add(myOKButton, btnGapLeft);
 
-        if (myHelper.isReplaceState()) {
-            bottomPanel.add(myReplaceAllButton, btnGapLeft);
-            bottomPanel.add(myReplaceSelectedButton, btnGapLeft);
-        }
+        JPanel bottomPanel = new JPanel(new MigLayout("flowx, ins 4 4 0 4, fillx, hidemode 2, gap 0"));
+        //bottomPanel.add(myTabResultsButton);
+        myFileCountHintLabel = new JBLabel("");
+        myLineCountHintLabel = new JBLabel("");
+        //myFileCountHintLabel.setEnabled(false);
+        //myLineCountHintLabel.setEnabled(false);
+        //String btnGapRight = "gapright " + (JBUI.scale(12)) ;
+        String btnGapRight = "";
+        bottomPanel.add(Box.createHorizontalGlue(), "growx, pushx");
+        bottomPanel.add(myFileCountHintLabel, btnGapRight + ",wrap");
+        bottomPanel.add(Box.createHorizontalGlue(), "growx, pushx");
+        bottomPanel.add(myLineCountHintLabel,btnGapRight);
+
+        ApplicationManager.getApplication().invokeLater(() -> {
+            updateFileLineNums();
+        });
+
 
         myCodePreviewComponent = myUsagePreviewPanel.createComponent();
         splitter.setSecondComponent(myCodePreviewComponent);
@@ -931,12 +930,6 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
         myTitleLabel.setText(myHelper.getTitle());
         myReplaceTextArea.setVisible(isReplaceState);
         myCbPreserveCase.setVisible(isReplaceState);
-        if (Registry.is("ide.find.enter.as.ok", false)) {
-            myOKHintLabel.setText(KeymapUtil.getKeystrokeText(ENTER));
-        } else {
-            myOKHintLabel.setText(KeymapUtil.getKeystrokeText(ENTER_WITH_MODIFIERS));
-        }
-        myOKButton.setText(FindBundle.message("find.popup.find.button"));
     }
 
     private void updateControls() {
@@ -1303,11 +1296,13 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
 
         ///mariotodo
         model.setStringToFind(getStringToFind());
+        WSProject pro = WSProjectListener.getInstance().getWSProject();
         FindTextRequest req = new FindTextRequest();
         req.m_bConsiderFileName = myConsiderFileName.isSelected();
-        req.m_nMaxResult = 1000;
+        req.m_nMaxResult = WSConfig.MAX_RESULT;
         req.setString(getStringToFind().toLowerCase());
-        req.m_searchFiles = WSProjectListener.getInstance().getWSProject().getSolutionFileCopy();
+
+        req.m_searchFiles = pro.getSolutionFileCopy();
 
         req.m_finishCallBack = (param) -> {
             ApplicationManager.getApplication().invokeLater(() -> {
@@ -1325,11 +1320,6 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
                     tableModel.addRows(vec);
                     myResultsPreviewTable.setRowSelectionInterval(0, 0);
                 }
-
-/*      for (int i = 0; i < args.listResult.size(); ++i) {
-        WSFindTextResult result = args.listResult.get(i);
-        tableModel.addRow(new Object[]{result});  //mariotodo
-      }*/
                 String resultDesc = "";
                 if (args.listResult.size() > 0) {
                     StringBuilder stringBuilder = new StringBuilder();
@@ -1349,15 +1339,12 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
                 //tableModel.addRow(vec);
                 //tableModel.fireTableRowsUpdated(tableModel.getRowCount() - 1, tableModel.getRowCount() - 1);
             });
+            ApplicationManager.getApplication().invokeLater(() -> {
+                updateFileLineNums();
+            });
             return 0;
         };
-
         WSTextFinder.getInstance().start(req);
-
-
-/*    if (model.isReplaceState()) {
-      model.setStringToReplace(StringUtil.convertLineSeparators(getStringToReplace()));
-    }*/
 
 
         model.setProjectScope(false);
@@ -1373,7 +1360,11 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
         String mask = getFileTypeMask();
         model.setFileFilter(mask);
     }
-
+    private void updateFileLineNums() {
+        WSProject pro = WSProjectListener.getInstance().getWSProject();
+            myFileCountHintLabel.setText("Files : " + pro.getFileNums());
+            myLineCountHintLabel.setText("Lines : " + pro.getLineNums());
+    }
     // 点击跳转
     private void navigateToSelectedUsage(AnActionEvent e) {
         List<WSFindTextResult> usages = getSelectedResults();

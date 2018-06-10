@@ -11,12 +11,10 @@ import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
+import org.apache.velocity.runtime.directive.Foreach;
 import sun.rmi.runtime.Log;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class WSProject {
     private Project m_project;
@@ -24,6 +22,9 @@ public class WSProject {
 
     private List<VirtualFile> m_solutionFile = Lists.newArrayList();
     private Map<VirtualFile, WSFileCache> m_CacheFile = new HashMap<VirtualFile, WSFileCache>();
+    private long m_nFilesNums = 0;
+    private long m_nLineNums = 0;
+
     private AsyncTask scanFileThread = new AsyncTask((ctx)->{
         this.scanFileMain(ctx);
         return 0;
@@ -46,10 +47,22 @@ public class WSProject {
             m_CacheFile.clear();
             VirtualFileManager.getInstance().removeVirtualFileListener(m_FileListener);
         }
+        System.gc();
+        System.runFinalization();
 
     }
     public List<VirtualFile> getSolutionFileCopy() {
-        return Lists.newArrayList(m_solutionFile);
+        //return Lists.newArrayList(m_solutionFile);
+        List<VirtualFile> ret = new ArrayList<>();
+        ProjectFileIndex indexer = ProjectRootManager.getInstance(this.m_project).getFileIndex();
+        synchronized (this) {
+            for(int i = 0;i < m_solutionFile.size();++i) {
+                if(!indexer.isExcluded(m_solutionFile.get(i))) {
+                    ret.add(m_solutionFile.get(i));
+                }
+            }
+        }
+        return ret;
     }
 
     public WSFileCache getCache(VirtualFile file) {
@@ -108,8 +121,9 @@ public class WSProject {
         synchronized(this) {
             m_solutionFile = solutionFile;
             m_CacheFile = cacheFile;
+            this.calculateFileLineNums();
         }
-        FSLog.log.info("scanFileMain end,fileNums = " + solutionFile.size());
+        FSLog.log.info(String.format("scanFileMain end,file = %d,lines = %d",this.m_nFilesNums,this.m_nLineNums));
     }
 
     public void updateCache(VirtualFile file,WSFileCache cache) {
@@ -164,6 +178,18 @@ public class WSProject {
 
         }
     }
-
+    private void calculateFileLineNums() {
+        this.m_nLineNums = 0;
+        m_CacheFile.forEach((k, v) -> {
+            this.m_nLineNums += v.m_Lines.size();
+        });
+        this.m_nFilesNums = m_CacheFile.size();
+    }
+    public long getFileNums() {
+        return this.m_nFilesNums;
+    }
+    public long getLineNums() {
+        return this.m_nLineNums;
+    }
 }
 
