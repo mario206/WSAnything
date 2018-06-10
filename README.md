@@ -3,7 +3,7 @@
 ### 0. Introduce
 Multi-KeyWord Search Plugin For IntelliJ IDEA
 
-Porting from Visual Studio's Plugin [VSAnthing](https://github.com/mario206/VSAnything) while using Jetbrain's "Find in Path" UI
+Porting from Visual Studio's Plugin [VSAnthing](https://github.com/mario206/VSAnything) with native Jetrain's UI
 
 ### 1. set keyboard shortcut 
 Through `Setting` -> `Keymap` -> `WSAnything Show`
