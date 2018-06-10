@@ -33,6 +33,7 @@ public class WSProjectListener implements VetoableProjectManagerListener {
     public void projectClosed(Project project) {
         FSLog.log.info("projectClosed" + project.getName());
         if(m_wsProject != null) {
+            m_wsProject.close();
             m_wsProject.dispose();
             m_wsProject = null;
         }
@@ -47,6 +48,7 @@ public class WSProjectListener implements VetoableProjectManagerListener {
             FSLog.log.info("start new project: " + pro.getName());
             m_currProject = pro;
             if(m_wsProject != null) {
+                m_wsProject.close();
                 m_wsProject.dispose();
                 m_wsProject = null;
             }

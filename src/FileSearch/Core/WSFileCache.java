@@ -4,25 +4,44 @@ import FileSearch.FSLog;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.impl.LoadTextUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import sun.misc.Cache;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class WSFileCache {
-    VirtualFile m_virtualFile;
-    String m_fileName;
+import java.io.*;
 
+
+public class WSFileCache implements java.io.Serializable {
+    transient VirtualFile m_virtualFile;
+    /// Serializable
+    String m_fileName;
     long m_timeStamp;
     long m_DocumentModifiedTime = 0;
-
     List<String> m_Lines = new ArrayList<>();
     List<String> m_LinesLowercase = new ArrayList<>();
     List<Integer> m_LineOffSets = new ArrayList<Integer>();
-
-    boolean m_bIsSizeValid = true;
     boolean m_bReadSuccess = true;
+    /// Serializable
+
+/*    public void writeObject(ObjectOutputStream outputStream) throws IOException{
+        outputStream.writeObject(m_fileName);
+        outputStream.writeObject(m_timeStamp);
+        outputStream.writeObject(m_DocumentModifiedTime);
+        outputStream.writeObject(m_Lines);
+        outputStream.writeObject(m_LinesLowercase);
+        outputStream.writeObject(m_LineOffSets);
+        outputStream.writeObject(m_bReadSuccess);
+    }
+    public void readObject(ObjectInputStream inputStream) throws IOException,ClassNotFoundException{
+        inputStream.defaultReadObject();
+        m_fileName = (String) inputStream.readObject();
+        m_timeStamp = (long) inputStream.readObject();
+        m_DocumentModifiedTime = (long) inputStream.readObject();
+        m_Lines = (ArrayList<String>) inputStream.readObject();
+        m_LinesLowercase = (ArrayList<String>) inputStream.readObject();
+        m_LineOffSets = (ArrayList<Integer>) inputStream.readObject();
+        m_bReadSuccess = (boolean) inputStream.readObject();
+    }*/
 
     public void init(VirtualFile file) {
         //FSLog.log.info("WSFileCache init: " + file.getName());
@@ -33,6 +52,16 @@ public class WSFileCache {
             m_bReadSuccess = false;
         }
     }
+
+    public void updateFromVirtualFile(VirtualFile file) {
+        m_virtualFile = file;
+        m_DocumentModifiedTime = 0;
+
+        if(m_timeStamp != file.getTimeStamp()) {
+            this.init(file);
+        }
+    }
+
     public boolean isReadSuccess() {
         return m_bReadSuccess;
     }
@@ -54,8 +83,6 @@ public class WSFileCache {
 
         int nOffSet = 0;
         for(int i = 0;i < m_Lines.size();++i) {
-            //m_Lines.set(i,m_Lines.get(i).trim());
-            //m_Lines.set(i,m_Lines.get(i));
             m_LinesLowercase.add(m_Lines.get(i).toLowerCase());
             m_LineOffSets.add(nOffSet);
             nOffSet += m_Lines.get(i).length() + 1;
@@ -65,9 +92,6 @@ public class WSFileCache {
         m_timeStamp = file.getTimeStamp();
     }
 
-    public boolean getIsSizeValid() {
-        return m_bIsSizeValid;
-    }
     public void setDocumentModifiedTime(long time) {
         m_DocumentModifiedTime = time;
     }

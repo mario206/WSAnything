@@ -40,6 +40,11 @@ public class WSProject {
         }
 
     }
+    public void close() {
+        FSLog.log.info(String.format("Project %s close",m_project.getName()));
+        List<WSFileCache> list = new ArrayList<>(m_CacheFile.values());
+        //CacheFileSerializer.SerializeToLocalFile(m_project,list);
+    }
     public void dispose() {
         synchronized(this) {
             m_project = null;
@@ -80,6 +85,9 @@ public class WSProject {
         m_solutionFile.clear();
         m_CacheFile.clear();
 
+        //Map<String, WSFileCache> cacheMap = CacheFileSerializer.readFromLocalFile(m_project);
+        Map<String, WSFileCache> cacheMap = new HashMap<>();
+
         List<VirtualFile> solutionFile = Lists.newArrayList();
         Map<VirtualFile, WSFileCache> cacheFile = new HashMap<>();
 
@@ -91,18 +99,20 @@ public class WSProject {
             return true;
         });
         FSLog.log.info("scanFileMain fileToScan = " + fileToScan.size());
-
         int lastProgress = 0;
 
         for(int i = 0;i < fileToScan.size();++i) {
             VirtualFile fileOrDir = fileToScan.get(i);
             if (WSUtil.checkShouldCacheFile(fileOrDir) && !indexer.isExcluded(fileOrDir)) {
                 try {
-                    //String text = LoadTextUtil.loadText(fileOrDir).toString();
-                    WSFileCache cache = new WSFileCache();
-                    cache.init(fileOrDir);
-                    if(cache.getIsSizeValid() && cache.isReadSuccess()) {
-                        //FSLog.log.info(fileOrDir.getName());
+                    WSFileCache cache = cacheMap.get(fileOrDir.getName());
+                    if(cache == null) {
+                        cache = new WSFileCache();
+                        cache.init(fileOrDir);
+                    } else {
+                        cache.updateFromVirtualFile(fileOrDir);
+                    }
+                    if(cache.isReadSuccess()) {
                         solutionFile.add(fileOrDir);
                         cacheFile.put(fileOrDir,cache);
                     }
@@ -123,6 +133,9 @@ public class WSProject {
             m_CacheFile = cacheFile;
             this.calculateFileLineNums();
         }
+        System.gc();
+        System.runFinalization();
+
         FSLog.log.info(String.format("scanFileMain end,file = %d,lines = %d",this.m_nFilesNums,this.m_nLineNums));
     }
 
@@ -130,7 +143,7 @@ public class WSProject {
         synchronized (this) {
             if(m_CacheFile.get(file) != null) {
                 FSLog.log.info("updateCache file:" + file.getName());
-                if(cache.getIsSizeValid() && cache.isReadSuccess()) {
+                if(cache.isReadSuccess()) {
                     m_CacheFile.put(file,cache);
                 } else {
                     FSLog.log.error(cache.m_fileName + "is size invalid,will remove");
@@ -145,7 +158,7 @@ public class WSProject {
     public void addCache(VirtualFile file,WSFileCache cache) {
         synchronized (this) {
             if(m_CacheFile.get(file) == null) {
-                if(cache.getIsSizeValid() && cache.isReadSuccess()) {
+                if(cache.isReadSuccess()) {
                     FSLog.log.info("addCache file:" + file.getName());
                     m_CacheFile.put(file,cache);
                     m_solutionFile.add(file);
