@@ -4,70 +4,54 @@ import java.util.Arrays;
 import java.util.List;
 
 public class WSConfig {
-    public static int MaxFileSize = 1024 * 1024;    // 1Mb
-    public static String VecSearchSuffix[] = {
+    public static int MaxFileSize_ProgramLang = 1024 * 1024;
+    public static int MaxFileSize_OtherFile = 1024 * 100;
+
+    public static String VecProgramFileSuffix[] = {
             ".asm",
             ".bat",
-            ".c",
-            ".cc",
-            ".cpp",
+            ".vb",
+            ".c",".cc",".h",".hh",".cpp",".inc",".hpp",".cxx",".inl",
+            ".m",".mm",
             ".cs",
-            ".css",
-            ".csv",
-            ".cxx",
-            ".def",
-            ".disco",
-            ".dtd",
-            ".fx",
-            ".h",
-            ".hh",
-            ".hpp",
-            ".hlsl",
-            ".htm",
-            ".html",
-            ".hxx",
-            ".idl",
-            ".inc",
-            ".inl",
+            ".py",
             ".java",
             ".js",
-            ".l",
-            ".ll",
-            ".lnx",
-            ".log",
-            ".mk",
-            ".pl",
-            ".pmk",
-            ".ps",
-            ".py",
-            ".s",
-            ".sh",
-            ".src",
-            ".srf",
-            ".tlh",
-            ".tli",
-            ".txt",
-            ".vb",
-            ".vsh",
-            ".wsdl",
-            ".xaml",
-            ".xml",
-            ".xsd",
-            ".xsl",
-            ".xslt",
-            ".y",
-            ".psh",
-            ".fsh",
+            ".ts",
+            ".as",
+            ".ml",
+            ".perl",".pl",
+            ".css",".html",".htm",
+            ".fx",
+            ".php",
+            ".hlsl",
+            ".kt",
+            ".go",
             ".sh",
             ".shader",
-            ".vsct",
-            ".resx",
-            ".wxs",
-            ".php",
-            ".vsixmanifest",
-            ".uc",
             ".sql",
-            ".json"
+            ".R",
+            ".swfit",
+            ".scala",
+            ".rb"
     };
-    public static final List<String> ListSearchSuffix = Arrays.asList(VecSearchSuffix);
+    public static String VecOtherFileSuffix[] = {
+            ".json",
+            ".xml",
+            ".txt",
+            ".mk",
+            ".csv",
+            ".xaml",
+            ".resx",
+            ".vsixmanifest",
+            ".log"
+    };
+    public static String VecSuffixToExclude[] = {
+            ".min.js",
+            "-min.js"
+    };
+
+    public static final List<String> ListSearchSuffix_ProgramLang = Arrays.asList(VecProgramFileSuffix);
+    public static final List<String> ListSearchSuffix_OtherFile = Arrays.asList(VecOtherFileSuffix);
+    public static final List<String> ListExcludeSuffx = Arrays.asList(VecSuffixToExclude);
 }

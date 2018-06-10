@@ -18,6 +18,8 @@ import com.intellij.psi.util.PsiUtilCore;
 import com.intellij.usageView.UsageInfo;
 import com.intellij.usages.UsageInfo2UsageAdapter;
 import org.jetbrains.annotations.NotNull;
+import sun.rmi.runtime.Log;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -206,7 +208,9 @@ public class WSUtil {
 
         if (!file.isDirectory()
             && !FileUtil.isAncestor(ideaFloderPath,new File(file.getPath()),false)
-            && WSConfig.ListSearchSuffix.contains(WSUtil.getFileSuffix(file.getName()))
+            && isSupportedSuffix(file)
+            && isSupportedSize(file)
+            && !isSuffixToExclude(file)
             ) {
             VirtualFile ProjectDir = pro.getBaseDir();
 //            FSLog.log.info(pro.getBasePath());
@@ -220,5 +224,44 @@ public class WSUtil {
             return true;
         }
         return false;
+    }
+
+    public static boolean isSuffixToExclude(VirtualFile file) {
+        String name = file.getName();
+        for(int i = 0;i < WSConfig.ListExcludeSuffx.size();++i) {
+            if(name.endsWith(WSConfig.ListExcludeSuffx.get(i))) {
+                FSLog.log.info("Exclude min.js : " + name);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isSupportedSuffix(VirtualFile file) {
+        String suffix = WSUtil.getFileSuffix(file.getName());
+        return WSConfig.ListSearchSuffix_ProgramLang.contains(suffix) || WSConfig.ListSearchSuffix_OtherFile.contains(suffix);
+    }
+
+    public static  boolean isSupportSize_impl(List<String> list,long maxSize,long size,String suffix,String fileName,boolean bLog) {
+        if(list.contains(suffix)) {
+            if(size <= maxSize) {
+                return true;
+            } else {
+                if(bLog) {
+                    FSLog.log.info(String.format("%s(%d byte) is bigger than %d,will no be cached",fileName,size,maxSize));
+                }
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isSupportedSize(VirtualFile file) {
+        String name = file.getName();
+        String suffix = WSUtil.getFileSuffix(name);
+        long size = file.getLength();
+
+        return isSupportSize_impl(WSConfig.ListSearchSuffix_ProgramLang,WSConfig.MaxFileSize_ProgramLang,size,suffix,name,true)
+                || isSupportSize_impl(WSConfig.ListSearchSuffix_OtherFile,WSConfig.MaxFileSize_OtherFile,size,suffix,name,false);
     }
 }

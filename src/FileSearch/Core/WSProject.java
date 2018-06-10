@@ -7,9 +7,11 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 
+import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
+import sun.rmi.runtime.Log;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -59,37 +61,49 @@ public class WSProject {
             return ret;
         }
     }
-
     public void scanFileMain(Context context) {
 
         FSLog.log.info("scanFileMain begin");
         m_solutionFile.clear();
         m_CacheFile.clear();
 
-        final String vecSearchSuffix[] = WSConfig.VecSearchSuffix;
-        final List<String> listSearchSuffix = Arrays.asList(vecSearchSuffix);
-
         List<VirtualFile> solutionFile = Lists.newArrayList();
-        Map<VirtualFile, WSFileCache> cacheFile = new HashMap<VirtualFile, WSFileCache>();
+        Map<VirtualFile, WSFileCache> cacheFile = new HashMap<>();
 
-        ProjectRootManager.getInstance(this.m_project).getFileIndex().iterateContent(fileOrDir -> {
-            if (WSUtil.checkShouldCacheFile(fileOrDir)) {
+        ProjectFileIndex indexer = ProjectRootManager.getInstance(this.m_project).getFileIndex();
+        List<VirtualFile> fileToScan = Lists.newArrayList();
+
+        indexer.iterateContent(fileOrDir -> {
+            fileToScan.add(fileOrDir);
+            return true;
+        });
+        FSLog.log.info("scanFileMain fileToScan = " + fileToScan.size());
+
+        int lastProgress = 0;
+
+        for(int i = 0;i < fileToScan.size();++i) {
+            VirtualFile fileOrDir = fileToScan.get(i);
+            if (WSUtil.checkShouldCacheFile(fileOrDir) && !indexer.isExcluded(fileOrDir)) {
                 try {
                     //String text = LoadTextUtil.loadText(fileOrDir).toString();
                     WSFileCache cache = new WSFileCache();
                     cache.init(fileOrDir);
                     if(cache.getIsSizeValid() && cache.isReadSuccess()) {
+                        //FSLog.log.info(fileOrDir.getName());
                         solutionFile.add(fileOrDir);
                         cacheFile.put(fileOrDir,cache);
                     }
                     //FSLog.log.info(text);
                 } catch (Exception e) {
-                    FSLog.log.error("scanFileMain Exception");
                     FSLog.log.error(e);
                 }
             }
-            return true;
-        });
+            int nCurrProgress = (i * 100 / fileToScan.size());
+            if(nCurrProgress - lastProgress > 5) {
+                lastProgress = nCurrProgress;
+                FSLog.log.info("scanFileMain progress = " + nCurrProgress + "%");
+            }
+        }
 
         synchronized(this) {
             m_solutionFile = solutionFile;

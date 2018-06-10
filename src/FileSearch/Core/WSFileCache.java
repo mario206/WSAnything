@@ -48,12 +48,6 @@ public class WSFileCache {
         }
     }
     public void updateByText(VirtualFile file,String text) {
-        int txtLength = text.length();
-        if(txtLength > WSConfig.MaxFileSize) {
-            m_bIsSizeValid = false;
-            FSLog.log.warn(file.getName() + " size = " + txtLength + " is bigger Than " + WSConfig.MaxFileSize + "byte,will no be cached!");
-            return;
-        }
         m_Lines = Arrays.asList(text.split("\n"));
         m_LinesLowercase.clear();
         m_LineOffSets.clear();
