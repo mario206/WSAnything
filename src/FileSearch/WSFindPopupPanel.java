@@ -79,7 +79,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class WSFindPopupPanel extends JBPanel implements FindUI {
+public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener  {
     private static final Logger LOG = Logger.getInstance(WSFindPopupPanel.class);
 
     private static final KeyStroke ENTER = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
@@ -142,6 +142,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
     private static WSFindPopupPanel pInstance;
 
     public WSFindPopupPanel(Project pro) {
+        WSProjectListener.getInstance().getWSProject().registerEventListener(this);
         WSFindUIHelper helper = new WSFindUIHelper(pro);
         myHelper = helper;
         myProject = myHelper.getProject();
@@ -170,6 +171,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
                         }
                     });
         }
+        WSProjectListener.getInstance().getWSProject().registerEventListener(this);
     }
 
     @Override
@@ -808,6 +810,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
             myIsPinned.set(false);
             myBalloon.cancel();
         }
+        WSProjectListener.getInstance().getWSProject().unRegisterEventListener(this);
     }
 
     //Some popups shown above may prevent panel closing, first of all we should close them
@@ -1512,6 +1515,15 @@ public class WSFindPopupPanel extends JBPanel implements FindUI {
         public boolean isValid() {
             return true;
         }
+    }
+    @Override
+    public void onFileCacheFinish()  {
+        ApplicationManager.getApplication().invokeLater(() -> {
+            if(myBalloon.isVisible()) {
+                findSettingsChanged();
+            }
+        });
+
     }
 
 }

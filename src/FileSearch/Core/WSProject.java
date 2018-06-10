@@ -24,6 +24,8 @@ public class WSProject {
     private Map<VirtualFile, WSFileCache> m_CacheFile = new HashMap<VirtualFile, WSFileCache>();
     private long m_nFilesNums = 0;
     private long m_nLineNums = 0;
+    private WSEventListener m_Listener = null;
+
 
     private AsyncTask scanFileThread = new AsyncTask((ctx)->{
         this.scanFileMain(ctx);
@@ -136,6 +138,9 @@ public class WSProject {
         System.gc();
         System.runFinalization();
 
+        if(m_Listener != null) {
+            m_Listener.onFileCacheFinish();
+        }
         FSLog.log.info(String.format("scanFileMain end,file = %d,lines = %d",this.m_nFilesNums,this.m_nLineNums));
     }
 
@@ -203,6 +208,14 @@ public class WSProject {
     }
     public long getLineNums() {
         return this.m_nLineNums;
+    }
+    public void registerEventListener(WSEventListener e) {
+        m_Listener = e;
+    }
+    public void unRegisterEventListener(WSEventListener e) {
+        if(m_Listener == e) {
+            m_Listener = null;
+        }
     }
 }
 
