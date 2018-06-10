@@ -1,8 +1,8 @@
 <idea-plugin>
   <id>com.mario.WSAnything.plugin</id>
   <name>WSAnything</name>
-  <version>1.0</version>
-  <vendor email="mario206@github.com" url="https://github.com/mario206">mario206</vendor>
+  <version>1.1</version>
+  <vendor email="null" url="https://github.com/mario206">mario</vendor>
 
   <description><![CDATA[
       Enter short description for your plugin here.<br>
