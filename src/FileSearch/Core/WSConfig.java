@@ -7,6 +7,7 @@ public class WSConfig {
     public static int MaxFileSize_ProgramLang = 1024 * 1024;
     public static int MaxFileSize_OtherFile = 1024 * 100;
     public static int MAX_RESULT = 1000;
+    public static int Max_Column_Per_Line = 3000;
     public static String VecProgramFileSuffix[] = {
             ".asm",
             ".bat",

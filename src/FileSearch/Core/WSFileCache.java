@@ -84,6 +84,12 @@ public class WSFileCache implements java.io.Serializable {
 
         int nOffSet = 0;
         for(int i = 0;i < m_Lines.size();++i) {
+            int len = m_Lines.get(i).length();
+            if(len > WSConfig.Max_Column_Per_Line) {
+                FSLog.log.warn(String.format("%s column > %d,will not be cached",file.getName(),WSConfig.Max_Column_Per_Line));
+                this.m_bReadSuccess = false;
+                break;
+            }
             m_LinesLowercase.add(m_Lines.get(i).toLowerCase());
             m_LineOffSets.add(nOffSet);
             nOffSet += m_Lines.get(i).length() + 1;
