@@ -157,6 +157,7 @@ public class WSTextFinder {
 
         FindTextRequest.Pattern pattern = req.m_pattern;
         String fileName = cache.m_fileName;
+        String fileNamelowercase = cache.m_fileNameLowerCase;
         List<Pair<Integer,Integer>> listMatchTextIndexs = null;
         List<Pair<Integer,Integer>> listMatchFileIndexs = null;
 
@@ -185,7 +186,7 @@ public class WSTextFinder {
                     break;
                 } else {
                     /// try if pattern[j] match fileName
-                    int fIndex = fileName.indexOf(word);
+                    int fIndex = fileNamelowercase.indexOf(word);
                     if(fIndex != -1) {
                         /// success to match the file name !!!
                         nFileMatchCount++;

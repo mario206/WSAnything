@@ -15,6 +15,7 @@ public class WSFileCache implements java.io.Serializable {
     transient VirtualFile m_virtualFile;
     /// Serializable
     String m_fileName;
+    String m_fileNameLowerCase;
     long m_timeStamp;
     long m_DocumentModifiedTime = 0;
     List<String> m_Lines = new ArrayList<>();
@@ -89,6 +90,7 @@ public class WSFileCache implements java.io.Serializable {
         }
         m_virtualFile = file;
         m_fileName = file.getName();
+        m_fileNameLowerCase = m_fileName.toLowerCase();
         m_timeStamp = file.getTimeStamp();
     }
 
