@@ -661,14 +661,16 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
             final List<UsageInfo> selection = new SmartList<>();
             VirtualFile file = null;
             for (int row : selectedRows) {
-                UsageInfo usageInfo = WSUtil.getUsageInfo((WSFindTextResult) myResultsPreviewTable.getModel().getValueAt(row, 0));
-                UsageInfo2UsageAdapter adapter = new UsageInfo2UsageAdapter(usageInfo);
-                file = adapter.getFile();
-                if (adapter.isValid()) {
-                    selection.addAll(Arrays.asList(adapter.getMergedInfos()));
+                WSFindTextResult result = (WSFindTextResult) myResultsPreviewTable.getModel().getValueAt(row, 0);
+                UsageInfo2UsageAdapter adapter = WSUtil.getMergedUsageAdapter(result);
+                if(adapter != null) {
+                    file = adapter.getFile();
+                    if (adapter.isValid()) {
+                        selection.addAll(Arrays.asList(adapter.getMergedInfos()));
+                    }
                 }
             }
-            String title = getTitle(file);
+            String title = file != null ? getTitle(file) : "null";
             myReplaceSelectedButton.setText(FindBundle.message("find.popup.replace.selected.button", selection.size()));
             //FindInProjectUtil.setupViewPresentation(myUsageViewPresentation, FindSettings.getInstance().isShowResultsInSeparateView(), myHelper.getModel().clone());
             myUsagePreviewPanel.updateLayout(selection);
@@ -1312,10 +1314,6 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
 
                 WSFindTextArgs args = (WSFindTextArgs) param;
                 FSLog.log.info(String.format("[%d]find req callback result num = %d", args.req.m_nTag,args.listResult.size()));
-                for (int i = 0; i < args.listResult.size(); ++i) {
-                    WSFindTextResult result = args.listResult.get(i);
-                    //FSLog.log.info(result.tostring());
-                }
 
                 if (args.listResult.size() > 0) {
                     WSTableModel tableModel = (WSTableModel) myResultsPreviewTable.getModel();

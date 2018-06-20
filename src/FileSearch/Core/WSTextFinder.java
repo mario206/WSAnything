@@ -201,11 +201,13 @@ public class WSTextFinder {
             }
         }
         if(bAllMatch && nWordMatchCount > 0) {
+            int cnt = listMatchTextIndexs.size();
+
             WSFindTextResult oneLineResult = new WSFindTextResult();
             oneLineResult.m_virtualFile = file;
             oneLineResult.m_nLineIndex = nLineNum;
-            oneLineResult.nBeginIndex = startIndex;
-            oneLineResult.nEndIdex = endIndex;
+            oneLineResult.nBeginIndex = listMatchTextIndexs.get(cnt - 1).first;
+            oneLineResult.nEndIdex = listMatchTextIndexs.get(cnt - 1).second;
             oneLineResult.m_strLineLowercase = line;
             oneLineResult.m_strLine = cache.m_Lines.get(nLineNum);
             oneLineResult.m_nLineOffset = cache.m_LineOffSets.get(nLineNum);
