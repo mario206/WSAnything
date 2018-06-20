@@ -13,4 +13,7 @@ Through `Setting` -> `Keymap` -> `WSAnything Show`
 ### 2. demo gif
 ![demo](https://github.com/mario206/WSAnything/blob/master/demo.gif)
 
+### 3. download 
+[Download WSAnything](https://plugins.jetbrains.com/plugin/10818-wsanything)
+
 
