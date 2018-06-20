@@ -1,9 +1,9 @@
 <idea-plugin>
   <id>com.mario.WSAnything.plugin</id>
   <name>WSAnything</name>
-  <version>1.2</version>
+  <version>1.3</version>
 
-  <vendor url="https://github.com/mario206" email="mariotest@qq.com" />
+  <vendor url="https://github.com/mario206/WSAnything" email="mariotest@qq.com" />
 
   <description>Multi-KeyWord Search Plugin For IntelliJ IDEA</description>
 
