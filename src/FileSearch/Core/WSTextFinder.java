@@ -12,6 +12,7 @@ import java.util.List;
 
 public class WSTextFinder {
     private static WSTextFinder pInstance;
+    private List<WSFindTextResult> m_lastResult = new ArrayList<>();
 
     private int MAX_SEARCH_THREAD = Math.max(1,Runtime.getRuntime().availableProcessors() - 1);
 
@@ -25,6 +26,9 @@ public class WSTextFinder {
             pInstance.createWorkers();
         }
         return pInstance;
+    }
+    public void beforeUIShow() {
+        m_lastResult = new ArrayList<>();
     }
     public  void createWorkers() {
         if(m_FindTextThreads.size() != MAX_SEARCH_THREAD) {
@@ -52,8 +56,12 @@ public class WSTextFinder {
     }
 
     public void findTask(Context context) {
-
-        WSProjectListener.getInstance().getWSProject().processUnSaveDocument();
+        WSProject project = WSProjectListener.getInstance().getWSProject();
+        if(project == null || !project.isReady()) {
+            return;
+        }
+        project.processUnSaveDocument();
+        project.processTemporaryDocument();
 
         FindTextRequest req = (FindTextRequest)context.getArg();
         if(req.m_TextBoxText.isEmpty()) {
@@ -87,6 +95,7 @@ public class WSTextFinder {
             }
         }
         FSLog.log.info("find Task finish");
+        m_lastResult = args.listResult;
         req.m_finishCallBack.apply(args);
     }
 
@@ -218,6 +227,10 @@ public class WSTextFinder {
             result = oneLineResult;
         }
         return result;
+    }
+
+    public List<WSFindTextResult> getLastResult() {
+        return this.m_lastResult;
     }
 
 }

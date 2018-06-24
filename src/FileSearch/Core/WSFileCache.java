@@ -22,6 +22,7 @@ public class WSFileCache implements java.io.Serializable {
     List<String> m_LinesLowercase = new ArrayList<>();
     List<Integer> m_LineOffSets = new ArrayList<Integer>();
     boolean m_bReadSuccess = true;
+    boolean m_bIsTempFile = false;
     /// Serializable
 
 /*    public void writeObject(ObjectOutputStream outputStream) throws IOException{
@@ -53,7 +54,12 @@ public class WSFileCache implements java.io.Serializable {
             m_bReadSuccess = false;
         }
     }
-
+    public void setIsTmpFile() {
+        this.m_bIsTempFile = true;
+    }
+    public boolean getIsTmpFile() {
+        return this.m_bIsTempFile;
+    }
     public void updateFromVirtualFile(VirtualFile file) {
         m_virtualFile = file;
         m_DocumentModifiedTime = 0;
@@ -85,7 +91,7 @@ public class WSFileCache implements java.io.Serializable {
         int nOffSet = 0;
         for(int i = 0;i < m_Lines.size();++i) {
             int len = m_Lines.get(i).length();
-            if(len > WSConfig.Max_Column_Per_Line) {
+            if(len > WSConfig.Max_Column_Per_Line && !m_bIsTempFile) {
                 FSLog.log.warn(String.format("%s column > %d,will not be cached",file.getName(),WSConfig.Max_Column_Per_Line));
                 this.m_bReadSuccess = false;
                 break;

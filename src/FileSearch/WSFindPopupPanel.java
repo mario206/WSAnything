@@ -11,6 +11,7 @@ import com.intellij.find.impl.*;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.IdeEventQueue;
 import com.intellij.ide.ui.UISettings;
+import com.intellij.lang.Language;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.MnemonicHelper;
 import com.intellij.openapi.actionSystem.*;
@@ -21,6 +22,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.event.DocumentListener;
+import com.intellij.openapi.fileTypes.PlainTextLanguage;
 import com.intellij.openapi.help.HelpManager;
 import com.intellij.openapi.keymap.KeymapUtil;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -45,6 +47,7 @@ import com.intellij.openapi.wm.IdeFrame;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.openapi.wm.impl.IdeFrameImpl;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.GlobalSearchScopeUtil;
 import com.intellij.ui.*;
@@ -84,7 +87,11 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
 
     private static final KeyStroke ENTER = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
     private static final KeyStroke ENTER_WITH_MODIFIERS =
-            KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, SystemInfo.isMac ? InputEvent.META_DOWN_MASK : InputEvent.CTRL_DOWN_MASK);
+            KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.ALT_DOWN_MASK);
+    private static final KeyStroke C_WITH_MODIFIERS =
+            KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.ALT_DOWN_MASK);
+    private static final KeyStroke F_WITH_MODIFIERS =
+            KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.ALT_DOWN_MASK);
     private static final KeyStroke REPLACE_ALL =
             KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.SHIFT_DOWN_MASK | InputEvent.ALT_MASK);
 
@@ -106,6 +113,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
     private final AtomicBoolean myIsPinned = new AtomicBoolean(false);
     private JBLabel myFileCountHintLabel;
     private JBLabel myLineCountHintLabel;
+    private JBLabel myCopyResultHintLabel;
     private Alarm mySearchRescheduleOnCancellationsAlarm;
     private volatile ProgressIndicatorBase myResultsPreviewSearchProgress;
 
@@ -116,12 +124,15 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
     private StateRestoringCheckBox myCbRegularExpressions;
     private StateRestoringCheckBox myCbFileFilter;
     private StateRestoringCheckBox myConsiderFileName;
+    private StateRestoringCheckBox myCurrFileOnly;
+    private JBLabel myCurrFileOnlyHintLabel;
+    private JBLabel myConsiderFileNameHintLabel;
     private ActionToolbarImpl myScopeSelectionToolbar;
     private ComboBox myFileMaskField;
     private ActionButton myFilterContextButton;
     private ActionButton myTabResultsButton;
     private ActionButton myPinButton;
-    private JButton myOKButton;
+    private JButton myCopyResultButton;
     private JButton myReplaceAllButton;
     private JButton myReplaceSelectedButton;
     private JTextArea mySearchComponent;
@@ -139,6 +150,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
     private String myFilesCount;
     private UsageViewPresentation myUsageViewPresentation;
     private Boolean m_bFirstTime = true;
+    private static int s_tmpIndex = 0;
     private static WSFindPopupPanel pInstance;
 
     public WSFindPopupPanel(Project pro) {
@@ -159,6 +171,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
 
         initComponents();
         initByModel();
+        initKeyBoardShortCut();
 
         ApplicationManager.getApplication().invokeLater(this::scheduleResultsUpdate, ModalityState.any());
         if (SystemInfo.isWindows) {
@@ -172,8 +185,33 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
                     });
         }
         WSProjectListener.getInstance().getWSProject().registerEventListener(this);
+        ApplicationManager.getApplication().invokeLater(()->{
+            if(WSUtil.isCurrFileTmpFile()) {
+                myCurrFileOnly.setSelected(true);
+                myCurrFileOnly.setEnabled(false);
+                myConsiderFileName.setEnabled(false);
+            }
+        });
     }
 
+    public void initKeyBoardShortCut() {
+        new AnAction() {
+            @Override
+            public void actionPerformed(AnActionEvent e) {
+                myCurrFileOnly.setEnabled(true);
+                myCurrFileOnly.doClick();
+            }
+        }.registerCustomShortcutSet(new CustomShortcutSet(C_WITH_MODIFIERS), this);
+
+        new AnAction() {
+            @Override
+            public void actionPerformed(AnActionEvent e) {
+                myConsiderFileName.setEnabled(true);
+                myConsiderFileName.doClick();
+            }
+        }.registerCustomShortcutSet(new CustomShortcutSet(F_WITH_MODIFIERS), this);
+
+    }
     @Override
     public void showUI() {
         FSLog.log.info("ShowUI begin");
@@ -354,7 +392,19 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
         myCbRegularExpressions.addItemListener(liveResultsPreviewUpdateListener);
         myCbFileFilter = createCheckBox("find.popup.filemask");
         myConsiderFileName = createCheckBox("Consider FileName");
-        myConsiderFileName.setName("Consider FileName");
+        myCurrFileOnly = createCheckBox("Search CurrFile Only");
+        myCurrFileOnly.setText("Search CurrFile Only");
+        myConsiderFileName.setText("Consider FileName");
+        myCurrFileOnlyHintLabel = new JBLabel("");
+        myCurrFileOnlyHintLabel.setEnabled(false);
+        myConsiderFileNameHintLabel = new JBLabel("");
+        myConsiderFileNameHintLabel.setEnabled(false);
+        myCurrFileOnlyHintLabel.setText(KeymapUtil.getKeystrokeText(C_WITH_MODIFIERS));
+        myConsiderFileNameHintLabel.setText(KeymapUtil.getKeystrokeText(F_WITH_MODIFIERS));
+
+        myCurrFileOnly.addItemListener(__ ->{
+            this.findSettingsChanged();
+        });
         myConsiderFileName.addItemListener(__ ->{
             this.findSettingsChanged();
         });
@@ -511,18 +561,18 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
         tabSettingsPresentation.setIcon(AllIcons.General.SecondaryGroup);
         myTabResultsButton =
                 new ActionButton(tabResultsContextGroup, tabSettingsPresentation, ActionPlaces.UNKNOWN, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE);
-        new AnAction() {
+/*        new AnAction() {
             @Override
             public void actionPerformed(AnActionEvent e) {
                 myTabResultsButton.click();
             }
-        }.registerCustomShortcutSet(CustomShortcutSet.fromString("alt DOWN"), this);
-        myOKButton = new JButton(FindBundle.message("find.popup.find.button"));
+        }.registerCustomShortcutSet(CustomShortcutSet.fromString("alt DOWN"), this);*/
+        myCopyResultButton = new JButton(FindBundle.message("find.popup.find.button"));
         myReplaceAllButton = new JButton(FindBundle.message("find.popup.replace.all.button"));
         myReplaceSelectedButton = new JButton(FindBundle.message("find.popup.replace.selected.button", 0));
 
-        myOkActionListener = __ -> doOK(true);
-        myOKButton.addActionListener(myOkActionListener);
+        myOkActionListener = __ -> doOK_new(true);
+        myCopyResultButton.addActionListener(myOkActionListener);
         boolean enterAsOK = Registry.is("ide.find.enter.as.ok", false);
 
         new DumbAwareAction() {
@@ -723,17 +773,21 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
         splitter.setFirstComponent(scrollPane);
 
         JPanel bottomPanel = new JPanel(new MigLayout("flowx, ins 4 4 0 4, fillx, hidemode 2, gap 0"));
-        //bottomPanel.add(myTabResultsButton);
+
+        myCopyResultHintLabel = new JBLabel("");
+        myCopyResultHintLabel.setEnabled(false);
+        bottomPanel.add(myCopyResultHintLabel,"dock west,gap left 3");
+        bottomPanel.add(myCopyResultButton,"dock west");
+
         myFileCountHintLabel = new JBLabel("");
         myLineCountHintLabel = new JBLabel("");
-        //myFileCountHintLabel.setEnabled(false);
-        //myLineCountHintLabel.setEnabled(false);
-        //String btnGapRight = "gapright " + (JBUI.scale(12)) ;
-        String btnGapRight = "";
         bottomPanel.add(Box.createHorizontalGlue(), "growx, pushx");
-        bottomPanel.add(myFileCountHintLabel, btnGapRight + ",wrap");
+        bottomPanel.add(myFileCountHintLabel,"wrap");
         bottomPanel.add(Box.createHorizontalGlue(), "growx, pushx");
-        bottomPanel.add(myLineCountHintLabel,btnGapRight);
+        bottomPanel.add(myLineCountHintLabel);
+
+
+
 
         ApplicationManager.getApplication().invokeLater(() -> {
             updateFileLineNums();
@@ -771,7 +825,10 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
 
         add(myTitlePanel, "sx 2, growx, growx 200, growy");
         add(checkboxesToolbar, "gapright 8");
-        add(myConsiderFileName,"gapleft 4, gapright 16");
+        add(myCurrFileOnlyHintLabel);
+        add(myCurrFileOnly,"gapright 16");
+        add(myConsiderFileNameHintLabel,"gapleft 4,");
+        add(myConsiderFileName,"gapright 16");
         //add(myCbFileFilter);
         //add(myFileMaskField, "gapleft 4, gapright 16");
         if (Registry.is("ide.find.as.popup.allow.pin") || ApplicationManager.getApplication().isInternal()) {
@@ -831,7 +888,6 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
         if (!canBeClosedImmediately()) {
             return;
         }
-
         FindModel validateModel = myHelper.getModel().clone();
         applyTo(validateModel);
 
@@ -852,6 +908,33 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
             return;
         }
         myIsPinned.set(false);
+        myBalloon.cancel();
+    }
+    private void doOK_new(boolean promptOnReplace) {
+        List<WSFindTextResult> result = WSTextFinder.getInstance().getLastResult();
+        if(result.isEmpty()) {
+            return;
+        }
+        String text = new String();
+        for(int i = 0;i < result.size();++i) {
+            text += result.get(i).m_strLine + "\n";
+        }
+
+
+
+        /// try get curr open file language
+        Language language = PlainTextLanguage.INSTANCE;
+        String suffix = "";
+        try {
+            PsiFile currPsiFile = WSUtil.getSelectedEditorPsiFile();
+            language = currPsiFile.getLanguage();
+            suffix = WSUtil.getFileSuffix(currPsiFile.getVirtualFile().getName());
+        } catch (Exception e) {
+
+        }
+        /// create and navigate to tmp file
+        PsiFile psiFile = WSUtil.createPSIFile(text,language,"tmp_" + (s_tmpIndex++) + suffix);
+        WSUtil.openTextEditor(psiFile);
         myBalloon.cancel();
     }
 
@@ -935,6 +1018,15 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
         myTitleLabel.setText(myHelper.getTitle());
         myReplaceTextArea.setVisible(isReplaceState);
         myCbPreserveCase.setVisible(isReplaceState);
+
+        if (Registry.is("ide.find.enter.as.ok", false)) {
+            myCopyResultHintLabel.setText(KeymapUtil.getKeystrokeText(ENTER));
+        } else {
+            myCopyResultHintLabel.setText(KeymapUtil.getKeystrokeText(ENTER_WITH_MODIFIERS));
+        }
+        //myCopyResultButton.setText(FindBundle.message("find.popup.find.button"));
+        myCopyResultButton.setText("Copy All Results");
+        myCopyResultButton.setEnabled(false);
     }
 
     private void updateControls() {
@@ -1300,14 +1392,17 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
         //model.setRegularExpressions(myCbRegularExpressions.isSelected());
 
         ///mariotodo
-        model.setStringToFind(getStringToFind());
+        String strToFind = getStringToFind();
+        model.setStringToFind(strToFind);
+
+        myCopyResultButton.setEnabled(!strToFind.isEmpty());
+
         WSProject pro = WSProjectListener.getInstance().getWSProject();
         FindTextRequest req = new FindTextRequest();
         req.m_bConsiderFileName = myConsiderFileName.isSelected();
         req.m_nMaxResult = WSConfig.MAX_RESULT;
         req.setString(getStringToFind().toLowerCase());
-
-        req.m_searchFiles = pro.getSolutionFileCopy();
+        req.m_searchFiles = myCurrFileOnly.isSelected() ?  pro.getCurrFileCopy() : pro.getSolutionFileCopy();
 
         req.m_finishCallBack = (param) -> {
             ApplicationManager.getApplication().invokeLater(() -> {
@@ -1321,6 +1416,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
                     tableModel.addRows(vec);
                     myResultsPreviewTable.setRowSelectionInterval(0, 0);
                 }
+                myCopyResultButton.setEnabled(args.listResult.size() > 0);
                 String resultDesc = "";
                 if (args.listResult.size() > 0) {
                     StringBuilder stringBuilder = new StringBuilder();

@@ -1,6 +1,7 @@
 package FileSearch.Core;
 
 import FileSearch.FSLog;
+import com.intellij.lang.Language;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -17,12 +18,14 @@ import com.intellij.psi.PsiManager;
 import com.intellij.psi.util.PsiUtilCore;
 import com.intellij.usageView.UsageInfo;
 import com.intellij.usages.UsageInfo2UsageAdapter;
+import com.intellij.util.LocalTimeCounter;
 import org.jetbrains.annotations.NotNull;
 import sun.rmi.runtime.Log;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import com.intellij.psi.*;
 
 public class WSUtil {
     public static String getFileSuffix(String fileName) {
@@ -40,19 +43,24 @@ public class WSUtil {
 
     public static Editor openTextEditor(WSFindTextResult info,boolean focus) {
         Project pro = WSProjectListener.getInstance().getJBProject();
-        OpenFileDescriptor desc = getDescriptor(pro,info);
+        OpenFileDescriptor desc = getDescriptor(pro,info.m_virtualFile,info.m_nLineIndex,info.nBeginIndex);
         return FileEditorManager.getInstance(pro).openTextEditor(desc, focus);
     }
-    public static OpenFileDescriptor getDescriptor(Project pro,WSFindTextResult result) {
-        VirtualFile file = result.m_virtualFile;
-        return new OpenFileDescriptor(pro, file,result.m_nLineIndex,result.nBeginIndex);
+    public static Editor openTextEditor(PsiFile file) {
+        Project pro = WSProjectListener.getInstance().getJBProject();
+        OpenFileDescriptor desc = getDescriptor(pro,file.getVirtualFile(),0,0);
+        return FileEditorManager.getInstance(pro).openTextEditor(desc, true);
+    }
+
+    public static OpenFileDescriptor getDescriptor(Project pro,VirtualFile file,int logicalLine,int logicalColumn) {
+        return new OpenFileDescriptor(pro, file,logicalLine,logicalColumn);
     }
 
     //mariotodo
     public static UsageInfo getUsageInfo(WSFindTextResult result) {
         UsageInfo info = null;
         try {
-            Pair.NonNull<PsiFile, VirtualFile> pair = ReadAction.compute(() -> findFile(result.m_virtualFile));
+            Pair<PsiFile, VirtualFile> pair = ReadAction.compute(() -> findFile(result.m_virtualFile));
             PsiFile psiFile = pair.first;
 
             Project project = psiFile.getProject();
@@ -94,7 +102,7 @@ public class WSUtil {
             Pair<Integer,Integer> indexPair = result.m_ListMatchTextIndexs.get(i);
 
             try {
-                Pair.NonNull<PsiFile, VirtualFile> pair = ReadAction.compute(() -> findFile(result.m_virtualFile));
+                Pair<PsiFile, VirtualFile> pair = ReadAction.compute(() -> findFile(result.m_virtualFile));
                 PsiFile psiFile = pair.first;
 
                 Project project = psiFile.getProject();
@@ -147,7 +155,7 @@ public class WSUtil {
 
 
 
-    private static Pair.NonNull<PsiFile, VirtualFile> findFile(@NotNull final VirtualFile virtualFile) {
+    public static Pair<PsiFile, VirtualFile> findFile(@NotNull final VirtualFile virtualFile) {
         Project project = WSProjectListener.getInstance().getJBProject();
         PsiManager myPsiManager = PsiManager.getInstance(project);
         PsiFile psiFile = myPsiManager.findFile(virtualFile);
@@ -263,5 +271,43 @@ public class WSUtil {
 
         return isSupportSize_impl(WSConfig.ListSearchSuffix_ProgramLang,WSConfig.MaxFileSize_ProgramLang,size,suffix,name,true)
                 || isSupportSize_impl(WSConfig.ListSearchSuffix_OtherFile,WSConfig.MaxFileSize_OtherFile,size,suffix,name,false);
+    }
+    public static PsiFile createPSIFile(String text, Language language,String fileName) {
+        Project project = WSProjectListener.getInstance().getJBProject();
+        PsiFile ret = PsiFileFactory.getInstance(project).createFileFromText(fileName,language,text);
+        return ret;
+    }
+    public static PsiFile getSelectedEditorPsiFile() {
+        return ReadAction.compute(()->{
+            Project project = WSProjectListener.getInstance().getJBProject();
+            Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
+            if(editor != null) {
+                return PsiDocumentManager.getInstance(project).getPsiFile(editor.getDocument());
+            } else {
+                return null;
+            }
+        });
+    }
+    public static boolean isCurrFileTmpFile() {
+        try {
+            PsiFile psiFile = WSUtil.getSelectedEditorPsiFile();
+            VirtualFile file = psiFile != null ? psiFile.getVirtualFile() : null;
+            return isTmpFile(file);
+        } catch (Exception e) {
+            FSLog.log.error(e);
+            return false;
+        }
+    }
+    public static boolean isTmpFile(VirtualFile file) {
+        boolean bRet = false;
+        if(file != null) {
+            try {
+                bRet = WSProjectListener.getInstance().getWSProject().isFileTmpFile(file);
+            }catch (Exception e) {
+                FSLog.log.error(e);
+            }
+        }
+
+        return bRet;
     }
 }
