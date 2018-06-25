@@ -149,8 +149,8 @@ public class WSTextFinder {
     public static List<WSFindTextResult> searchFile(VirtualFile file, FindTextRequest req) {
         List<WSFindTextResult> result = null;
         WSFileCache cache = WSProjectListener.getInstance().getWSProject().getCache(file);
-        for(int i = 0;i < cache.m_LinesLowercase.size();++i) {
-            String line = cache.m_LinesLowercase.get(i);
+        for(int i = 0;i < cache.m_Lines.size();++i) {
+            String line = cache.m_Lines.get(i).toLowerCase();
 
             WSFindTextResult oneLineResult = searchLine(i, line, file, req, cache);
             if (oneLineResult != null) {

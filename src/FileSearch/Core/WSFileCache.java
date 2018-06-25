@@ -19,7 +19,7 @@ public class WSFileCache implements java.io.Serializable {
     long m_timeStamp;
     long m_DocumentModifiedTime = 0;
     List<String> m_Lines = new ArrayList<>();
-    List<String> m_LinesLowercase = new ArrayList<>();
+    //List<String> m_LinesLowercase = new ArrayList<>();
     List<Integer> m_LineOffSets = new ArrayList<Integer>();
     boolean m_bReadSuccess = true;
     boolean m_bIsTempFile = false;
@@ -85,7 +85,7 @@ public class WSFileCache implements java.io.Serializable {
     }
     public void updateByText(VirtualFile file,String text) {
         m_Lines = Arrays.asList(text.split("\n"));
-        m_LinesLowercase.clear();
+        //m_LinesLowercase.clear();
         m_LineOffSets.clear();
 
         int nOffSet = 0;
@@ -96,7 +96,7 @@ public class WSFileCache implements java.io.Serializable {
                 this.m_bReadSuccess = false;
                 break;
             }
-            m_LinesLowercase.add(m_Lines.get(i).toLowerCase());
+            //m_LinesLowercase.add(m_Lines.get(i).toLowerCase());
             m_LineOffSets.add(nOffSet);
             nOffSet += m_Lines.get(i).length() + 1;
         }

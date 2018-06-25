@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.mario.WSAnything.plugin</id>
   <name>WSAnything</name>
-  <version>1.4</version>
+  <version>1.5</version>
 
   <vendor url="https://github.com/mario206/WSAnything" email="mariotest@qq.com" />
 
@@ -26,7 +26,7 @@
     <group id="WSAnything.WSAnything" text="_WSAnything" description="WSAnything">\
       <add-to-group group-id="MainMenu" anchor="last"  />
       <action id="WSAnything.Open" class="FileSearch.actions.OpenFileSearch" text="WSAnything Show" description="Find files by name or path">
-        <keyboard-shortcut first-keystroke="control Y" second-keystroke="F1" keymap="$default"/>
+        <keyboard-shortcut first-keystroke="F1" keymap="$default"/>
       </action>
 
     </group>
