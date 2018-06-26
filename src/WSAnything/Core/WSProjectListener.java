@@ -29,7 +29,7 @@ public class WSProjectListener implements VetoableProjectManagerListener {
 
     public void projectOpened(Project project) {
         FSLog.log.info("projectOpened" + project.getName());
-        startProject(project);
+        //startProject(project);
     }
     public void projectClosed(Project project) {
         FSLog.log.info("projectClosed" + project.getName());

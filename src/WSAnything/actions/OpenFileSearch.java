@@ -13,7 +13,7 @@ public class OpenFileSearch extends AnAction {
         Project project = e.getProject();
 
         if(project != null) {
-            WSProjectListener.getInstance().projectOpened(project);
+            WSProjectListener.getInstance().startProject(project);
         }
         WSProjectListener.getInstance().beforeUIShow();
         WSFindPopupPanel pnl = new WSFindPopupPanel(project);

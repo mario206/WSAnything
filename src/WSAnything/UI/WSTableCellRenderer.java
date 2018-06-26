@@ -2,6 +2,7 @@ package WSAnything.UI;
 
 import WSAnything.Core.WSFindTextResult;
 import WSAnything.Core.WSUtil;
+import WSAnything.FSLog;
 import com.intellij.openapi.fileEditor.UniqueVFilePathBuilder;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Comparing;
@@ -29,7 +30,6 @@ public class WSTableCellRenderer extends JPanel implements TableCellRenderer {
     private final ColoredTableCellRenderer myUsageRenderer = new ColoredTableCellRenderer() {
         @Override
         protected void customizeCellRenderer(JTable table, Object value, boolean selected, boolean hasFocus, int row, int column) {
-
             WSFindTextResult result = (WSFindTextResult)value;
             UsageInfo2UsageAdapter adapter = WSUtil.getMergedUsageAdapter(result);
 

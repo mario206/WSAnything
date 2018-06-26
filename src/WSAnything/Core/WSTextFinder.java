@@ -93,6 +93,9 @@ public class WSTextFinder {
             }
         }
         FSLog.log.info("find Task finish");
+        if(args.listResult.size() > req.m_nMaxResult) {
+            args.listResult = args.listResult.subList(0,req.m_nMaxResult);
+        }
         m_lastResult = args.listResult;
         req.m_finishCallBack.apply(args);
     }
