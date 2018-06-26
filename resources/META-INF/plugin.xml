@@ -25,7 +25,7 @@
   <!-- Add your actions here -->
     <group id="WSAnything.WSAnything" text="_WSAnything" description="WSAnything">\
       <add-to-group group-id="MainMenu" anchor="last"  />
-      <action id="WSAnything.Open" class="FileSearch.actions.OpenFileSearch" text="WSAnything Show" description="Find files by name or path">
+      <action id="WSAnything.Open" class="WSAnything.actions.OpenFileSearch" text="WSAnything Show" description="Find files by name or path">
         <keyboard-shortcut first-keystroke="F1" keymap="$default"/>
       </action>
 
