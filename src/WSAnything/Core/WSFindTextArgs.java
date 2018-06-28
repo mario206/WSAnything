@@ -8,5 +8,6 @@ public class WSFindTextArgs {
     public List<WSFindTextResult> listResult = new ArrayList<WSFindTextResult>();
     public int m_currResultCnt = 0;
     public int activeThreadCnt;
+    public List<List<WSFindTextResult>> llistResult = null;
 }
 

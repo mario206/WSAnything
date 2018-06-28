@@ -14,6 +14,7 @@ public class FindTextRequest {
         String[] vec = new String[0];
     }
     public int m_nTag;
+    public long m_reqTimeStamp;
     public int m_currIndex = 0;
     public int m_nMaxResult;
     public int m_nResultFileCnt = 0;
@@ -28,4 +29,5 @@ public class FindTextRequest {
         m_TextBoxText = str;
         m_pattern.vec = m_TextBoxText.split("\\s+");
     }
+
 }

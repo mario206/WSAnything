@@ -5,6 +5,7 @@ import WSAnything.FSLog;
 import com.google.common.collect.Lists;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.util.Pair;
+import sun.misc.Cache;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,6 +76,7 @@ public class WSTextFinder {
         FSLog.log.info("searchFileNums = " + req.m_searchFiles.size());
         WSFindTextArgs args = new WSFindTextArgs();
         args.req = req;
+        args.llistResult = new ArrayList<>(args.req.m_searchFiles.size());
         args.activeThreadCnt = MAX_SEARCH_THREAD;
 
         for(int i = 0;i < MAX_SEARCH_THREAD;++i) {
@@ -93,6 +95,12 @@ public class WSTextFinder {
             }
         }
         FSLog.log.info("find Task finish");
+        for(int i = 0;i < args.llistResult.size();++i) {
+            List<WSFindTextResult> list = args.llistResult.get(i);
+            if(list != null) {
+                args.listResult.addAll(list);
+            }
+        }
         if(args.listResult.size() > req.m_nMaxResult) {
             args.listResult = args.listResult.subList(0,req.m_nMaxResult);
         }
@@ -103,10 +111,11 @@ public class WSTextFinder {
     public void findTextThreadMain(Context context) {
         FSLog.log.info("findTextThreadMain begin");
         WSFindTextArgs args = (WSFindTextArgs) context.getArg();
-        List<WSFindTextResult> result = new ArrayList<WSFindTextResult>();
         VirtualFile file = null;
         while (true) {
+            int currIndex = -1;
             synchronized (args) {
+                currIndex = args.req.m_currIndex;
                 if(context.isTaskCanceled()) {
                     FSLog.log.info("findTextThreadMain cancel");
                     break;
@@ -116,7 +125,8 @@ public class WSTextFinder {
                         args.req.m_upToResultCntLimit = true;
                         break;
                     }
-                    file = args.req.m_searchFiles.get(args.req.m_currIndex++);
+                    file = args.req.m_searchFiles.get(currIndex);
+                    args.req.m_currIndex++;
                     //FSLog.log.info("search File" + file.getName())
                 } else {
                     FSLog.log.info("search file empty,break");
@@ -124,24 +134,30 @@ public class WSTextFinder {
                 }
             }
             if(file != null) {
-                List<WSFindTextResult> tmpRsult = searchFile(file,args.req);
-                if(tmpRsult != null) {
-                    result.addAll(tmpRsult);
-                    if(tmpRsult.size() > 0) {
-                        synchronized (args) {
-                            args.req.m_nResultFileCnt++;
-                            args.m_currResultCnt += tmpRsult.size();
+                List<WSFindTextResult> tmpRsult = null;
+                try {
+                    tmpRsult = searchFile(file,args.req);
+                }catch (Exception e) {
+                    FSLog.log.error(e);
+                }
+                if(tmpRsult != null && tmpRsult.size() > 0) {
+                    synchronized (args) {
+                        args.req.m_nResultFileCnt++;
+                        args.m_currResultCnt += tmpRsult.size();
+                        try {
+                            while(args.llistResult.size() < currIndex) {
+                                args.llistResult.add(null);
+                            }
+                            args.llistResult.add(currIndex, tmpRsult);
+                        } catch (Exception e) {
+                            FSLog.log.info("sd");
                         }
                     }
                 }
             }
-
         }
         FSLog.log.info("findTextThreadMain end");
         synchronized(args) {
-            if(result != null) {
-                args.listResult.addAll(result);
-            }
             args.activeThreadCnt--;
             args.notify();
         }
@@ -150,13 +166,14 @@ public class WSTextFinder {
     public static List<WSFindTextResult> searchFile(VirtualFile file, FindTextRequest req) {
         List<WSFindTextResult> result = null;
         WSFileCache cache = WSProjectListener.getInstance().getWSProject().getCache(file);
-        for(int i = 0;i < cache.m_Lines.size();++i) {
-            String line = cache.m_Lines.get(i).toLowerCase();
-
-            WSFindTextResult oneLineResult = searchLine(i, line, file, req, cache);
-            if (oneLineResult != null) {
-                if(result == null)  result = new ArrayList<>();
-                result.add(oneLineResult);
+        if(cache != null) {
+            for(int i = 0;i < cache.m_Lines.size();++i) {
+                String line = cache.m_Lines.get(i).toLowerCase();
+                WSFindTextResult oneLineResult = searchLine(i, line, file, req, cache);
+                if (oneLineResult != null) {
+                    if(result == null)  result = new ArrayList<>();
+                    result.add(oneLineResult);
+                }
             }
         }
         return result;

@@ -1399,6 +1399,8 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
 
         WSProject pro = WSProjectListener.getInstance().getWSProject();
         FindTextRequest req = new FindTextRequest();
+
+        req.m_reqTimeStamp = new Date().getTime();
         req.m_bConsiderFileName = myConsiderFileName.isSelected();
         req.m_nMaxResult = WSConfig.MAX_RESULT;
         req.setString(getStringToFind().toLowerCase());
@@ -1407,8 +1409,9 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
         req.m_finishCallBack = (param) -> {
             ApplicationManager.getApplication().invokeLater(() -> {
 
+                long currTimeStamp = new Date().getTime();
                 WSFindTextArgs args = (WSFindTextArgs) param;
-                FSLog.log.info(String.format("[%d]find req callback result num = %d", args.req.m_nTag,args.listResult.size()));
+                FSLog.log.info(String.format("[%d]find req callback result num = %d,take time = %d(ms)", args.req.m_nTag,args.listResult.size(),currTimeStamp - req.m_reqTimeStamp));
 
                 if (args.listResult.size() > 0) {
                     WSTableModel tableModel = (WSTableModel) myResultsPreviewTable.getModel();

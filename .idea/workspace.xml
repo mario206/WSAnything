@@ -3,10 +3,11 @@
   <component name="ChangeListManager">
     <list default="true" id="c64f6eb7-b270-4479-b5d2-5dbef3e277b5" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/WSAnything.jar" afterPath="$PROJECT_DIR$/WSAnything.jar" />
       <change beforePath="$PROJECT_DIR$/resources/META-INF/plugin.xml" afterPath="$PROJECT_DIR$/resources/META-INF/plugin.xml" />
-      <change beforePath="$PROJECT_DIR$/src/FileSearch/Core/WSProject.java" afterPath="$PROJECT_DIR$/src/FileSearch/Core/WSProject.java" />
-      <change beforePath="$PROJECT_DIR$/src/FileSearch/WSFindPopupPanel.java" afterPath="$PROJECT_DIR$/src/FileSearch/WSFindPopupPanel.java" />
+      <change beforePath="$PROJECT_DIR$/src/WSAnything/Core/FindTextRequest.java" afterPath="$PROJECT_DIR$/src/WSAnything/Core/FindTextRequest.java" />
+      <change beforePath="$PROJECT_DIR$/src/WSAnything/Core/WSFindTextArgs.java" afterPath="$PROJECT_DIR$/src/WSAnything/Core/WSFindTextArgs.java" />
+      <change beforePath="$PROJECT_DIR$/src/WSAnything/Core/WSTextFinder.java" afterPath="$PROJECT_DIR$/src/WSAnything/Core/WSTextFinder.java" />
+      <change beforePath="$PROJECT_DIR$/src/WSAnything/WSFindPopupPanel.java" afterPath="$PROJECT_DIR$/src/WSAnything/WSFindPopupPanel.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -21,60 +22,80 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="WSProject.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/FileSearch/Core/WSProject.java">
+      <file leaf-file-name="WSTextFinder.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/WSAnything/Core/WSTextFinder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state relative-caret-position="370">
+              <caret line="100" column="45" lean-forward="false" selection-start-line="100" selection-start-column="45" selection-end-line="100" selection-end-column="45" />
               <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#7393#7394#0" expanded="true" />
-                <element signature="e#7433#7434#0" expanded="true" />
-                <element signature="e#7465#7466#0" expanded="true" />
-                <element signature="e#7504#7505#0" expanded="true" />
-                <element signature="e#7563#7564#0" expanded="true" />
-                <element signature="e#7593#7594#0" expanded="true" />
+                <element signature="e#9556#9557#0" expanded="true" />
+                <element signature="e#9596#9597#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="WSFindPopupPanel.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/FileSearch/WSFindPopupPanel.java">
+      <file leaf-file-name="EnumConstantNotPresentException.java" pinned="false" current-in-tab="false">
+        <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home/src.zip!/java/lang/EnumConstantNotPresentException.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="308">
-              <caret line="1475" column="68" lean-forward="false" selection-start-line="1475" selection-start-column="41" selection-end-line="1475" selection-end-column="68" />
+            <state relative-caret-position="195">
+              <caret line="59" column="11" lean-forward="false" selection-start-line="59" selection-start-column="11" selection-end-line="59" selection-end-column="11" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ArrayList.java" pinned="false" current-in-tab="false">
+        <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home/src.zip!/java/util/ArrayList.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="188">
+              <caret line="150" column="40" lean-forward="false" selection-start-line="150" selection-start-column="25" selection-end-line="150" selection-end-column="40" />
               <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#14070#14071#0" expanded="true" />
-                <element signature="e#14105#14106#0" expanded="true" />
-                <element signature="e#14153#14154#0" expanded="true" />
-                <element signature="e#14185#14186#0" expanded="true" />
-                <element signature="e#14239#14240#0" expanded="true" />
-                <element signature="e#14270#14271#0" expanded="true" />
-                <element signature="e#14318#14319#0" expanded="true" />
-                <element signature="e#14350#14351#0" expanded="true" />
-                <element signature="e#14405#14406#0" expanded="true" />
-                <element signature="e#14438#14439#0" expanded="true" />
-                <element signature="e#18543#18544#0" expanded="true" />
-                <element signature="e#18598#18599#0" expanded="true" />
-                <element signature="e#20613#20614#0" expanded="true" />
-                <element signature="e#20656#20657#0" expanded="true" />
-                <element signature="e#20736#20737#0" expanded="true" />
-                <element signature="e#20818#20819#0" expanded="true" />
-                <element signature="e#21484#21485#0" expanded="true" />
-                <element signature="e#21559#21560#0" expanded="true" />
-                <element signature="e#21652#21653#0" expanded="true" />
-                <element signature="e#21726#21727#0" expanded="true" />
-                <element signature="e#22129#22130#0" expanded="true" />
-                <element signature="e#22196#22197#0" expanded="true" />
-                <element signature="e#22289#22290#0" expanded="true" />
-                <element signature="e#22355#22356#0" expanded="true" />
-                <element signature="e#56060#56061#0" expanded="true" />
-                <element signature="e#56094#56095#0" expanded="true" />
-                <element signature="e#58970#58971#0" expanded="true" />
-                <element signature="e#59021#59022#0" expanded="true" />
+                <element signature="e#6283#6284#0" expanded="true" />
+                <element signature="e#6351#6352#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="List.java" pinned="false" current-in-tab="false">
+        <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home/src.zip!/java/util/List.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="366">
+              <caret line="589" column="48" lean-forward="false" selection-start-line="589" selection-start-column="48" selection-end-line="589" selection-end-column="48" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="WSFindTextArgs.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/WSAnything/Core/WSFindTextArgs.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="153">
+              <caret line="10" column="40" lean-forward="false" selection-start-line="10" selection-start-column="40" selection-end-line="10" selection-end-column="40" />
+              <folding>
+                <element signature="e#200#218#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FindTextRequest.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/WSAnything/Core/FindTextRequest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="208">
+              <caret line="18" column="27" lean-forward="false" selection-start-line="18" selection-start-column="15" selection-end-line="18" selection-end-column="27" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="WSConfig.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/WSAnything/Core/WSConfig.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="289">
+              <caret line="18" column="20" lean-forward="true" selection-start-line="18" selection-start-column="20" selection-end-line="18" selection-end-column="20" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -82,141 +103,32 @@
       <file leaf-file-name="plugin.xml" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/resources/META-INF/plugin.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="408">
-              <caret line="24" column="0" lean-forward="true" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ActionUtil.class" pinned="false" current-in-tab="false">
-        <entry file="jar://$APPLICATION_HOME_DIR$/lib/openapi.jar!/com/intellij/openapi/actionSystem/ex/ActionUtil.class">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3043">
-              <caret line="219" column="0" lean-forward="false" selection-start-line="219" selection-start-column="0" selection-end-line="219" selection-end-column="0" />
-              <folding>
-                <marker date="1520278554000" expanded="false" signature="0:104" ph="/.../" />
-                <marker date="1520278554000" expanded="false" signature="160:1811" ph="..." />
-                <marker date="1520278554000" expanded="true" signature="2358:2365" ph="{}" />
-                <marker date="1520278554000" expanded="true" signature="2444:3410" ph="{...}" />
-                <marker date="1520278554000" expanded="true" signature="3514:4250" ph="{...}" />
-                <marker date="1520278554000" expanded="true" signature="4352:4703" ph="{...}" />
-                <marker date="1520278554000" expanded="true" signature="4863:7090" ph="{...}" />
-                <marker date="1520278554000" expanded="true" signature="7096:7114" ph="/**...*/" />
-                <marker date="1520278554000" expanded="true" signature="7263:7495" ph="{...}" />
-                <marker date="1520278554000" expanded="true" signature="7561:8052" ph="{...}" />
-                <marker date="1520278554000" expanded="true" signature="8164:8977" ph="{...}" />
-                <marker date="1520278554000" expanded="true" signature="9071:9718" ph="{...}" />
-                <marker date="1520278554000" expanded="true" signature="9116:9533" ph="{...}" />
-                <marker date="1520278554000" expanded="true" signature="9148:9409" ph="{...}" />
-                <marker date="1520278554000" expanded="false" signature="9447:9466" ph=" { " />
-                <marker date="1520278554000" expanded="false" signature="9509:9523" ph=" }" />
-                <marker date="1520278554000" expanded="true" signature="9808:10111" ph="{...}" />
-                <marker date="1520278554000" expanded="true" signature="10180:10347" ph="{...}" />
-                <marker date="1520278554000" expanded="true" signature="10446:10830" ph="{...}" />
-                <marker date="1520278554000" expanded="true" signature="10983:11795" ph="{...}" />
-                <marker date="1520278554000" expanded="true" signature="11947:12544" ph="{...}" />
-                <marker date="1520278554000" expanded="true" signature="12634:12892" ph="{...}" />
-                <marker date="1520278554000" expanded="true" signature="12983:14161" ph="{...}" />
-                <marker date="1520278554000" expanded="true" signature="14338:15102" ph="{...}" />
-                <marker date="1520278554000" expanded="true" signature="15268:16100" ph="{...}" />
-                <marker date="1520278554000" expanded="true" signature="15557:15990" ph="{...}" />
-                <marker date="1520278554000" expanded="true" signature="15614:15980" ph="{...}" />
-                <marker date="1520278554000" expanded="true" signature="16139:16272" ph="{...}" />
-                <marker date="1520278554000" expanded="true" signature="16255:16266" ph="{}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="JBPanel.class" pinned="false" current-in-tab="false">
-        <entry file="jar://$APPLICATION_HOME_DIR$/lib/util.jar!/com/intellij/ui/components/JBPanel.class">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="102">
-              <caret line="17" column="71" lean-forward="false" selection-start-line="17" selection-start-column="71" selection-end-line="17" selection-end-column="71" />
-              <folding>
-                <marker date="1520278552000" expanded="false" signature="0:104" ph="/.../" />
-                <marker date="1520278552000" expanded="false" signature="150:449" ph="..." />
-                <marker date="1520278552000" expanded="false" signature="824:835" ph=" { " />
-                <marker date="1520278552000" expanded="false" signature="867:873" ph=" }" />
-                <marker date="1520278552000" expanded="false" signature="915:926" ph=" { " />
-                <marker date="1520278552000" expanded="false" signature="940:946" ph=" }" />
-                <marker date="1520278552000" expanded="false" signature="992:1003" ph=" { " />
-                <marker date="1520278552000" expanded="false" signature="1027:1033" ph=" }" />
-                <marker date="1520278552000" expanded="true" signature="1056:1063" ph="{}" />
-                <marker date="1520278552000" expanded="true" signature="1104:1164" ph="{...}" />
-                <marker date="1520278552000" expanded="true" signature="1201:1257" ph="{...}" />
-                <marker date="1520278552000" expanded="true" signature="1289:1348" ph="{...}" />
-                <marker date="1520278552000" expanded="true" signature="1375:1433" ph="{...}" />
-                <marker date="1520278552000" expanded="true" signature="1491:1559" ph="{...}" />
-                <marker date="1520278552000" expanded="true" signature="1604:1671" ph="{...}" />
-                <marker date="1520278552000" expanded="true" signature="1718:1787" ph="{...}" />
-                <marker date="1520278552000" expanded="true" signature="1843:1951" ph="{...}" />
-                <marker date="1520278552000" expanded="true" signature="1994:2059" ph="{...}" />
-                <marker date="1520278552000" expanded="true" signature="2104:2171" ph="{...}" />
-                <marker date="1520278552000" expanded="true" signature="2214:2279" ph="{...}" />
-                <marker date="1520278552000" expanded="true" signature="2324:2391" ph="{...}" />
-                <marker date="1520278552000" expanded="true" signature="2433:2564" ph="{...}" />
-                <marker date="1520278552000" expanded="true" signature="2604:2727" ph="{...}" />
-                <marker date="1520278552000" expanded="true" signature="2767:2890" ph="{...}" />
-                <marker date="1520278552000" expanded="true" signature="2991:3262" ph="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="JBComponent.class" pinned="false" current-in-tab="false">
-        <entry file="jar://$APPLICATION_HOME_DIR$/lib/util.jar!/com/intellij/util/ui/components/JBComponent.class">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="102">
-              <caret line="10" column="17" lean-forward="false" selection-start-line="10" selection-start-column="17" selection-end-line="10" selection-end-column="17" />
-              <folding>
-                <marker date="1520278552000" expanded="false" signature="0:104" ph="/.../" />
-                <marker date="1520278552000" expanded="false" signature="155:217" ph="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="FindUI.class" pinned="false" current-in-tab="false">
-        <entry file="jar://$APPLICATION_HOME_DIR$/lib/idea.jar!/com/intellij/find/impl/FindUI.class">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="102">
-              <caret line="10" column="17" lean-forward="false" selection-start-line="10" selection-start-column="17" selection-end-line="10" selection-end-column="17" />
-              <folding>
-                <marker date="1520278552000" expanded="false" signature="0:104" ph="/.../" />
-                <marker date="1520278552000" expanded="false" signature="146:220" ph="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="OpenFileSearch.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/FileSearch/actions/OpenFileSearch.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="323">
-              <caret line="24" column="21" lean-forward="false" selection-start-line="24" selection-start-column="21" selection-end-line="24" selection-end-column="21" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="WSEventListener.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/FileSearch/Core/WSEventListener.java">
-          <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="51">
-              <caret line="3" column="16" lean-forward="false" selection-start-line="3" selection-start-column="16" selection-end-line="3" selection-end-column="16" />
+              <caret line="3" column="14" lean-forward="false" selection-start-line="3" selection-start-column="14" selection-end-line="3" selection-end-column="14" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="WSProjectListener.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/FileSearch/Core/WSProjectListener.java">
+      <file leaf-file-name="WSFindPopupPanel.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/WSAnything/WSFindPopupPanel.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="357">
-              <caret line="30" column="15" lean-forward="false" selection-start-line="30" selection-start-column="15" selection-end-line="30" selection-end-column="15" />
+            <state relative-caret-position="188">
+              <caret line="1404" column="42" lean-forward="false" selection-start-line="1404" selection-start-column="42" selection-end-line="1404" selection-end-column="42" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Date.java" pinned="false" current-in-tab="false">
+        <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home/src.zip!/java/util/Date.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="188">
+              <caret line="130" column="13" lean-forward="false" selection-start-line="130" selection-start-column="13" selection-end-line="130" selection-end-column="13" />
+              <folding>
+                <element signature="e#37718#37719#0" expanded="true" />
+                <element signature="e#37754#37755#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -232,36 +144,36 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>close</find>
-      <find>Integer</find>
-      <find>m_DocumentModifiedTime</find>
-      <find>m_bIsSizeValid</find>
-      <find>getIsSizeValid</find>
-      <find>readFromLocalFile</find>
-      <find>SerializeToLocalFile</find>
-      <find>readf</find>
-      <find>hide</find>
-      <find>get</find>
-      <find>pro</find>
-      <find>WSFindPopupPanel</find>
-      <find>closeImmediately</find>
-      <find>unre</find>
-      <find>getstringtofind</find>
-      <find>myBalloon</find>
-      <find>getstirngt</find>
-      <find>setstringtofind</find>
-      <find>applyTo</find>
-      <find>unregi</find>
-      <find>registe</find>
-      <find>Registe</find>
-      <find>registerevent</find>
-      <find>scanFileThread</find>
-      <find>later</find>
-      <find>ApplicationManager.getApplication().invokeLater</find>
-      <find>invokeLater</find>
-      <find>CustomShortcutSet</find>
-      <find>MySwitchContextToggleAction</find>
-      <find>vend</find>
+      <find>isReadSuccess</find>
+      <find>tablece</find>
+      <find>customizeCellRenderer</find>
+      <find>tablecellrender</find>
+      <find>WSTableCellRenderer</find>
+      <find>mariotodo</find>
+      <find>m_finishCallBack</find>
+      <find>maxresult</find>
+      <find>keyboard</find>
+      <find>shortcut</find>
+      <find>default</find>
+      <find>VecOtherFileSuffix</find>
+      <find>ListSearchSuffix_OtherFile</find>
+      <find>MaxFileSize_OtherFile</find>
+      <find>html</find>
+      <find>m_searchFiles =</find>
+      <find>m_CacheFile</find>
+      <find>getCache</find>
+      <find>searchFile</find>
+      <find>tmpRsult</find>
+      <find>result</find>
+      <find>WSFindTextArgs new</find>
+      <find>m</find>
+      <find>mis</find>
+      <find>m_searchFiles</find>
+      <find>m_currIndex</find>
+      <find>findTextThreadMain</find>
+      <find>llistResult</find>
+      <find>find req callback</find>
+      <find>m_nMaxResult</find>
     </findStrings>
     <replaceStrings>
       <replace>WSTableCellRenderer</replace>
@@ -278,12 +190,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/FileSearch/Searcher.java" />
-        <option value="$PROJECT_DIR$/src/WSFileCache.java" />
-        <option value="$PROJECT_DIR$/src/FileSearch/WSFileCache.java" />
-        <option value="$PROJECT_DIR$/src/FileSearch/WSUtil.java" />
-        <option value="$PROJECT_DIR$/src/FileSearch/WSProjectListerner.java" />
-        <option value="$PROJECT_DIR$/src/FileSearch/WSSolution.java" />
         <option value="$PROJECT_DIR$/src/FileSearch/WSProjectListener.java" />
         <option value="$PROJECT_DIR$/src/FileSearch/FindTextRequest.java" />
         <option value="$PROJECT_DIR$/src/FileSearch/WSMain.java" />
@@ -301,25 +207,40 @@
         <option value="$PROJECT_DIR$/src/FileSearch/Core/WSFindTaskResult.java" />
         <option value="$PROJECT_DIR$/src/FileSearch/WSFindUIHelper.java" />
         <option value="$PROJECT_DIR$/src/FileSearch/Core/WSFindInProjectUtil.java" />
-        <option value="$PROJECT_DIR$/src/FileSearch/actions/OpenFileSearch.java" />
         <option value="$PROJECT_DIR$/src/FileSearch/Core/WSFindTextArgs.java" />
         <option value="$PROJECT_DIR$/src/FileSearch/Core/FindTextRequest.java" />
         <option value="$PROJECT_DIR$/src/FileSearch/Core/AsyncTask.java" />
-        <option value="$PROJECT_DIR$/src/FileSearch/Core/WSFileListener.java" />
         <option value="$PROJECT_DIR$/src/FileSearch/UI/WSTableCellRenderer.java" />
         <option value="$PROJECT_DIR$/src/FileSearch/Core/WSFindTextResult.java" />
-        <option value="$PROJECT_DIR$/src/FileSearch/Core/WSTextFinder.java" />
-        <option value="$PROJECT_DIR$/src/FileSearch/Core/WSUtil.java" />
-        <option value="$PROJECT_DIR$/src/FileSearch/Core/WSConfig.java" />
         <option value="$PROJECT_DIR$/src/FileSearch/SearchOptions.java" />
         <option value="$PROJECT_DIR$/src/FileSearch/UI/WSTableModel.java" />
-        <option value="$PROJECT_DIR$/src/FileSearch/Core/WSProjectListener.java" />
-        <option value="$PROJECT_DIR$/src/FileSearch/Core/WSFileCache.java" />
         <option value="$PROJECT_DIR$/src/FileSearch/Core/CacheFileSerializer.java" />
         <option value="$PROJECT_DIR$/src/FileSearch/Core/WSEventListener.java" />
-        <option value="$PROJECT_DIR$/src/FileSearch/Core/WSProject.java" />
+        <option value="$PROJECT_DIR$/src/FileSearch/Core/WSConfig.java" />
+        <option value="$PROJECT_DIR$/src/FileSearch/Core/WSSolutionFile.java" />
+        <option value="$PROJECT_DIR$/src/FileSearch/Core/WSFileEditorListener.java" />
+        <option value="$PROJECT_DIR$/src/FileSearch/Core/WSFileListener.java" />
+        <option value="$PROJECT_DIR$/src/FileSearch/Core/WSUtil.java" />
+        <option value="$PROJECT_DIR$/src/FileSearch/Core/WSFileCache.java" />
         <option value="$PROJECT_DIR$/src/FileSearch/WSFindPopupPanel.java" />
+        <option value="$PROJECT_DIR$/src/FileSearch/Core/WSProject.java" />
+        <option value="$PROJECT_DIR$/src/FileSearch/Core/WSProjectListener.java" />
+        <option value="$PROJECT_DIR$/src/FileSearch/Core/WSTextFinder.java" />
+        <option value="$PROJECT_DIR$/src/FileSearch/actions/OpenFileSearch.java" />
+        <option value="$PROJECT_DIR$/src/FileSearch/SearchResultListener.java" />
+        <option value="$PROJECT_DIR$/src/WSAnything/FSLog.java" />
+        <option value="$PROJECT_DIR$/src/WSAnything/actions/OpenFileSearch.java" />
+        <option value="$PROJECT_DIR$/src/WSAnything/Core/WSProjectListener.java" />
+        <option value="$PROJECT_DIR$/src/WSAnything/Core/WSProject.java" />
+        <option value="$PROJECT_DIR$/src/WSAnything/UI/WSTableCellRenderer.java" />
+        <option value="$PROJECT_DIR$/src/WSAnything/UI/WSTableModel.java" />
+        <option value="$PROJECT_DIR$/src/WSAnything/Core/WSFileCache.java" />
         <option value="$PROJECT_DIR$/resources/META-INF/plugin.xml" />
+        <option value="$PROJECT_DIR$/src/WSAnything/Core/WSFindTextArgs.java" />
+        <option value="$PROJECT_DIR$/src/WSAnything/Core/WSTextFinder.java" />
+        <option value="$PROJECT_DIR$/src/WSAnything/Core/FindTextRequest.java" />
+        <option value="$PROJECT_DIR$/src/WSAnything/WSFindPopupPanel.java" />
+        <option value="$PROJECT_DIR$/src/WSAnything/Core/WSConfig.java" />
       </list>
     </option>
   </component>
@@ -331,10 +252,10 @@
     <option name="CUSTOM_FILTER" value="" />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="163" />
-    <option name="y" value="83" />
-    <option name="width" value="2165" />
-    <option name="height" value="1311" />
+    <option name="x" value="87" />
+    <option name="y" value="116" />
+    <option name="width" value="2077" />
+    <option name="height" value="1080" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -351,12 +272,33 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="AndroidView" />
+      <pane id="Scope" />
       <pane id="PackagesPane" />
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
               <item name="WSAnything" type="b2602c69:ProjectViewProjectNode" />
+              <item name="WSAnything" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="WSAnything" type="b2602c69:ProjectViewProjectNode" />
+              <item name="WSAnything" type="462c0819:PsiDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="WSAnything" type="b2602c69:ProjectViewProjectNode" />
+              <item name="WSAnything" type="462c0819:PsiDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+              <item name="production" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="WSAnything" type="b2602c69:ProjectViewProjectNode" />
+              <item name="WSAnything" type="462c0819:PsiDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+              <item name="production" type="462c0819:PsiDirectoryNode" />
               <item name="WSAnything" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -379,36 +321,12 @@
               <item name="WSAnything" type="b2602c69:ProjectViewProjectNode" />
               <item name="WSAnything" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="FileSearch" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="WSAnything" type="b2602c69:ProjectViewProjectNode" />
               <item name="WSAnything" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="FileSearch" type="462c0819:PsiDirectoryNode" />
-              <item name="actions" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="WSAnything" type="b2602c69:ProjectViewProjectNode" />
-              <item name="WSAnything" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="FileSearch" type="462c0819:PsiDirectoryNode" />
-              <item name="Core" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="WSAnything" type="b2602c69:ProjectViewProjectNode" />
-              <item name="WSAnything" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="FileSearch" type="462c0819:PsiDirectoryNode" />
-              <item name="UI" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
-      <pane id="AndroidView" />
-      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -418,7 +336,8 @@
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.44804215" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="settings.editor.selected.configurable" value="VisualVMLauncher" />
+    <property name="full.screen.before.presentation.mode" value="false" />
   </component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
@@ -509,10 +428,13 @@
     </configuration>
     <configuration name="Plugin" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
       <module name="WSAnything" />
-      <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m -ea -Dapple.laf.useScreenMenuBar=false " />
+      <option name="VM_PARAMETERS" value="-Xmx5000m -Xms512m -ea -Dapple.laf.useScreenMenuBar=false" />
       <option name="PROGRAM_PARAMETERS" value="" />
       <alternative-path path="IntelliJ IDEA Community Edition IC-173.4674.33" alternative-path-enabled="true" />
       <predefined_log_file id="idea.log" enabled="true" />
+      <RunnerSettings RunnerId="Debug with VisualVM">
+        <option name="visualVMId" value="160084002961918" />
+      </RunnerSettings>
     </configuration>
     <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
       <module name="WSAnything" />
@@ -538,36 +460,48 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="163" y="83" width="2165" height="1311" extended-state="0" />
+    <frame x="87" y="116" width="2077" height="1080" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18805489" sideWeight="0.49612403" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.29026216" sideWeight="0.40600777" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32994923" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18650794" sideWeight="0.49387974" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20815986" sideWeight="0.4133806" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32919255" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3299285" sideWeight="0.49791014" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1704388" sideWeight="0.77185184" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Run with VisualVM" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19354838" sideWeight="0.73015875" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.26907632" sideWeight="0.27099842" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2881356" sideWeight="0.59399223" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18222222" sideWeight="0.22814815" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.39285713" sideWeight="0.5866194" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19638105" sideWeight="0.23714286" order="5" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug with VisualVM" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2906746" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.22869243" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.22778346" sideWeight="0.4981373" order="1" side_tool="false" content_ui="tabs" />
     </layout>
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ORDER">
+      <list>
+        <option value="0" />
+        <option value="2" />
+        <option value="3" />
+        <option value="1" />
+      </list>
+    </option>
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
@@ -576,16 +510,10 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/FileSearch/dialogs/SearchDialog.java</url>
+          <url>file://$PROJECT_DIR$/src/WSAnything/dialogs/SearchDialog.java</url>
           <line>144</line>
           <properties />
           <option name="timeStamp" value="9" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/FileSearch/WSFindPopupPanel.java</url>
-          <line>850</line>
-          <properties />
-          <option name="timeStamp" value="99" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/../intellij-community-master/platform/platform-impl/src/com/intellij/ide/plugins/RepositoryHelper.java</url>
@@ -624,540 +552,382 @@
           <option name="timeStamp" value="348" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/FileSearch/Core/WSFileCache.java</url>
-          <line>38</line>
+          <url>file://$PROJECT_DIR$/src/WSAnything/Core/WSFileCache.java</url>
+          <line>37</line>
           <properties />
           <option name="timeStamp" value="401" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/FileSearch/Core/WSFileCache.java</url>
-          <line>35</line>
+          <url>file://$PROJECT_DIR$/src/WSAnything/Core/WSFileCache.java</url>
+          <line>34</line>
           <properties />
           <option name="timeStamp" value="402" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/FileSearch/Core/CacheFileSerializer.java</url>
-          <line>64</line>
+          <url>file://$PROJECT_DIR$/src/WSAnything/WSFindPopupPanel.java</url>
+          <line>566</line>
           <properties />
-          <option name="timeStamp" value="405" />
+          <option name="timeStamp" value="425" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/FileSearch/Core/CacheFileSerializer.java</url>
-          <line>44</line>
+          <url>file://$PROJECT_DIR$/src/WSAnything/WSFindPopupPanel.java</url>
+          <line>182</line>
           <properties />
-          <option name="timeStamp" value="406" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/FileSearch/WSFindPopupPanel.java</url>
-          <line>812</line>
-          <properties />
-          <option name="timeStamp" value="410" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/FileSearch/Core/WSProject.java</url>
-          <line>140</line>
-          <properties />
-          <option name="timeStamp" value="411" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/FileSearch/WSFindPopupPanel.java</url>
-          <line>144</line>
-          <properties />
-          <option name="timeStamp" value="415" />
+          <option name="timeStamp" value="433" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="416" />
+      <option name="time" value="476" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/FileSearch/SearchManager.java">
+    <entry file="file://$PROJECT_DIR$/src/WSAnything/Core/Context.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="17" column="1" lean-forward="true" selection-start-line="17" selection-start-column="1" selection-end-line="17" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/FileSearch/Core/WSFileEditorListener.java" />
+    <entry file="jar://$APPLICATION_HOME_DIR$/lib/openapi.jar!/com/intellij/openapi/fileEditor/FileEditorManagerListener.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="13" column="17" lean-forward="false" selection-start-line="13" selection-start-column="17" selection-end-line="13" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/WSAnything/Core/WSSolutionFile.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="68">
-          <caret line="12" column="13" lean-forward="false" selection-start-line="12" selection-start-column="13" selection-end-line="12" selection-end-column="13" />
+          <caret line="4" column="13" lean-forward="false" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/FileSearch/Searcher.java">
+    <entry file="jar://$APPLICATION_HOME_DIR$/lib/openapi.jar!/com/intellij/openapi/fileEditor/FileEditorManager.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="15" column="13" lean-forward="false" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
+        <state relative-caret-position="663">
+          <caret line="51" column="27" lean-forward="false" selection-start-line="51" selection-start-column="27" selection-end-line="51" selection-end-column="27" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/FileSearch/Search.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="7" column="13" lean-forward="false" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
-        </state>
+    <entry file="file://$PROJECT_DIR$/demo.gif">
+      <provider selected="true" editor-type-id="images">
+        <state />
       </provider>
     </entry>
-    <entry file="jar://$APPLICATION_HOME_DIR$/lib/openapi.jar!/com/intellij/usages/impl/UsagePreviewPanel.class">
+    <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="595">
-          <caret line="38" column="26" lean-forward="false" selection-start-line="38" selection-start-column="26" selection-end-line="38" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$APPLICATION_HOME_DIR$/lib/util.jar!/com/intellij/util/ui/JBUI.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2295">
-          <caret line="181" column="22" lean-forward="false" selection-start-line="181" selection-start-column="22" selection-end-line="181" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$APPLICATION_HOME_DIR$/lib/miglayout-swing-5.0.jar!/net/miginfocom/swing/MigLayout.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="493">
-          <caret line="76" column="11" lean-forward="false" selection-start-line="76" selection-start-column="11" selection-end-line="76" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home/src.zip!/java/awt/Container.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15283">
-          <caret line="971" column="16" lean-forward="false" selection-start-line="971" selection-start-column="16" selection-end-line="971" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home/src.zip!/javax/swing/Box.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3604">
-          <caret line="246" column="28" lean-forward="false" selection-start-line="246" selection-start-column="28" selection-end-line="246" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home/src.zip!/java/util/Arrays.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="63410">
-          <caret line="3803" column="22" lean-forward="false" selection-start-line="3803" selection-start-column="22" selection-end-line="3803" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$APPLICATION_HOME_DIR$/lib/openapi.jar!/com/intellij/openapi/application/Application.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="816">
-          <caret line="60" column="20" lean-forward="false" selection-start-line="60" selection-start-column="9" selection-end-line="60" selection-end-column="20" />
+        <state relative-caret-position="255">
+          <caret line="15" column="16" lean-forward="true" selection-start-line="15" selection-start-column="16" selection-end-line="15" selection-end-column="16" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/WSAnything.iml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="11" column="14" lean-forward="false" selection-start-line="11" selection-start-column="14" selection-end-line="11" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
-      <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home/src.zip!/java/lang/System.java">
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home/src.zip!/java/awt/event/InputEvent.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="16405">
-          <caret line="1013" column="23" lean-forward="false" selection-start-line="1013" selection-start-column="23" selection-end-line="1013" selection-end-column="23" />
+        <state relative-caret-position="1632">
+          <caret line="127" column="28" lean-forward="false" selection-start-line="127" selection-start-column="28" selection-end-line="127" selection-end-column="28" />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$APPLICATION_HOME_DIR$/lib/openapi.jar!/com/intellij/openapi/vfs/VirtualFileListener.class">
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home/src.zip!/java/lang/String.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="2668" column="18" lean-forward="false" selection-start-line="2668" selection-start-column="18" selection-end-line="2668" selection-end-column="18" />
+          <folding>
+            <element signature="e#104675#104676#0" expanded="false" />
+            <element signature="e#104730#104731#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home/jre/lib/rt.jar!/sun/reflect/DelegatingMethodAccessorImpl.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="17" column="0" lean-forward="false" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$APPLICATION_HOME_DIR$/lib/openapi.jar!/com/intellij/openapi/project/VetoableProjectManagerListener.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="9" column="17" lean-forward="false" selection-start-line="9" selection-start-column="17" selection-end-line="9" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$APPLICATION_HOME_DIR$/lib/openapi.jar!/com/intellij/openapi/application/ApplicationManager.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="391">
+          <caret line="31" column="0" lean-forward="false" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$APPLICATION_HOME_DIR$/lib/idea.jar!/com/intellij/openapi/project/impl/ProjectManagerImpl.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="302">
+          <caret line="972" column="0" lean-forward="false" selection-start-line="972" selection-start-column="0" selection-end-line="972" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$APPLICATION_HOME_DIR$/lib/openapi.jar!/com/intellij/openapi/project/ProjectManager.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="161">
+          <caret line="30" column="25" lean-forward="false" selection-start-line="30" selection-start-column="25" selection-end-line="30" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/FileSearch/tools/FileUtils.java" />
+    <entry file="file://$PROJECT_DIR$/src/FileSearch/tools/PathManager.java" />
+    <entry file="file://$PROJECT_DIR$/src/FileSearch/tools/Result.java" />
+    <entry file="file://$PROJECT_DIR$/src/FileSearch/dialogs/SearchDialog.java" />
+    <entry file="file://$PROJECT_DIR$/src/FileSearch/ResultsListModel.java" />
+    <entry file="file://$PROJECT_DIR$/src/FileSearch/Search.java" />
+    <entry file="file://$PROJECT_DIR$/src/FileSearch/SearchResultListener.java" />
+    <entry file="file://$PROJECT_DIR$/src/FileSearch/SearchOptions.java" />
+    <entry file="file://$PROJECT_DIR$/src/WSAnything/FSLog.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" column="13" lean-forward="false" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/WSAnything/WSFindUIHelper.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="379">
+          <caret line="33" column="5" lean-forward="false" selection-start-line="33" selection-start-column="5" selection-end-line="33" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/WSAnything/Core/WSFileListener.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="442">
+          <caret line="34" column="40" lean-forward="false" selection-start-line="34" selection-start-column="40" selection-end-line="34" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/WSAnything/Core/WSEventListener.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="17" lean-forward="false" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/WSAnything/actions/OpenFileSearch.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="187">
-          <caret line="15" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
+          <caret line="16" column="9" lean-forward="true" selection-start-line="16" selection-start-column="9" selection-end-line="16" selection-end-column="9" />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$APPLICATION_HOME_DIR$/lib/idea.jar!/com/intellij/openapi/roots/impl/FileIndexBase.class">
+    <entry file="file://$PROJECT_DIR$/src/WSAnything/Core/WSFindInProjectUtil.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1547">
-          <caret line="106" column="0" lean-forward="false" selection-start-line="106" selection-start-column="0" selection-end-line="106" selection-end-column="0" />
+        <state relative-caret-position="102">
+          <caret line="24" column="13" lean-forward="false" selection-start-line="24" selection-start-column="13" selection-end-line="24" selection-end-column="13" />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$APPLICATION_HOME_DIR$/lib/idea.jar!/com/intellij/openapi/roots/impl/ProjectFileIndexImpl.class">
+    <entry file="file://$PROJECT_DIR$/src/WSAnything/Core/AsyncTask.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1598">
-          <caret line="118" column="47" lean-forward="false" selection-start-line="118" selection-start-column="47" selection-end-line="118" selection-end-column="47" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$APPLICATION_HOME_DIR$/lib/openapi.jar!/com/intellij/openapi/roots/ProjectFileIndex.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="23" column="31" lean-forward="false" selection-start-line="23" selection-start-column="31" selection-end-line="23" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/FileSearch/Core/WSTextFinder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3264">
-          <caret line="199" column="13" lean-forward="false" selection-start-line="199" selection-start-column="13" selection-end-line="199" selection-end-column="13" />
+        <state relative-caret-position="918">
+          <caret line="58" column="0" lean-forward="false" selection-start-line="58" selection-start-column="0" selection-end-line="58" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/FileSearch/WSFindUIHelper.java">
+    <entry file="file://$PROJECT_DIR$/src/WSAnything/Core/CacheFileSerializer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="27" column="13" lean-forward="false" selection-start-line="27" selection-start-column="13" selection-end-line="27" selection-end-column="13" />
+        <state relative-caret-position="595">
+          <caret line="41" column="43" lean-forward="false" selection-start-line="41" selection-start-column="43" selection-end-line="41" selection-end-column="43" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home/src.zip!/java/io/Serializable.java">
+    <entry file="jar://$APPLICATION_HOME_DIR$/lib/openapi.jar!/com/intellij/openapi/fileTypes/FileType.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1078">
-          <caret line="168" column="17" lean-forward="false" selection-start-line="168" selection-start-column="17" selection-end-line="168" selection-end-column="17" />
+        <state relative-caret-position="221">
+          <caret line="21" column="12" lean-forward="true" selection-start-line="21" selection-start-column="12" selection-end-line="21" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$APPLICATION_HOME_DIR$/lib/idea.jar!/com/intellij/openapi/fileEditor/impl/LoadTextUtil.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="707" column="31" lean-forward="false" selection-start-line="707" selection-start-column="31" selection-end-line="707" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/WSAnything/UI/WSTableCellRenderer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="31" column="36" lean-forward="false" selection-start-line="31" selection-start-column="36" selection-end-line="31" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/WSAnything/Core/WSProjectListener.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="799">
+          <caret line="57" column="0" lean-forward="false" selection-start-line="57" selection-start-column="0" selection-end-line="57" selection-end-column="0" />
+          <folding>
+            <element signature="e#485#486#0" expanded="false" />
+            <element signature="e#561#562#0" expanded="false" />
+            <element signature="e#848#849#0" expanded="false" />
+            <element signature="e#875#876#0" expanded="false" />
+            <element signature="e#1366#1367#0" expanded="false" />
+            <element signature="e#1434#1435#0" expanded="false" />
+            <element signature="e#1911#1912#0" expanded="false" />
+            <element signature="e#1945#1946#0" expanded="false" />
+            <element signature="e#1978#1979#0" expanded="false" />
+            <element signature="e#2035#2036#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/WSAnything/UI/WSTableModel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="21" column="34" lean-forward="false" selection-start-line="21" selection-start-column="34" selection-end-line="21" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_CONFIG_DIR$/idea.vmoptions">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="3" lean-forward="true" selection-start-line="7" selection-start-column="3" selection-end-line="7" selection-end-column="3" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/WSAnything/Core/WSFileCache.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1240">
+          <caret line="93" column="44" lean-forward="false" selection-start-line="93" selection-start-column="44" selection-end-line="93" selection-end-column="44" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/WSAnything/Core/WSUtil.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="266">
+          <caret line="270" column="36" lean-forward="false" selection-start-line="270" selection-start-column="36" selection-end-line="270" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/WSAnything/Core/WSProject.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="222">
+          <caret line="101" column="31" lean-forward="false" selection-start-line="101" selection-start-column="23" selection-end-line="101" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/WSAnything/Core/WSFindTextResult.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="9" column="13" lean-forward="false" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home/src.zip!/java/util/ArrayList.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="404">
-          <caret line="164" column="11" lean-forward="false" selection-start-line="164" selection-start-column="11" selection-end-line="164" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home/src.zip!/java/net/URI.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="404">
-          <caret line="2421" column="26" lean-forward="false" selection-start-line="2421" selection-start-column="26" selection-end-line="2421" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home/src.zip!/java/io/FileOutputStream.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="397">
-          <caret line="99" column="11" lean-forward="false" selection-start-line="99" selection-start-column="11" selection-end-line="99" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$APPLICATION_HOME_DIR$/lib/openapi.jar!/com/intellij/openapi/project/Project.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="16" column="11" lean-forward="false" selection-start-line="16" selection-start-column="11" selection-end-line="16" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/FileSearch/Core/WSUtil.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1066">
-          <caret line="223" column="0" lean-forward="false" selection-start-line="223" selection-start-column="0" selection-end-line="223" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home/src.zip!/java/io/File.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="397">
-          <caret line="1032" column="19" lean-forward="false" selection-start-line="1032" selection-start-column="19" selection-end-line="1032" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/FileSearch/Core/WSFileListener.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="493">
-          <caret line="35" column="5" lean-forward="false" selection-start-line="35" selection-start-column="5" selection-end-line="35" selection-end-column="5" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home/src.zip!/java/lang/Integer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15623">
-          <caret line="972" column="19" lean-forward="false" selection-start-line="972" selection-start-column="19" selection-end-line="972" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/FileSearch/SearchOptions.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="16" column="0" lean-forward="false" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home/src.zip!/java/io/ObjectOutputStream.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5219">
-          <caret line="341" column="22" lean-forward="false" selection-start-line="341" selection-start-column="22" selection-end-line="341" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home/src.zip!/java/io/ObjectInputStream.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="8517">
-          <caret line="546" column="16" lean-forward="false" selection-start-line="546" selection-start-column="16" selection-end-line="546" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/FileSearch/Core/CacheFileSerializer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="16" column="46" lean-forward="false" selection-start-line="16" selection-start-column="26" selection-end-line="16" selection-end-column="46" />
+        <state relative-caret-position="188">
+          <caret line="150" column="40" lean-forward="false" selection-start-line="150" selection-start-column="25" selection-end-line="150" selection-end-column="40" />
           <folding>
-            <element signature="imports" expanded="false" />
+            <element signature="e#6283#6284#0" expanded="true" />
+            <element signature="e#6351#6352#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/FileSearch/Core/WSConfig.java">
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home/src.zip!/java/util/List.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="16" column="18" lean-forward="false" selection-start-line="16" selection-start-column="18" selection-end-line="16" selection-end-column="18" />
+        <state relative-caret-position="366">
+          <caret line="589" column="48" lean-forward="false" selection-start-line="589" selection-start-column="48" selection-end-line="589" selection-end-column="48" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/FileSearch/Core/WSFileCache.java">
+    <entry file="file://$PROJECT_DIR$/src/WSAnything/Core/WSFindTextArgs.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-133">
-          <caret line="33" column="5" lean-forward="true" selection-start-line="33" selection-start-column="5" selection-end-line="33" selection-end-column="5" />
+        <state relative-caret-position="153">
+          <caret line="10" column="40" lean-forward="false" selection-start-line="10" selection-start-column="40" selection-end-line="10" selection-end-column="40" />
           <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#2311#2312#0" expanded="false" />
-            <element signature="e#2348#2349#0" expanded="false" />
-            <element signature="e#3382#3383#0" expanded="false" />
-            <element signature="e#3427#3428#0" expanded="false" />
-            <element signature="e#3471#3472#0" expanded="false" />
-            <element signature="e#3516#3517#0" expanded="false" />
+            <element signature="e#200#218#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/FileSearch/Core/Context.java">
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home/src.zip!/java/lang/EnumConstantNotPresentException.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="13" lean-forward="false" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
+        <state relative-caret-position="195">
+          <caret line="59" column="11" lean-forward="false" selection-start-line="59" selection-start-column="11" selection-end-line="59" selection-end-column="11" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/FileSearch/SearchResultListener.java">
+    <entry file="file://$PROJECT_DIR$/src/WSAnything/Core/WSTextFinder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" column="17" lean-forward="false" selection-start-line="4" selection-start-column="17" selection-end-line="4" selection-end-column="17" />
+        <state relative-caret-position="370">
+          <caret line="100" column="45" lean-forward="false" selection-start-line="100" selection-start-column="45" selection-end-line="100" selection-end-column="45" />
+          <folding>
+            <element signature="e#9556#9557#0" expanded="true" />
+            <element signature="e#9596#9597#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home/src.zip!/java/util/Date.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="188">
+          <caret line="130" column="13" lean-forward="false" selection-start-line="130" selection-start-column="13" selection-end-line="130" selection-end-column="13" />
+          <folding>
+            <element signature="e#37718#37719#0" expanded="true" />
+            <element signature="e#37754#37755#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/WSAnything/Core/FindTextRequest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="208">
+          <caret line="18" column="27" lean-forward="false" selection-start-line="18" selection-start-column="15" selection-end-line="18" selection-end-column="27" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home/src.zip!/javax/swing/JComboBox.java">
+    <entry file="file://$PROJECT_DIR$/src/WSAnything/WSFindPopupPanel.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="327">
-          <caret line="807" column="16" lean-forward="false" selection-start-line="807" selection-start-column="16" selection-end-line="807" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home/src.zip!/javax/swing/JComponent.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="641">
-          <caret line="5561" column="24" lean-forward="true" selection-start-line="5561" selection-start-column="24" selection-end-line="5561" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home/src.zip!/javax/swing/event/EventListenerList.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="273">
-          <caret line="100" column="13" lean-forward="false" selection-start-line="100" selection-start-column="13" selection-end-line="100" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home/src.zip!/javax/swing/table/AbstractTableModel.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="344">
-          <caret line="230" column="18" lean-forward="false" selection-start-line="230" selection-start-column="8" selection-end-line="230" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/FileSearch/UI/WSTableModel.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="697">
-          <caret line="44" column="0" lean-forward="false" selection-start-line="44" selection-start-column="0" selection-end-line="44" selection-end-column="0" />
+        <state relative-caret-position="188">
+          <caret line="1404" column="42" lean-forward="false" selection-start-line="1404" selection-start-column="42" selection-end-line="1404" selection-end-column="42" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$APPLICATION_HOME_DIR$/lib/util.jar!/com/intellij/util/ui/components/JBComponent.class">
+    <entry file="file://$PROJECT_DIR$/src/WSAnything/Core/WSConfig.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="10" column="17" lean-forward="false" selection-start-line="10" selection-start-column="17" selection-end-line="10" selection-end-column="17" />
-          <folding>
-            <marker date="1520278552000" expanded="false" signature="0:104" ph="/.../" />
-            <marker date="1520278552000" expanded="false" signature="155:217" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$APPLICATION_HOME_DIR$/lib/util.jar!/com/intellij/ui/components/JBPanel.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="17" column="71" lean-forward="false" selection-start-line="17" selection-start-column="71" selection-end-line="17" selection-end-column="71" />
-          <folding>
-            <marker date="1520278552000" expanded="false" signature="0:104" ph="/.../" />
-            <marker date="1520278552000" expanded="false" signature="150:449" ph="..." />
-            <marker date="1520278552000" expanded="false" signature="824:835" ph=" { " />
-            <marker date="1520278552000" expanded="false" signature="867:873" ph=" }" />
-            <marker date="1520278552000" expanded="false" signature="915:926" ph=" { " />
-            <marker date="1520278552000" expanded="false" signature="940:946" ph=" }" />
-            <marker date="1520278552000" expanded="false" signature="992:1003" ph=" { " />
-            <marker date="1520278552000" expanded="false" signature="1027:1033" ph=" }" />
-            <marker date="1520278552000" expanded="true" signature="1056:1063" ph="{}" />
-            <marker date="1520278552000" expanded="true" signature="1104:1164" ph="{...}" />
-            <marker date="1520278552000" expanded="true" signature="1201:1257" ph="{...}" />
-            <marker date="1520278552000" expanded="true" signature="1289:1348" ph="{...}" />
-            <marker date="1520278552000" expanded="true" signature="1375:1433" ph="{...}" />
-            <marker date="1520278552000" expanded="true" signature="1491:1559" ph="{...}" />
-            <marker date="1520278552000" expanded="true" signature="1604:1671" ph="{...}" />
-            <marker date="1520278552000" expanded="true" signature="1718:1787" ph="{...}" />
-            <marker date="1520278552000" expanded="true" signature="1843:1951" ph="{...}" />
-            <marker date="1520278552000" expanded="true" signature="1994:2059" ph="{...}" />
-            <marker date="1520278552000" expanded="true" signature="2104:2171" ph="{...}" />
-            <marker date="1520278552000" expanded="true" signature="2214:2279" ph="{...}" />
-            <marker date="1520278552000" expanded="true" signature="2324:2391" ph="{...}" />
-            <marker date="1520278552000" expanded="true" signature="2433:2564" ph="{...}" />
-            <marker date="1520278552000" expanded="true" signature="2604:2727" ph="{...}" />
-            <marker date="1520278552000" expanded="true" signature="2767:2890" ph="{...}" />
-            <marker date="1520278552000" expanded="true" signature="2991:3262" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$APPLICATION_HOME_DIR$/lib/idea.jar!/com/intellij/find/impl/FindUI.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="10" column="17" lean-forward="false" selection-start-line="10" selection-start-column="17" selection-end-line="10" selection-end-column="17" />
-          <folding>
-            <marker date="1520278552000" expanded="false" signature="0:104" ph="/.../" />
-            <marker date="1520278552000" expanded="false" signature="146:220" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/FileSearch/Core/WSEventListener.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" column="16" lean-forward="false" selection-start-line="3" selection-start-column="16" selection-end-line="3" selection-end-column="16" />
+        <state relative-caret-position="289">
+          <caret line="18" column="20" lean-forward="true" selection-start-line="18" selection-start-column="20" selection-end-line="18" selection-end-column="20" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$APPLICATION_HOME_DIR$/lib/openapi.jar!/com/intellij/openapi/actionSystem/ex/ActionUtil.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3043">
-          <caret line="219" column="0" lean-forward="false" selection-start-line="219" selection-start-column="0" selection-end-line="219" selection-end-column="0" />
-          <folding>
-            <marker date="1520278554000" expanded="false" signature="0:104" ph="/.../" />
-            <marker date="1520278554000" expanded="false" signature="160:1811" ph="..." />
-            <marker date="1520278554000" expanded="true" signature="2358:2365" ph="{}" />
-            <marker date="1520278554000" expanded="true" signature="2444:3410" ph="{...}" />
-            <marker date="1520278554000" expanded="true" signature="3514:4250" ph="{...}" />
-            <marker date="1520278554000" expanded="true" signature="4352:4703" ph="{...}" />
-            <marker date="1520278554000" expanded="true" signature="4863:7090" ph="{...}" />
-            <marker date="1520278554000" expanded="true" signature="7096:7114" ph="/**...*/" />
-            <marker date="1520278554000" expanded="true" signature="7263:7495" ph="{...}" />
-            <marker date="1520278554000" expanded="true" signature="7561:8052" ph="{...}" />
-            <marker date="1520278554000" expanded="true" signature="8164:8977" ph="{...}" />
-            <marker date="1520278554000" expanded="true" signature="9071:9718" ph="{...}" />
-            <marker date="1520278554000" expanded="true" signature="9116:9533" ph="{...}" />
-            <marker date="1520278554000" expanded="true" signature="9148:9409" ph="{...}" />
-            <marker date="1520278554000" expanded="false" signature="9447:9466" ph=" { " />
-            <marker date="1520278554000" expanded="false" signature="9509:9523" ph=" }" />
-            <marker date="1520278554000" expanded="true" signature="9808:10111" ph="{...}" />
-            <marker date="1520278554000" expanded="true" signature="10180:10347" ph="{...}" />
-            <marker date="1520278554000" expanded="true" signature="10446:10830" ph="{...}" />
-            <marker date="1520278554000" expanded="true" signature="10983:11795" ph="{...}" />
-            <marker date="1520278554000" expanded="true" signature="11947:12544" ph="{...}" />
-            <marker date="1520278554000" expanded="true" signature="12634:12892" ph="{...}" />
-            <marker date="1520278554000" expanded="true" signature="12983:14161" ph="{...}" />
-            <marker date="1520278554000" expanded="true" signature="14338:15102" ph="{...}" />
-            <marker date="1520278554000" expanded="true" signature="15268:16100" ph="{...}" />
-            <marker date="1520278554000" expanded="true" signature="15557:15990" ph="{...}" />
-            <marker date="1520278554000" expanded="true" signature="15614:15980" ph="{...}" />
-            <marker date="1520278554000" expanded="true" signature="16139:16272" ph="{...}" />
-            <marker date="1520278554000" expanded="true" signature="16255:16266" ph="{}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/FileSearch/Core/WSProjectListener.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="30" column="15" lean-forward="false" selection-start-line="30" selection-start-column="15" selection-end-line="30" selection-end-column="15" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/FileSearch/actions/OpenFileSearch.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="24" column="21" lean-forward="false" selection-start-line="24" selection-start-column="21" selection-end-line="24" selection-end-column="21" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/FileSearch/Core/WSProject.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#7393#7394#0" expanded="true" />
-            <element signature="e#7433#7434#0" expanded="true" />
-            <element signature="e#7465#7466#0" expanded="true" />
-            <element signature="e#7504#7505#0" expanded="true" />
-            <element signature="e#7563#7564#0" expanded="true" />
-            <element signature="e#7593#7594#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/FileSearch/WSFindPopupPanel.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="308">
-          <caret line="1475" column="68" lean-forward="false" selection-start-line="1475" selection-start-column="41" selection-end-line="1475" selection-end-column="68" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#14070#14071#0" expanded="true" />
-            <element signature="e#14105#14106#0" expanded="true" />
-            <element signature="e#14153#14154#0" expanded="true" />
-            <element signature="e#14185#14186#0" expanded="true" />
-            <element signature="e#14239#14240#0" expanded="true" />
-            <element signature="e#14270#14271#0" expanded="true" />
-            <element signature="e#14318#14319#0" expanded="true" />
-            <element signature="e#14350#14351#0" expanded="true" />
-            <element signature="e#14405#14406#0" expanded="true" />
-            <element signature="e#14438#14439#0" expanded="true" />
-            <element signature="e#18543#18544#0" expanded="true" />
-            <element signature="e#18598#18599#0" expanded="true" />
-            <element signature="e#20613#20614#0" expanded="true" />
-            <element signature="e#20656#20657#0" expanded="true" />
-            <element signature="e#20736#20737#0" expanded="true" />
-            <element signature="e#20818#20819#0" expanded="true" />
-            <element signature="e#21484#21485#0" expanded="true" />
-            <element signature="e#21559#21560#0" expanded="true" />
-            <element signature="e#21652#21653#0" expanded="true" />
-            <element signature="e#21726#21727#0" expanded="true" />
-            <element signature="e#22129#22130#0" expanded="true" />
-            <element signature="e#22196#22197#0" expanded="true" />
-            <element signature="e#22289#22290#0" expanded="true" />
-            <element signature="e#22355#22356#0" expanded="true" />
-            <element signature="e#56060#56061#0" expanded="true" />
-            <element signature="e#56094#56095#0" expanded="true" />
-            <element signature="e#58970#58971#0" expanded="true" />
-            <element signature="e#59021#59022#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/resources/META-INF/plugin.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="24" column="0" lean-forward="true" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
+        <state relative-caret-position="51">
+          <caret line="3" column="14" lean-forward="false" selection-start-line="3" selection-start-column="14" selection-end-line="3" selection-end-column="14" />
           <folding />
         </state>
       </provider>
