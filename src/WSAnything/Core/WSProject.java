@@ -180,7 +180,7 @@ public class WSProject {
                 if (cache.isReadSuccess()) {
                     m_CacheFile.put(file, cache);
                 } else {
-                    FSLog.log.error(cache.m_fileName + "is size invalid,will remove");
+                    FSLog.log.warn(cache.m_fileName + "is size invalid,will remove");
                     m_CacheFile.remove(file);
                     m_solutionFile.remove(file);
                 }

@@ -1,6 +1,7 @@
 package WSAnything.Core;
 
 import WSAnything.FSLog;
+import com.intellij.execution.ExecutionException;
 import com.intellij.lang.Language;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.editor.Document;
@@ -101,6 +102,9 @@ public class WSUtil {
 
             try {
                 Pair<PsiFile, VirtualFile> pair = ReadAction.compute(() -> findFile(result.m_virtualFile));
+                if(pair == null) {
+                    continue;
+                }
                 PsiFile psiFile = pair.first;
 
                 Project project = psiFile.getProject();
@@ -154,21 +158,25 @@ public class WSUtil {
 
 
     public static Pair<PsiFile, VirtualFile> findFile(@NotNull final VirtualFile virtualFile) {
-        Project project = WSProjectListener.getInstance().getJBProject();
-        PsiManager myPsiManager = PsiManager.getInstance(project);
-        PsiFile psiFile = myPsiManager.findFile(virtualFile);
-        if (psiFile != null) {
-            PsiFile sourceFile = (PsiFile)psiFile.getNavigationElement();
-            if (sourceFile != null) psiFile = sourceFile;
-            if (psiFile.getFileType().isBinary()) {
-                psiFile = null;
+        try {
+            Project project = WSProjectListener.getInstance().getJBProject();
+            PsiManager myPsiManager = PsiManager.getInstance(project);
+            PsiFile psiFile = myPsiManager.findFile(virtualFile);
+            if (psiFile != null) {
+                PsiFile sourceFile = (PsiFile)psiFile.getNavigationElement();
+                if (sourceFile != null) psiFile = sourceFile;
+                if (psiFile.getFileType().isBinary()) {
+                    psiFile = null;
+                }
             }
-        }
-        VirtualFile sourceVirtualFile = PsiUtilCore.getVirtualFile(psiFile);
-        if (psiFile == null || psiFile.getFileType().isBinary() || sourceVirtualFile == null) {
+            VirtualFile sourceVirtualFile = PsiUtilCore.getVirtualFile(psiFile);
+            if (psiFile == null || psiFile.getFileType().isBinary() || sourceVirtualFile == null) {
+                return null;
+            }
+            return Pair.createNonNull(psiFile, sourceVirtualFile);
+        } catch (Exception e) {
             return null;
         }
-        return Pair.createNonNull(psiFile, sourceVirtualFile);
     }
 
     public static String getWordAtCaret(Project project) {

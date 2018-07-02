@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.mario.WSAnything.plugin</id>
   <name>WSAnything</name>
-  <version>1.7</version>
+  <version>1.8</version>
 
   <vendor url="https://github.com/mario206/WSAnything" email="mariotest@qq.com" />
 
