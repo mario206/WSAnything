@@ -89,9 +89,9 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
     private static final KeyStroke ENTER_WITH_MODIFIERS =
             KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, SystemInfo.isMac ? InputEvent.META_DOWN_MASK : InputEvent.ALT_DOWN_MASK);
     private static final KeyStroke C_WITH_MODIFIERS =
-            KeyStroke.getKeyStroke(KeyEvent.VK_C, SystemInfo.isMac ? InputEvent.META_DOWN_MASK : InputEvent.ALT_DOWN_MASK);
+            KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.ALT_DOWN_MASK);
     private static final KeyStroke F_WITH_MODIFIERS =
-            KeyStroke.getKeyStroke(KeyEvent.VK_F, SystemInfo.isMac ? InputEvent.META_DOWN_MASK : InputEvent.ALT_DOWN_MASK);
+            KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.ALT_DOWN_MASK);
     private static final KeyStroke REPLACE_ALL =
             KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.SHIFT_DOWN_MASK | InputEvent.ALT_MASK);
 
