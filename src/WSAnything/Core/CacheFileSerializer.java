@@ -33,7 +33,7 @@ public class CacheFileSerializer {
             out.close();
             fileOut.close();
         } catch (Exception e) {
-            FSLog.log.error(e);
+            FSLog.log.warn(e);
         }
         FSLog.log.info("SerializeToLocalFile end");
         return true;
@@ -66,7 +66,7 @@ public class CacheFileSerializer {
             fileIn.close();
         } catch (Exception c) {
             deleteFile(path);
-            FSLog.log.error(c);
+            FSLog.log.warn(c);
         }
         FSLog.log.info("readFromLocalFile end");
         return ret;

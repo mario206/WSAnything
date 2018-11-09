@@ -90,7 +90,7 @@ public class WSTextFinder {
                     FSLog.log.info("wait for threadCnt = " + args.activeThreadCnt);
                     args.wait();
                 } catch(Exception e) {
-                    FSLog.log.error("wait for text search thread Exception");
+                    FSLog.log.warn("wait for text search thread Exception");
                 }
             }
         }
@@ -138,7 +138,7 @@ public class WSTextFinder {
                 try {
                     tmpRsult = searchFile(file,args.req);
                 }catch (Exception e) {
-                    FSLog.log.error(e);
+                    FSLog.log.warn(e);
                 }
                 if(tmpRsult != null && tmpRsult.size() > 0) {
                     synchronized (args) {

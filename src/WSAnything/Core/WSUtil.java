@@ -300,7 +300,7 @@ public class WSUtil {
             VirtualFile file = psiFile != null ? psiFile.getVirtualFile() : null;
             return isTmpFile(file);
         } catch (Exception e) {
-            FSLog.log.error(e);
+            FSLog.log.warn(e);
             return false;
         }
     }
@@ -310,7 +310,7 @@ public class WSUtil {
             try {
                 bRet = WSProjectListener.getInstance().getWSProject().isFileTmpFile(file);
             }catch (Exception e) {
-                FSLog.log.error(e);
+                FSLog.log.warn(e);
             }
         }
 

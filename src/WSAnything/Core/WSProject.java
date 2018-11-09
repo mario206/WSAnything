@@ -103,7 +103,7 @@ public class WSProject {
         synchronized (this) {
             WSFileCache ret = m_CacheFile.get(file);
             if (ret == null) {
-                FSLog.log.error("[getCache] " + file.getName());
+                FSLog.log.warn("[getCache] " + file.getName());
             }
             return ret;
         }
@@ -148,7 +148,7 @@ public class WSProject {
                     }
                     //FSLog.log.info(text);
                 } catch (Exception e) {
-                    FSLog.log.error(e);
+                    FSLog.log.warn(e);
                 }
             }
             int nCurrProgress = (i * 100 / fileToScan.size());
@@ -237,7 +237,7 @@ public class WSProject {
                 }
             }
         } catch (Exception e) {
-            FSLog.log.error(e);
+            FSLog.log.warn(e);
         }
     }
     /// these documents are not in project
@@ -253,7 +253,7 @@ public class WSProject {
                     }
                 }
             } catch (Exception e) {
-                FSLog.log.error(e);
+                FSLog.log.warn(e);
             }
 
         }
@@ -270,7 +270,7 @@ public class WSProject {
                     }
                 }
             } catch (Exception e) {
-                FSLog.log.error(e);
+                FSLog.log.warn(e);
             }
         }
         return ret;

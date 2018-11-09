@@ -44,7 +44,7 @@ public class AsyncTask {
                             try {
                                 this.wait();
                             } catch (Exception ex) {
-                                FSLog.log.error("AsyncTask wait exception1");
+                                FSLog.log.warn("AsyncTask wait exception1");
                             }
                         } else {
                             break;
@@ -58,8 +58,8 @@ public class AsyncTask {
                     try {
                         m_threadMain.apply(newContext);
                     } catch (Exception ex) {
-                        FSLog.log.error("AsyncTask wait exception2 :" + m_threadName);
-                        FSLog.log.error(ex);
+                        FSLog.log.warn("AsyncTask wait exception2 :" + m_threadName);
+                        FSLog.log.warn(ex);
                     }
                 } else {
                     FSLog.log.info(m_threadName + " task is cancel");
