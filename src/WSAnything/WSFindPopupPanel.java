@@ -1568,7 +1568,8 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
             icon.setIcon(AllIcons.General.Dropdown, 1, 3, 0);
             getTemplatePresentation().setIcon(icon);
 
-            setShortcutSet(new CustomShortcutSet(ShowMoreOptions.SHORT_CUT));
+            Shortcut SHORT_CUT = new KeyboardShortcut(KeyStroke.getKeyStroke(70, 640), (KeyStroke)null);
+            setShortcutSet(new CustomShortcutSet(SHORT_CUT));
             mySwitchContextGroup = new DefaultActionGroup();
             mySwitchContextGroup.add(new MySwitchContextToggleAction(FindModel.SearchContext.ANY));
             mySwitchContextGroup.add(new MySwitchContextToggleAction(FindModel.SearchContext.IN_COMMENTS));
