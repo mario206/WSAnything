@@ -301,5 +301,8 @@ public class WSProject {
             m_Listener = null;
         }
     }
+    public WSEventListener getEventListener() {
+        return m_Listener;
+    }
 }
 

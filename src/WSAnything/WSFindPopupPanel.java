@@ -21,7 +21,12 @@ import com.intellij.openapi.application.ApplicationActivationListener;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.editor.CaretModel;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.event.CaretEvent;
+import com.intellij.openapi.editor.event.CaretListener;
 import com.intellij.openapi.editor.event.DocumentListener;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileTypes.PlainTextLanguage;
 import com.intellij.openapi.help.HelpManager;
 import com.intellij.openapi.keymap.KeymapUtil;
@@ -125,6 +130,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
     private StateRestoringCheckBox myCbFileFilter;
     private StateRestoringCheckBox myConsiderFileName;
     private StateRestoringCheckBox myCurrFileOnly;
+    private StateRestoringCheckBox myFollowCursor;
     private JBLabel myCurrFileOnlyHintLabel;
     private JBLabel myConsiderFileNameHintLabel;
     private ActionToolbarImpl myScopeSelectionToolbar;
@@ -151,6 +157,8 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
     private UsageViewPresentation myUsageViewPresentation;
     private Boolean m_bFirstTime = true;
     private static int s_tmpIndex = 0;
+    private CaretListener m_lastCaretListener;
+    private CaretModel m_lastCaretModel;
     private static WSFindPopupPanel pInstance;
 
     public WSFindPopupPanel(Project pro) {
@@ -397,6 +405,8 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
         myConsiderFileName = createCheckBox("Consider FileName");
         myCurrFileOnly = createCheckBox("Search CurrFile Only");
         myCurrFileOnly.setText("Search CurrFile Only");
+        myFollowCursor = createCheckBox("Follow Cursor");
+        myFollowCursor.setText("Follow Cursor");
         myConsiderFileName.setText("Consider FileName");
         myCurrFileOnlyHintLabel = new JBLabel("");
         myCurrFileOnlyHintLabel.setEnabled(false);
@@ -410,6 +420,10 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
         });
         myConsiderFileName.addItemListener(__ ->{
             this.findSettingsChanged();
+        });
+
+        myFollowCursor.addItemListener(__ ->{
+            this.toggleFollowCursor();
         });
 
         myCbFileFilter.addItemListener(__ -> {
@@ -780,6 +794,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
         myCopyResultHintLabel.setEnabled(false);
         bottomPanel.add(myCopyResultHintLabel,"dock west,gap left 3");
         bottomPanel.add(myCopyResultButton,"dock west");
+        bottomPanel.add(myFollowCursor,"dock west");
 
         myFileCountHintLabel = new JBLabel("");
         myLineCountHintLabel = new JBLabel("");
@@ -1090,6 +1105,16 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
             myResultsPreviewSearchProgress.cancel();
         }
     }
+    private void toggleFollowCursor() {
+        if(myFollowCursor.isSelected()) {
+            if(!myIsPinned.get()) {
+                myPinButton.click();
+            }
+            addListenerToCurrEditor();
+        } else {
+            removeListenerToLastEditor();
+        }
+    };
 
     private void findSettingsChanged() {
         if (isShowing()) {
@@ -1622,7 +1647,44 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
                 findSettingsChanged();
             }
         });
+    }
+    public void removeListenerToLastEditor() {
+        try {
+            if(m_lastCaretListener != null && m_lastCaretModel != null) {
+                m_lastCaretModel.removeCaretListener(m_lastCaretListener);
+            }
+            m_lastCaretListener = null;
+            m_lastCaretModel = null;
+        } finally {
 
+        }
+    }
+    public void addListenerToCurrEditor() {
+        this.removeListenerToLastEditor();
+        Editor editor = FileEditorManager.getInstance(WSProjectListener.getInstance().getJBProject()).getSelectedTextEditor();
+        if(editor != null) {
+            m_lastCaretListener = new CaretListener() {
+                @Override
+                public void caretPositionChanged(@NotNull final CaretEvent e) {
+                    ApplicationManager.getApplication().invokeLater(() -> {
+                        if(myFollowCursor.isSelected()) {
+                            String toSearch = WSUtil.getWordAtCaret(WSProjectListener.getInstance().getJBProject());
+                            if(!toSearch.isEmpty()) {
+                                mySearchComponent.setText(toSearch);
+                                findSettingsChanged();
+                            }
+                        }
+                    });
+                }
+            };
+            m_lastCaretModel = editor.getCaretModel();
+            m_lastCaretModel.addCaretListener(m_lastCaretListener);
+        }
+    };
+
+    @Override
+    public void onEditorChanged() {
+        addListenerToCurrEditor();
     }
 
 }
