@@ -123,6 +123,9 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
     private volatile ProgressIndicatorBase myResultsPreviewSearchProgress;
 
     private JLabel myTitleLabel;
+    private JButton myHistoryPrev;
+    private JButton myHistoryNext;
+
     private StateRestoringCheckBox myCbCaseSensitive;
     private StateRestoringCheckBox myCbPreserveCase;
     private StateRestoringCheckBox myCbWholeWordsOnly;
@@ -160,6 +163,8 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
     private CaretListener m_lastCaretListener;
     private CaretModel m_lastCaretModel;
     private static WSFindPopupPanel pInstance;
+    private static List<WSFindTextResult> g_Historys = new ArrayList<>();
+    private int g_historyIndex = -1;
 
     public WSFindPopupPanel(Project pro) {
         WSProjectListener.getInstance().getWSProject().registerEventListener(this);
@@ -273,6 +278,8 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
             WindowMoveListener windowListener = new WindowMoveListener(this);
             myTitlePanel.addMouseListener(windowListener);
             myTitlePanel.addMouseMotionListener(windowListener);
+            addMouseListener(windowListener);
+            addMouseMotionListener(windowListener);
             Dimension panelSize = getPreferredSize();
             Dimension prev = DimensionService.getInstance().getSize(SERVICE_KEY);
             if (!myCbPreserveCase.isVisible()) {
@@ -583,6 +590,13 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
                 myTabResultsButton.click();
             }
         }.registerCustomShortcutSet(CustomShortcutSet.fromString("alt DOWN"), this);*/
+        myHistoryPrev = new JButton("",AllIcons.General.ArrowLeft);
+        myHistoryNext = new JButton("",AllIcons.General.ArrowRight);
+
+        myHistoryPrev.addActionListener(__ -> onClickPrev());
+        myHistoryNext.addActionListener(__ -> onClickNext());
+
+
         myCopyResultButton = new JButton(FindBundle.message("find.popup.find.button"));
         myReplaceAllButton = new JButton(FindBundle.message("find.popup.replace.all.button"));
         myReplaceSelectedButton = new JButton(FindBundle.message("find.popup.replace.selected.button", 0));
@@ -822,7 +836,11 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
         myTitlePanel = new JPanel(new MigLayout("flowx, ins 0, gap 0, fillx, filly"));
         myTitlePanel.add(myTitleLabel);
         myTitlePanel.add(myLoadingDecorator.getComponent(), "w 24, wmin 24");
+        myTitlePanel.add(myHistoryPrev);
+        myTitlePanel.add(myHistoryNext);
+
         myTitlePanel.add(Box.createHorizontalGlue(), "growx, pushx");
+
         int gap = Math.max(0, JBUI.scale(16) - cbGapLeft - cbGapRight);
         JPanel regexpPanel = new JPanel(new BorderLayout(4, 5));
         regexpPanel.add(myCbRegularExpressions, BorderLayout.CENTER);
@@ -870,6 +888,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
                 return c == myResultsPreviewTable ? mySearchComponent : super.getComponentAfter(container, c);
             }
         });
+        updateHistoryBtn();
     }
 
     private void onFileMaskChanged() {
@@ -926,6 +945,29 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
         }
         myIsPinned.set(false);
         myBalloon.cancel();
+    }
+    private void onClickPrev() {
+        if(g_historyIndex > 0) {
+            g_historyIndex--;
+            String str = getHistoryStr();
+            updateSearchByText(str);
+            updateHistoryBtn();
+        }
+    };
+    private void onClickNext() {
+        if(g_historyIndex + 1 < g_Historys.size()) {
+            g_historyIndex++;
+            String str = getHistoryStr();
+            updateSearchByText(str);
+            updateHistoryBtn();
+        }
+    };
+    private String getHistoryStr() {
+        if(g_historyIndex >= 0 && g_Historys.size() > g_historyIndex) {
+            return g_Historys.get(g_historyIndex).m_textBoxText;
+        } else {
+            return "";
+        }
     }
     private void doOK_new(boolean promptOnReplace) {
         List<WSFindTextResult> result = WSTextFinder.getInstance().getLastResult();
@@ -1500,6 +1542,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
             boolean first = true;
             for (WSFindTextResult usage : usages) {
                 if (first) {
+                    addJumpHistory(usage);
                     WSUtil.navigateToFile(usage, true);
                 } else {
                     //usage.highlightInEditor();
@@ -1670,10 +1713,8 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
                     ApplicationManager.getApplication().invokeLater(() -> {
                         if(myFollowCursor.isSelected()) {
                             String toSearch = WSUtil.getWordAtCaret(WSProjectListener.getInstance().getJBProject());
-                            if(!toSearch.isEmpty()) {
-                                mySearchComponent.setText(toSearch);
-                                findSettingsChanged();
-                            }
+                            updateSearchByText(toSearch);
+
                         }
                     });
                 }
@@ -1683,9 +1724,31 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
         }
     };
 
+    public void updateSearchByText(String toSearch) {
+        ApplicationManager.getApplication().invokeLater(() -> {
+            String oldText = mySearchComponent.getText();
+            if(!toSearch.isEmpty() && !oldText.equals(toSearch)) {
+                mySearchComponent.setText(toSearch);
+                findSettingsChanged();
+            }
+        });
+    }
+
+    private void updateHistoryBtn() {
+        ApplicationManager.getApplication().invokeLater(() -> {
+            myHistoryPrev.setEnabled(g_historyIndex > 0);
+            myHistoryNext.setEnabled(g_historyIndex + 1 < g_Historys.size());
+        });
+    }
     @Override
     public void onEditorChanged() {
         addListenerToCurrEditor();
+    }
+
+    private void addJumpHistory(WSFindTextResult result) {
+        g_Historys.add(result);
+        g_historyIndex = g_Historys.size() - 1;
+        updateHistoryBtn();
     }
 
 }

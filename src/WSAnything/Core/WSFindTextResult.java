@@ -17,6 +17,7 @@ public class WSFindTextResult {
     public int m_nLineIndex;
     public int nBeginIndex;
     public int nEndIdex;
+    public String m_textBoxText;
     public List<Pair<Integer, Integer>> m_ListMatchTextIndexs = Lists.newArrayList();
     public List<Pair<Integer, Integer>> m_ListMatchFileNameIndex = Lists.newArrayList();
 

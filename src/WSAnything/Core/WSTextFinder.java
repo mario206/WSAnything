@@ -242,6 +242,7 @@ public class WSTextFinder {
             oneLineResult.m_ListMatchFileNameIndex = listMatchFileIndexs;
             oneLineResult.m_strFileName = fileName;
             oneLineResult.m_bConsiderFileName = nFileMatchCount > 0;
+            oneLineResult.m_textBoxText = req.m_TextBoxText;
             result = oneLineResult;
         }
         return result;
