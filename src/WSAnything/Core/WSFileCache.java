@@ -7,6 +7,10 @@ import com.intellij.openapi.vfs.VirtualFile;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.IOException;
+
 
 
 public class WSFileCache implements java.io.Serializable {
@@ -17,18 +21,16 @@ public class WSFileCache implements java.io.Serializable {
     long m_timeStamp;
     long m_DocumentModifiedTime = 0;
     List<String> m_Lines = new ArrayList<>();
-    //List<String> m_LinesLowercase = new ArrayList<>();
     List<Integer> m_LineOffSets = new ArrayList<Integer>();
     boolean m_bReadSuccess = true;
     boolean m_bIsTempFile = false;
     /// Serializable
 
-/*    public void writeObject(ObjectOutputStream outputStream) throws IOException{
+    public void writeObject(ObjectOutputStream outputStream) throws IOException{
         outputStream.writeObject(m_fileName);
         outputStream.writeObject(m_timeStamp);
         outputStream.writeObject(m_DocumentModifiedTime);
         outputStream.writeObject(m_Lines);
-        outputStream.writeObject(m_LinesLowercase);
         outputStream.writeObject(m_LineOffSets);
         outputStream.writeObject(m_bReadSuccess);
     }
@@ -38,10 +40,9 @@ public class WSFileCache implements java.io.Serializable {
         m_timeStamp = (long) inputStream.readObject();
         m_DocumentModifiedTime = (long) inputStream.readObject();
         m_Lines = (ArrayList<String>) inputStream.readObject();
-        m_LinesLowercase = (ArrayList<String>) inputStream.readObject();
         m_LineOffSets = (ArrayList<Integer>) inputStream.readObject();
         m_bReadSuccess = (boolean) inputStream.readObject();
-    }*/
+    }
 
     public void init(VirtualFile file) {
         //FSLog.log.info("WSFileCache init: " + file.getName());

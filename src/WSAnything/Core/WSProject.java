@@ -51,8 +51,8 @@ public class WSProject {
 
     public void close() {
         FSLog.log.info(String.format("Project %s close", m_project.getName()));
-        //List<WSFileCache> list = new ArrayList<>(m_CacheFile.values());
-        //CacheFileSerializer.SerializeToLocalFile(m_project,list);
+        List<WSFileCache> list = new ArrayList<>(m_CacheFile.values());
+        CacheFileSerializer.SerializeToLocalFile(m_project,list);
     }
 
     public void dispose() {
@@ -115,8 +115,8 @@ public class WSProject {
         m_solutionFile.clear();
         m_CacheFile.clear();
 
-        //Map<String, WSFileCache> cacheMap = CacheFileSerializer.readFromLocalFile(m_project);
-        Map<String, WSFileCache> cacheMap = new HashMap<>();
+        Map<String, WSFileCache> cacheMap = CacheFileSerializer.readFromLocalFile(m_project);
+        //Map<String, WSFileCache> cacheMap = new HashMap<>();
 
         List<WSSolutionFile> solutionFile = Lists.newArrayList();
         Map<VirtualFile, WSFileCache> cacheFile = new HashMap<>();
