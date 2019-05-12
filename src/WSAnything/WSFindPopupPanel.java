@@ -1746,6 +1746,12 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
     }
 
     private void addJumpHistory(WSFindTextResult result) {
+        if(g_Historys.size() > 0) {
+            WSFindTextResult lastResult = g_Historys.get(g_Historys.size() - 1);
+            if(lastResult.m_textBoxText.equals(result.m_textBoxText)) {
+                return;
+            }
+        }
         g_Historys.add(result);
         g_historyIndex = g_Historys.size() - 1;
         updateHistoryBtn();
