@@ -886,6 +886,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
             myBalloon.cancel();
         }
         WSProjectListener.getInstance().getWSProject().unRegisterEventListener(this);
+        removeListenerToLastEditor();
     }
 
     //Some popups shown above may prevent panel closing, first of all we should close them
