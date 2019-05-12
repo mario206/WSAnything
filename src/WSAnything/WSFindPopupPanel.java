@@ -315,9 +315,12 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
 
     protected boolean canBeClosed() {
         myBalloon.moveToFitScreen();
-/*    if (!myCanClose.get()) return false;
-    if (myIsPinned.get()) return false;
-    if (!ApplicationManager.getApplication().isActive()) return SystemInfo.isWindows;
+        if (myIsPinned.get()) return false;
+
+        /*if (!myCanClose.get()) return false;
+
+
+        if (!ApplicationManager.getApplication().isActive()) return SystemInfo.isWindows;
     if (KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow() == null) return SystemInfo.isWindows;
     if (myFileMaskField.isPopupVisible()) {
       myFileMaskField.setPopupVisible(false);
@@ -500,7 +503,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
                     }
                 };
         myShowFilterPopupAction.registerCustomShortcutSet(myShowFilterPopupAction.getShortcutSet(), this);
-        ToggleAction pinAction = new ToggleAction(null, null, AllIcons.General.AutohideOff) {
+        ToggleAction pinAction = new ToggleAction(null, null, AllIcons.General.Pin_tab) {
             @Override
             public boolean isDumbAware() {
                 return true;
@@ -508,13 +511,12 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
 
             @Override
             public boolean isSelected(AnActionEvent e) {
-                return UISettings.getInstance().getPinFindInPath();
+                return myIsPinned.get();
             }
 
             @Override
             public void setSelected(AnActionEvent e, boolean state) {
                 myIsPinned.set(state);
-                UISettings.getInstance().setPinFindInPath(state);
             }
         };
         myPinButton = new ActionButton(pinAction, pinAction.getTemplatePresentation(), ActionPlaces.UNKNOWN, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE);
@@ -832,7 +834,6 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
         //add(myCbFileFilter);
         //add(myFileMaskField, "gapleft 4, gapright 16");
         if (Registry.is("ide.find.as.popup.allow.pin") || ApplicationManager.getApplication().isInternal()) {
-            myIsPinned.set(UISettings.getInstance().getPinFindInPath());
             JPanel twoButtons = new JPanel(new GridLayout(1, 2, 4, 0));
             //twoButtons.add(myFilterContextButton);
             twoButtons.add(myPinButton);
