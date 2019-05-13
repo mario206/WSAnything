@@ -22,11 +22,13 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.CaretModel;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.event.CaretEvent;
 import com.intellij.openapi.editor.event.CaretListener;
 import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.fileEditor.TextEditor;
 import com.intellij.openapi.fileTypes.PlainTextLanguage;
 import com.intellij.openapi.help.HelpManager;
 import com.intellij.openapi.keymap.KeymapUtil;
@@ -163,7 +165,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
     private CaretListener m_lastCaretListener;
     private CaretModel m_lastCaretModel;
     private static WSFindPopupPanel pInstance;
-    private static List<WSFindTextResult> g_Historys = new ArrayList<>();
+    private List<WSFindTextResult> g_Historys = new ArrayList<>();
     private int g_historyIndex = -1;
 
     public WSFindPopupPanel(Project pro) {
@@ -326,30 +328,6 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
         }
 
         super.doLayout();
-    }
-
-    protected boolean canBeClosed() {
-        myBalloon.moveToFitScreen();
-        if (myIsPinned.get()) return false;
-
-        /*if (!myCanClose.get()) return false;
-
-
-        if (!ApplicationManager.getApplication().isActive()) return SystemInfo.isWindows;
-    if (KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow() == null) return SystemInfo.isWindows;
-    if (myFileMaskField.isPopupVisible()) {
-      myFileMaskField.setPopupVisible(false);
-      return false;
-    }
-    List<JBPopup> popups = ContainerUtil.filter(JBPopupFactory.getInstance().getChildPopups(this), popup -> !popup.isDisposed());
-    if (!popups.isEmpty()) {
-      for (JBPopup popup : popups) {
-        popup.cancel();
-      }
-      return false;
-    }
-    return !myScopeUI.hideAllPopups();*/
-        return true;
     }
 
     public void saveSettings() {
@@ -903,13 +881,17 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
         if (canBeClosedImmediately() && myBalloon != null && myBalloon.isVisible()) {
             myIsPinned.set(false);
             myBalloon.cancel();
+            WSProjectListener.getInstance().getWSProject().unRegisterEventListener(this);
+            removeListenerToLastEditor();
         }
-        WSProjectListener.getInstance().getWSProject().unRegisterEventListener(this);
-        removeListenerToLastEditor();
     }
 
+    protected boolean canBeClosed() {
+        return !myIsPinned.get();
+    }
     //Some popups shown above may prevent panel closing, first of all we should close them
     private boolean canBeClosedImmediately() {
+        /// use "ESC"
         boolean state = myIsPinned.get();
         myIsPinned.set(false);
         try {
@@ -918,33 +900,6 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
         } finally {
             myIsPinned.set(state);
         }
-    }
-
-    private void doOK(boolean promptOnReplace) {
-        if (!canBeClosedImmediately()) {
-            return;
-        }
-        FindModel validateModel = myHelper.getModel().clone();
-        applyTo(validateModel);
-
-        ValidationInfo validationInfo = getValidationInfo(validateModel);
-
-        if (validationInfo == null) {
-            myHelper.getModel().copyFrom(validateModel);
-            myHelper.getModel().setPromptOnReplace(promptOnReplace);
-            myHelper.doOKAction();
-        } else {
-            String message = validationInfo.message;
-            Messages.showMessageDialog(
-                    this,
-                    message,
-                    CommonBundle.getErrorTitle(),
-                    Messages.getErrorIcon()
-            );
-            return;
-        }
-        myIsPinned.set(false);
-        myBalloon.cancel();
     }
     private void onClickPrev() {
         if(g_historyIndex > 0) {
@@ -978,9 +933,6 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
         for(int i = 0;i < result.size();++i) {
             text += result.get(i).m_strLine + "\n";
         }
-
-
-
         /// try get curr open file language
         Language language = PlainTextLanguage.INSTANCE;
         String suffix = "";
@@ -1704,6 +1656,7 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
         }
     }
     public void addListenerToCurrEditor() {
+        FSLog.log.info("addListenerToCurrEditor");
         this.removeListenerToLastEditor();
         Editor editor = FileEditorManager.getInstance(WSProjectListener.getInstance().getJBProject()).getSelectedTextEditor();
         if(editor != null) {
@@ -1721,6 +1674,8 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
             };
             m_lastCaretModel = editor.getCaretModel();
             m_lastCaretModel.addCaretListener(m_lastCaretListener);
+        } else {
+            FSLog.log.error("curr eidtor null");
         }
     };
 
@@ -1742,7 +1697,9 @@ public class WSFindPopupPanel extends JBPanel implements FindUI,WSEventListener 
     }
     @Override
     public void onEditorChanged() {
-        addListenerToCurrEditor();
+        ApplicationManager.getApplication().invokeLater(() -> {
+            addListenerToCurrEditor();
+        });
     }
 
     private void addJumpHistory(WSFindTextResult result) {

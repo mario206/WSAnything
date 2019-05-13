@@ -24,7 +24,7 @@ public class WSProject {
     private Map<VirtualFile, WSFileCache> m_CacheFile = new HashMap<VirtualFile, WSFileCache>();
     private long m_nFilesNums = 0;
     private long m_nLineNums = 0;
-    private WSEventListener m_Listener;
+    private List<WSEventListener> m_Listener = Lists.newArrayList();
     private boolean m_bIsReady = false;
 
 
@@ -168,7 +168,9 @@ public class WSProject {
         System.runFinalization();
 
         if (m_Listener != null) {
-            m_Listener.onFileCacheFinish();
+            for(int i = 0;i < m_Listener.size();++i) {
+                m_Listener.get(i).onFileCacheFinish();
+            }
         }
         FSLog.log.info(String.format("scanFileMain end,file = %d,lines = %d", this.m_nFilesNums, this.m_nLineNums));
     }
@@ -293,15 +295,23 @@ public class WSProject {
     }
 
     public void registerEventListener(WSEventListener e) {
-        m_Listener = e;
+        for(int i = 0;i < m_Listener.size();++i) {
+            if(m_Listener.get(i) == e) {
+                return;
+            }
+        }
+        m_Listener.add(e);
     }
 
     public void unRegisterEventListener(WSEventListener e) {
-        if (m_Listener == e) {
-            m_Listener = null;
+        for(int i = 0;i < m_Listener.size();++i) {
+            if(m_Listener.get(i) == e) {
+                m_Listener.remove(i);
+                break;
+            }
         }
     }
-    public WSEventListener getEventListener() {
+    public List<WSEventListener> getEventListener() {
         return m_Listener;
     }
 }
